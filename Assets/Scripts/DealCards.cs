@@ -8,11 +8,11 @@ public class DealCards : MonoBehaviour
 {
     public List<GameObject> Areas;
     public GameObject Pack;
-    //public GameObject DealerPuck;
+    public GameObject DealerPuck;
 
     private List<GameObject> cards = new List<GameObject>();
-    private int dealerIndex = 0;
-    public List<GameObject> areaHands;
+    private int dealerIndex = -1;
+    private List<GameObject> areaHands = new List<GameObject>();
 
 
     // Start is called before the first frame update
@@ -54,6 +54,8 @@ public class DealCards : MonoBehaviour
         {
             dealerIndex = 0;
         }
+
+        DealerPuck.transform.SetParent(Areas[dealerIndex].transform, false);
     }
 
     void CollectCards()
@@ -78,7 +80,7 @@ public class DealCards : MonoBehaviour
         {
             GameObject playerCard = Instantiate(shuffledCards[i], new Vector3(0, 0, 0), Quaternion.identity);
 
-            var areaIndex = (i + dealerIndex) % Areas.Count;
+            var areaIndex = (i + dealerIndex + 1) % Areas.Count;
 
             playerCard.transform.SetParent(areaHands[areaIndex].transform, false);
         }
