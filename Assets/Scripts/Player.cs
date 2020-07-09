@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -12,5 +13,18 @@ public class Player : MonoBehaviour
         //TODO: find a less clunky way to find this?
         var sevenOfDiamonds = transform.Find("Hand/Diamond07(Clone)");
         return sevenOfDiamonds != null;
+    }
+
+    void Update()
+    {
+        Text activeText = transform.Find("Active").GetComponent<Text>();
+        if(IsActive)
+        {
+            activeText.text = "Active";
+        }
+        else
+        {
+             activeText.text = string.Empty;
+        }
     }
 }
