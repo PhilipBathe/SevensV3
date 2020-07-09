@@ -9,10 +9,12 @@ public class DealCards : MonoBehaviour
     public List<GameObject> Players;
     public GameObject Pack;
     public GameObject DealerPuck;
+    public GameObject Board;
 
     private List<GameObject> cards = new List<GameObject>();
     private int dealerIndex = -1;
     private List<GameObject> playerHands = new List<GameObject>();
+    private List<GameObject> suitSlots = new List<GameObject>();
 
 
     // Start is called before the first frame update
@@ -35,6 +37,14 @@ public class DealCards : MonoBehaviour
                 {
                     playerHands.Add(child.gameObject);
                 }
+            }
+        }
+
+        foreach(Transform child in Board.transform)
+        {
+            if (child.tag == "SuitSlot")
+            {
+                suitSlots.Add(child.gameObject);
             }
         }
     }
@@ -72,6 +82,11 @@ public class DealCards : MonoBehaviour
                 }
             }
             hand.transform.DetachChildren();
+        }
+
+        foreach(var slot in suitSlots)
+        {
+            slot.transform.DetachChildren();
         }
     }
 
