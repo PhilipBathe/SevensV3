@@ -6,13 +6,13 @@ using System.Linq;
 
 public class DealCards : MonoBehaviour
 {
-    public List<GameObject> Areas;
+    public List<GameObject> Players;
     public GameObject Pack;
     public GameObject DealerPuck;
 
     private List<GameObject> cards = new List<GameObject>();
     private int dealerIndex = -1;
-    private List<GameObject> areaHands = new List<GameObject>();
+    private List<GameObject> playerHands = new List<GameObject>();
 
 
     // Start is called before the first frame update
@@ -27,15 +27,15 @@ public class DealCards : MonoBehaviour
             }
         }
 
-        foreach(var area in Areas)
+        foreach(var player in Players)
         {
-            foreach(Transform child in area.transform)
+            foreach(Transform child in player.transform)
             {
                 if (child.tag == "Hand")
                 {
-                    areaHands.Add(child.gameObject);
+                    playerHands.Add(child.gameObject);
                 }
-            } 
+            }
         }
     }
 
@@ -46,30 +46,32 @@ public class DealCards : MonoBehaviour
         collectCards();
         deal();
         sortCards();
+        findFirstPlayer();
     }
 
     private void changeDealer()
     {
         dealerIndex++;
-        if(dealerIndex >= Areas.Count)
+        if(dealerIndex >= Players.Count)
         {
             dealerIndex = 0;
         }
 
-        DealerPuck.transform.SetParent(Areas[dealerIndex].transform, false);
+        DealerPuck.transform.SetParent(Players[dealerIndex].transform, false);
     }
 
     private void collectCards()
     {
-        foreach(var area in areaHands)
+        foreach(var hand in playerHands)
         {
-            foreach(Transform child in area.transform)
+            foreach(Transform child in hand.transform)
             {
                 if (child.tag == "Card")
                 {
                     Destroy(child.gameObject);
                 }
             }
+            hand.transform.DetachChildren();
         }
     }
 
@@ -81,17 +83,31 @@ public class DealCards : MonoBehaviour
         {
             GameObject playerCard = Instantiate(shuffledCards[i], new Vector3(0, 0, 0), Quaternion.identity);
 
-            var areaIndex = (i + dealerIndex + 1) % Areas.Count;
+            var playerIndex = (i + dealerIndex + 1) % Players.Count;
 
-            playerCard.transform.SetParent(areaHands[areaIndex].transform, false);
+            playerCard.transform.SetParent(playerHands[playerIndex].transform, false);
         }
     }
 
     private void sortCards()
     {
-        foreach(var hand in areaHands)
+        foreach(var hand in playerHands)
         {
            hand.GetComponent<SortCards>().Run();
+        }
+    }
+
+    private void findFirstPlayer()
+    {
+        foreach(var playerGO in Players)
+        {
+            var player = playerGO.GetComponent<Player>();
+            player.IsActive = false;
+            if(player.HasSevenOfDiamonds()) 
+            {
+                //Debug.Log("Found 7 of diamonds");
+                player.IsActive = true;
+            }
         }
     }
 }
