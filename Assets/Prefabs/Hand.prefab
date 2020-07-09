@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1806622627518481675}
   - component: {fileID: 1806622627518481674}
+  - component: {fileID: -7948615345232199823}
   m_Layer: 5
   m_Name: Hand
   m_TagString: Hand
@@ -60,3 +61,15 @@ MonoBehaviour:
   m_Spacing: {x: -80, y: 0}
   m_Constraint: 2
   m_ConstraintCount: 1
+--- !u!114 &-7948615345232199823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1806622627518481676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65e23a94ac3d0c443acd5166edd38e79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

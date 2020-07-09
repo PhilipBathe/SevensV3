@@ -7,14 +7,15 @@ public class CreatePack : MonoBehaviour
 {
     public GameObject CardPrefab;
 
-    private string[] suits = new string[] {"Club", "Diamond", "Heart", "Spade"};
+    private string[] suits = new string[] {"Diamond", "Club", "Heart", "Spade"};
 
     void Start()
     {
-        Debug.Log("Creating Pack");
+        //Debug.Log("Creating Pack");
 
         string cardName = string.Empty;
         string id = string.Empty;
+        int sortOrder = 0;
 
         foreach(var suit in suits)
         {
@@ -22,16 +23,17 @@ public class CreatePack : MonoBehaviour
             {
                 id = $"0{i}";
                 cardName = suit + id.Substring(id.Length - 2);
-                addCard(cardName);
+                addCard(cardName, sortOrder++);
             }
         }
     }
 
-    private void addCard(string cardName)
+    private void addCard(string cardName, int sortOrder)
     {
         GameObject newCard = Instantiate(CardPrefab, this.transform.position, this.transform.rotation);
         newCard.name = cardName;
         newCard.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/{cardName}");
+        newCard.GetComponent<Card>().SortOrder = sortOrder;
 
         newCard.transform.SetParent(this.transform, false);
     }

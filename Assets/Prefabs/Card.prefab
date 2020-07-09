@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 6963364927206869262}
   - component: {fileID: 3667664687574523697}
   - component: {fileID: 2051182014802343317}
+  - component: {fileID: 626720838147759147}
   m_Layer: 5
-  m_Name: Card1
+  m_Name: Card
   m_TagString: Card
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 60, y: 90}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3667664687574523697
 CanvasRenderer:
@@ -74,3 +75,15 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &626720838147759147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4503151186310769141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb88b01ab6ec12a4c9d07b64fbc6c5fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

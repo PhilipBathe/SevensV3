@@ -42,12 +42,13 @@ public class DealCards : MonoBehaviour
     // Update is called once per frame
     public void OnClick()
     {
-        ChangeDealer();
-        CollectCards();
-        Deal();
+        changeDealer();
+        collectCards();
+        deal();
+        sortCards();
     }
 
-    void ChangeDealer()
+    private void changeDealer()
     {
         dealerIndex++;
         if(dealerIndex >= Areas.Count)
@@ -58,7 +59,7 @@ public class DealCards : MonoBehaviour
         DealerPuck.transform.SetParent(Areas[dealerIndex].transform, false);
     }
 
-    void CollectCards()
+    private void collectCards()
     {
         foreach(var area in areaHands)
         {
@@ -72,7 +73,7 @@ public class DealCards : MonoBehaviour
         }
     }
 
-    void Deal()
+    private void deal()
     {
         List<GameObject> shuffledCards = cards.OrderBy(a => Guid.NewGuid()).ToList();
 
@@ -83,6 +84,14 @@ public class DealCards : MonoBehaviour
             var areaIndex = (i + dealerIndex + 1) % Areas.Count;
 
             playerCard.transform.SetParent(areaHands[areaIndex].transform, false);
+        }
+    }
+
+    private void sortCards()
+    {
+        foreach(var hand in areaHands)
+        {
+           hand.GetComponent<SortCards>().Run();
         }
     }
 }
