@@ -23,17 +23,19 @@ public class CreatePack : MonoBehaviour
             {
                 id = $"0{i}";
                 cardName = suit + id.Substring(id.Length - 2);
-                addCard(cardName, sortOrder++);
+                addCard(cardName, sortOrder++, suit, i);
             }
         }
     }
 
-    private void addCard(string cardName, int sortOrder)
+    private void addCard(string cardName, int sortOrder, string suit, int number)
     {
         GameObject newCard = Instantiate(CardPrefab, this.transform.position, this.transform.rotation);
         newCard.name = cardName;
         newCard.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>($"Sprites/{cardName}");
         newCard.GetComponent<Card>().SortOrder = sortOrder;
+        newCard.GetComponent<Card>().Suit = suit;
+        newCard.GetComponent<Card>().Number = number;
 
         newCard.transform.SetParent(this.transform, false);
     }

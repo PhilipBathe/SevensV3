@@ -11,12 +11,14 @@ public class Player : MonoBehaviour
 
     public bool IsAI = false;
 
-    //public GameObject Board = null;
 
 
     private bool isTakingTurn = false;
 
-    private List<GameObject> suitSlots = new List<GameObject>();
+    private Transform hand;
+    private TableManager tableManager;
+    private BoardManager boardManager;
+
 
     public bool HasSevenOfDiamonds()
     {
@@ -26,13 +28,15 @@ public class Player : MonoBehaviour
     }
 
     void Start() {
-        // foreach(Transform child in Board.transform)
-        // {
-        //     if (child.tag == "SuitSlot")
-        //     {
-        //         suitSlots.Add(child.gameObject);
-        //     }
-        // }
+        boardManager = GameObject.Find("Board").GetComponent<BoardManager>();
+        tableManager = GameObject.Find("TableManager").GetComponent<TableManager>();
+        foreach(Transform child in this.transform)
+        {
+            if (child.tag == "Hand")
+            {
+                this.hand = child;
+            }
+        }
     }
 
     void Update()
@@ -77,7 +81,7 @@ public class Player : MonoBehaviour
                 //TODO: cleverer AI than this!
                 playCard(playableCards.First());
             }
-            //isTakingTurn = false;
+            isTakingTurn = false;
         }
         else
         {
@@ -96,25 +100,56 @@ public class Player : MonoBehaviour
             var sevenOfDiamonds = transform.Find("Hand/Diamond07(Clone)");
             playableCards.Add(sevenOfDiamonds.gameObject);
         }
-
-        //TODO: work out what playable cards we have
+        else{
+            foreach(Transform cardChild in this.hand)
+            {
+                if (cardChild.tag == "Card")
+                {
+                    if(boardManager.IsCardPlayable(cardChild.gameObject))
+                    {
+                        playableCards.Add(cardChild.gameObject);
+                    }
+                }
+            }
+        }
 
         return playableCards;
 
     }
 
+    private int cardCount()
+    {
+        int count = 0;
+
+        foreach(Transform cardChild in this.hand)
+        {
+            if (cardChild.tag == "Card")
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
     private void knock()
     {
+        Debug.Log("Knock!");
         //TODO: show "knock"
-        //TODO: tell gamemanager to move to next player
+        tableManager.NextPlayer();
+        isTakingTurn = false;
     }
 
     private void playCard(GameObject card)
     {
-        Debug.Log($"Playing {card.name}");
-        //TODO: move card to board
-        //card.transform.SetParent(suitSlots.First().transform, false);
-        //TODO: tell gamemanager to move to next player
+        //Debug.Log($"Playing {card.name}");
+        boardManager.PlayCard(card);
+        if(this.cardCount() == 0)
+        {
+            tableManager.OutOfCards();
+        }
+        tableManager.NextPlayer();
+        isTakingTurn = false;
     }
 
     private void displayOptions()

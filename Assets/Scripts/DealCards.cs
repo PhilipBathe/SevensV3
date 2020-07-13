@@ -14,7 +14,6 @@ public class DealCards : MonoBehaviour
     private List<GameObject> cards = new List<GameObject>();
     private int dealerIndex = -1;
     private List<GameObject> playerHands = new List<GameObject>();
-    private List<GameObject> suitSlots = new List<GameObject>();
 
 
     // Start is called before the first frame update
@@ -39,14 +38,6 @@ public class DealCards : MonoBehaviour
                 {
                     playerHands.Add(child.gameObject);
                 }
-            }
-        }
-
-        foreach(Transform child in Board.transform)
-        {
-            if (child.tag == "SuitSlot")
-            {
-                suitSlots.Add(child.gameObject);
             }
         }
     }
@@ -86,10 +77,7 @@ public class DealCards : MonoBehaviour
             hand.transform.DetachChildren();
         }
 
-        foreach(var slot in suitSlots)
-        {
-            slot.transform.DetachChildren();
-        }
+        Board.GetComponent<BoardManager>().ClearBoard();
     }
 
     private void deal()
@@ -116,15 +104,16 @@ public class DealCards : MonoBehaviour
 
     private void findFirstPlayer()
     {
-        foreach(var playerGO in Players)
-        {
-            var player = playerGO.GetComponent<Player>();
-            player.IsActive = false;
-            if(player.HasSevenOfDiamonds()) 
-            {
-                //Debug.Log("Found 7 of diamonds");
-                player.IsActive = true;
-            }
-        }
+        // foreach(var playerGO in Players)
+        // {
+        //     var player = playerGO.GetComponent<Player>();
+        //     player.IsActive = false;
+        //     if(player.HasSevenOfDiamonds()) 
+        //     {
+        //         //Debug.Log("Found 7 of diamonds");
+        //         player.IsActive = true;
+        //     }
+        // }
+        GameObject.Find("TableManager").GetComponent<TableManager>().NextPlayer(true);
     }
 }
