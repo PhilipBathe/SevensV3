@@ -37,6 +37,9 @@ public class CreatePack : MonoBehaviour
         newCard.GetComponent<Card>().Suit = suit;
         newCard.GetComponent<Card>().Number = number;
 
+        Vector2 S = newCard.GetComponent<SpriteRenderer>().sprite.bounds.size;
+        newCard.GetComponent<BoxCollider2D>().size = S;
+
         newCard.transform.SetParent(this.transform, false);
     }
 

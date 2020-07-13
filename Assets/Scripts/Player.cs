@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using System;
 
 public class Player : MonoBehaviour
 {
@@ -18,7 +19,7 @@ public class Player : MonoBehaviour
     private Transform hand;
     private TableManager tableManager;
     private BoardManager boardManager;
-
+    private GameObject optionsPanel;
 
     public bool HasSevenOfDiamonds()
     {
@@ -30,6 +31,13 @@ public class Player : MonoBehaviour
     void Start() {
         boardManager = GameObject.Find("Board").GetComponent<BoardManager>();
         tableManager = GameObject.Find("TableManager").GetComponent<TableManager>();
+
+        if(IsAI == false)
+        {
+            optionsPanel = GameObject.Find("OptionsPanel");
+            optionsPanel.SetActive(false);
+        }
+
         foreach(Transform child in this.transform)
         {
             if (child.tag == "Hand")
@@ -75,7 +83,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            displayOptions();
+            displayOptions(playableCards);
         }
 
 
@@ -158,9 +166,53 @@ public class Player : MonoBehaviour
         isTakingTurn = false;
     }
 
-    private void displayOptions()
+
+    private void displayOptions(List<GameObject> playableCards)
     {
         Debug.Log("Need to display options");
         //isTakingTurn = false;
+
+        if(playableCards.Count == 0)
+        {
+            //show knock button
+            //TODO: auto knock option
+            knock();
+
+            return;
+        }
+
+        optionsPanel.SetActive(true);
+
+        int i = 0;
+
+        foreach(var card in playableCards)
+        {
+            var dupCard = Instantiate(card, Vector3.zero, Quaternion.identity);
+
+            dupCard.transform.SetParent(optionsPanel.transform, false);
+            dupCard.transform.localScale = new Vector3(4, 4, 4);
+            dupCard.transform.localPosition = new Vector3(35+(i % 2) * 80, 140 - ((float)Math.Floor(i/2.0) * 90), -1);
+            
+            i++;
+        }
+
+    }
+
+    public void SelectCard(GameObject card)
+    {
+        Debug.Log("Selecting Card");
+        var cardToPlay = getPlayableCards().First(c => c.GetComponent<Card>().Suit == card.GetComponent<Card>().Suit && c.GetComponent<Card>().Number == card.GetComponent<Card>().Number);
+
+        foreach(Transform child in optionsPanel.transform)
+        {
+            if (child.tag == "Card")
+            {
+                Destroy(child.gameObject);
+            }
+        }
+        optionsPanel.transform.DetachChildren();
+        optionsPanel.SetActive(false);        
+        
+        playCard(cardToPlay);
     }
 }
