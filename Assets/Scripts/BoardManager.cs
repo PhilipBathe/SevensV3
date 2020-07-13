@@ -55,9 +55,6 @@ public class BoardManager : MonoBehaviour
 
         card.transform.localPosition = new Vector3(0f, y, Math.Abs(cardNumber - 7) * -0.01f);
 
-        //TODO: fix position (bump up z index of cards as they move away from 7 (and shift along the x axis) card.transform.localPosition)
-        
-
     }
 
     public bool IsCardPlayable(GameObject card)

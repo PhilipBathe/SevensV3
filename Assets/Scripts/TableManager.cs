@@ -51,7 +51,7 @@ public class TableManager : MonoBehaviour
         if(newGame == true)
         {
             finishedPlayers = new List<int>();
-            
+
             for(int i = 0; i < players.Count; i++)
             {
                 var player = players[i].GetComponent<Player>();
@@ -99,8 +99,9 @@ public class TableManager : MonoBehaviour
 
     List<int> finishedPlayers = new List<int>();
 
-    public void OutOfCards()
+    public int OutOfCards()
     {
         finishedPlayers.Add(activePlayerIndex);
+        return finishedPlayers.Count;
     }
 }

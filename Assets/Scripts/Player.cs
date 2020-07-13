@@ -63,25 +63,15 @@ public class Player : MonoBehaviour
 
     private void startTurn()
     {
-        // Text activeText = transform.Find("Active").GetComponent<Text>();
 
-        // activeText.text = "Active";
         isTakingTurn = true;
+        GameObject.Find("ActivePointer").transform.SetParent(this.transform, false);
 
         List<GameObject> playableCards = getPlayableCards();
 
         if(IsAI)
         {
-            if(playableCards.Count == 0)
-            {
-                knock();
-            }
-            else
-            {
-                //TODO: cleverer AI than this!
-                playCard(playableCards.First());
-            }
-            isTakingTurn = false;
+            StartCoroutine(AiThinkingCoroutine(playableCards));
         }
         else
         {
@@ -89,6 +79,22 @@ public class Player : MonoBehaviour
         }
 
 
+    }
+
+    IEnumerator AiThinkingCoroutine(List<GameObject> playableCards)
+    {
+        yield return new WaitForSeconds(1);
+
+        if(playableCards.Count == 0)
+        {
+            knock();
+        }
+        else
+        {
+            //TODO: cleverer AI than this!
+            playCard(playableCards.First());
+        }
+        isTakingTurn = false;
     }
 
     private List<GameObject> getPlayableCards()
@@ -146,7 +152,7 @@ public class Player : MonoBehaviour
         boardManager.PlayCard(card);
         if(this.cardCount() == 0)
         {
-            tableManager.OutOfCards();
+            var position = tableManager.OutOfCards();
         }
         tableManager.NextPlayer();
         isTakingTurn = false;

@@ -1,27 +1,30 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Linq;
 
 public class DealCards : MonoBehaviour
 {
-    private List<GameObject> Players;
-    public GameObject Pack;
     public GameObject DealerPuck;
-    public GameObject Board;
 
-    private List<GameObject> cards = new List<GameObject>();
     private int dealerIndex = -1;
+    private TableManager tableManager;
+    private BoardManager boardManager;
+    private GameObject pack;
+    private List<GameObject> cards = new List<GameObject>();
+    private List<GameObject> players;
     private List<GameObject> playerHands = new List<GameObject>();
 
 
-    // Start is called before the first frame update
     void Start()
     {
-        Players = GameObject.Find("TableManager").GetComponent<TableManager>().GetPlayers();
+        boardManager = GameObject.Find("Board").GetComponent<BoardManager>();
+        tableManager = GameObject.Find("TableManager").GetComponent<TableManager>();
+        pack = GameObject.Find("Pack");
 
-        foreach(Transform child in Pack.transform)
+        players = tableManager.GetPlayers();
+
+        foreach(Transform child in pack.transform)
         {
             //Debug.Log("child");
             if (child.tag == "Card")
@@ -30,7 +33,7 @@ public class DealCards : MonoBehaviour
             }
         }
 
-        foreach(var player in Players)
+        foreach(var player in players)
         {
             foreach(Transform child in player.transform)
             {
@@ -42,7 +45,6 @@ public class DealCards : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     public void OnClick()
     {
         changeDealer();
@@ -55,12 +57,12 @@ public class DealCards : MonoBehaviour
     private void changeDealer()
     {
         dealerIndex++;
-        if(dealerIndex >= Players.Count)
+        if(dealerIndex >= players.Count)
         {
             dealerIndex = 0;
         }
 
-        DealerPuck.transform.SetParent(Players[dealerIndex].transform, false);
+        DealerPuck.transform.SetParent(players[dealerIndex].transform, false);
     }
 
     private void collectCards()
@@ -77,7 +79,7 @@ public class DealCards : MonoBehaviour
             hand.transform.DetachChildren();
         }
 
-        Board.GetComponent<BoardManager>().ClearBoard();
+        boardManager.ClearBoard();
     }
 
     private void deal()
@@ -88,7 +90,7 @@ public class DealCards : MonoBehaviour
         {
             GameObject playerCard = Instantiate(shuffledCards[i], new Vector3(0, 0, 0), Quaternion.identity);
 
-            var playerIndex = (i + dealerIndex + 1) % Players.Count;
+            var playerIndex = (i + dealerIndex + 1) % players.Count;
 
             playerCard.transform.SetParent(playerHands[playerIndex].transform, false);
         }
@@ -104,16 +106,6 @@ public class DealCards : MonoBehaviour
 
     private void findFirstPlayer()
     {
-        // foreach(var playerGO in Players)
-        // {
-        //     var player = playerGO.GetComponent<Player>();
-        //     player.IsActive = false;
-        //     if(player.HasSevenOfDiamonds()) 
-        //     {
-        //         //Debug.Log("Found 7 of diamonds");
-        //         player.IsActive = true;
-        //     }
-        // }
-        GameObject.Find("TableManager").GetComponent<TableManager>().NextPlayer(true);
+        tableManager.NextPlayer(true);
     }
 }
