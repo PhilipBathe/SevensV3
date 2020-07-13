@@ -11,7 +11,7 @@ public class Player : MonoBehaviour
 
     public bool IsAI = false;
 
-    public GameObject Board;
+    //public GameObject Board = null;
 
 
     private bool isTakingTurn = false;
@@ -26,19 +26,19 @@ public class Player : MonoBehaviour
     }
 
     void Start() {
-        foreach(Transform child in Board.transform)
-        {
-            if (child.tag == "SuitSlot")
-            {
-                suitSlots.Add(child.gameObject);
-            }
-        }
+        // foreach(Transform child in Board.transform)
+        // {
+        //     if (child.tag == "SuitSlot")
+        //     {
+        //         suitSlots.Add(child.gameObject);
+        //     }
+        // }
     }
 
     void Update()
     {
         //FIXME: probably a better way to work out if should be taking turn, than checking active flag on every frame!
-        Text activeText = transform.Find("Active").GetComponent<Text>();
+        //Text activeText = transform.Find("Active").GetComponent<Text>();
         if(IsActive)
         {
             
@@ -53,15 +53,15 @@ public class Player : MonoBehaviour
         }
         else
         {
-             activeText.text = string.Empty;
+             //activeText.text = string.Empty;
         }
     }
 
     private void startTurn()
     {
-        Text activeText = transform.Find("Active").GetComponent<Text>();
+        // Text activeText = transform.Find("Active").GetComponent<Text>();
 
-        activeText.text = "Active";
+        // activeText.text = "Active";
         isTakingTurn = true;
 
         List<GameObject> playableCards = getPlayableCards();
@@ -77,7 +77,7 @@ public class Player : MonoBehaviour
                 //TODO: cleverer AI than this!
                 playCard(playableCards.First());
             }
-            isTakingTurn = false;
+            //isTakingTurn = false;
         }
         else
         {
@@ -113,13 +113,13 @@ public class Player : MonoBehaviour
     {
         Debug.Log($"Playing {card.name}");
         //TODO: move card to board
-        card.transform.SetParent(suitSlots.First().transform, false);
+        //card.transform.SetParent(suitSlots.First().transform, false);
         //TODO: tell gamemanager to move to next player
     }
 
     private void displayOptions()
     {
         Debug.Log("Need to display options");
-        isTakingTurn = false;
+        //isTakingTurn = false;
     }
 }

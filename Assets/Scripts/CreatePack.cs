@@ -32,7 +32,7 @@ public class CreatePack : MonoBehaviour
     {
         GameObject newCard = Instantiate(CardPrefab, this.transform.position, this.transform.rotation);
         newCard.name = cardName;
-        newCard.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/{cardName}");
+        newCard.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>($"Sprites/{cardName}");
         newCard.GetComponent<Card>().SortOrder = sortOrder;
 
         newCard.transform.SetParent(this.transform, false);

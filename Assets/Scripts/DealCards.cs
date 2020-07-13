@@ -6,7 +6,7 @@ using System.Linq;
 
 public class DealCards : MonoBehaviour
 {
-    public List<GameObject> Players;
+    private List<GameObject> Players;
     public GameObject Pack;
     public GameObject DealerPuck;
     public GameObject Board;
@@ -20,6 +20,8 @@ public class DealCards : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Players = GameObject.Find("TableManager").GetComponent<TableManager>().GetPlayers();
+
         foreach(Transform child in Pack.transform)
         {
             //Debug.Log("child");
@@ -108,7 +110,7 @@ public class DealCards : MonoBehaviour
     {
         foreach(var hand in playerHands)
         {
-           hand.GetComponent<SortCards>().Run();
+            hand.GetComponent<SortCards>().Run();
         }
     }
 
