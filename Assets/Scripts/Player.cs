@@ -95,75 +95,91 @@ public class Player : MonoBehaviour
         }
         else
         {
-            //TODO: cleverer AI than this!
             if(playableCards.Count == 1)
             {
                 playCard(playableCards.First());
             }
             else
             {
-                Debug.Log("Choice to make");
-                var cardToPlay = playableCards.First();
-                float bestCardWorth = -100f;
-                foreach(var playableCardGO in playableCards)
-                {
-                    var playableCard = playableCardGO.GetComponent<Card>();
-                    int distUp = 0;
-                    int distDown = 0;
-                    int suitCardCount = 1;
-
-                    //we need clever maths - gap to card furthest away =1 (in both directions if a 7) - number of cards in suit
-                    foreach(Transform cardChild in this.hand)
-                    {
-                        if (cardChild.tag == "Card" 
-                            && cardChild.GetComponent<Card>().Suit == playableCard.Suit 
-                            && cardChild.GetComponent<Card>().Number != playableCard.Number)
-                        {
-                            var card = cardChild.GetComponent<Card>();
-                            if(card.Number > 7 && playableCard.Number >= 7 && distUp < card.Number - playableCard.Number)
-                            {
-                                distUp = card.Number - playableCard.Number; 
-                                suitCardCount++;
-                            }
-                            if(card.Number < 7 && playableCard.Number <= 7 && distDown < playableCard.Number - card.Number)
-                            {
-                                distDown = playableCard.Number - card.Number; 
-                                suitCardCount++;
-                            }
-                        }
-                    }
-
-                    if(distUp > 0)
-                    {
-                        distUp++;
-                    }
-                    if(distDown > 0)
-                    {
-                        distDown++;
-                    }
-
-                    float currentWorth = distUp + distDown - suitCardCount;
-
-                    //in the event of a tie favour cards nearer to the ends
-                    currentWorth += Math.Abs(7 - playableCard.Number) / 10;
-
-                    //if still a tie then don't always pick the first suit (add some "flavour")
-
-                    currentWorth += UnityEngine.Random.Range(0.01f, 0.09f);
-
-                    Debug.Log($"Card {playableCardGO.name} gets worth of {currentWorth}");
-
-                    if(currentWorth > bestCardWorth)
-                    {
-                        bestCardWorth = currentWorth;
-                        cardToPlay = playableCardGO;
-                    }
-                }
+                var cardToPlay = chooseCard(playableCards);
 
                 playCard(cardToPlay);
             }
         }
         isTakingTurn = false;
+    }
+
+    private GameObject chooseCard(List<GameObject> playableCards)
+    {
+        Debug.Log("Choice to make");
+
+        var cardToPlay = playableCards.First();
+        float bestCardWorth = -100f;
+
+        foreach(var playableCardGO in playableCards)
+        {
+            var playableCard = playableCardGO.GetComponent<Card>();
+            int distUp = 0;
+            int distDown = 0;
+            int suitCardCount = 1;
+
+            //we need clever maths - gap to card furthest away =1 (in both directions if a 7) - number of cards in suit
+            foreach(Transform cardChild in this.hand)
+            {
+                if (cardChild.tag != "Card")
+                {
+                    continue;
+                }
+
+                var card = cardChild.GetComponent<Card>();
+                if(card.Suit != playableCard.Suit || card.Number == playableCard.Number)
+                {
+                    continue;
+                }
+
+                if(card.Number > 7 && playableCard.Number >= 7 && distUp < card.Number - playableCard.Number)
+                {
+                    distUp = card.Number - playableCard.Number; 
+                    suitCardCount++;
+                }
+                
+                if(card.Number < 7 && playableCard.Number <= 7 && distDown < playableCard.Number - card.Number)
+                {
+                    distDown = playableCard.Number - card.Number; 
+                    suitCardCount++;
+                }
+            }
+
+            //make playing a card that has a neighbour more valuable than if no neighbour exists
+            if(distUp > 0)
+            {
+                distUp++;
+            }
+            if(distDown > 0)
+            {
+                distDown++;
+            }
+
+            float currentWorth = distUp + distDown - suitCardCount;
+
+            //in the event of a tie favour cards nearer to the ends
+            currentWorth += Math.Abs(7 - playableCard.Number) / 10;
+
+            //if still a tie then don't always pick the first suit ("add some flavour")
+            currentWorth += UnityEngine.Random.Range(0.01f, 0.09f);
+
+            //TODO: maybe add some stupid setting ("Wine level")?
+
+            Debug.Log($"Card {playableCardGO.name} gets worth of {currentWorth}");
+
+            if(currentWorth > bestCardWorth)
+            {
+                bestCardWorth = currentWorth;
+                cardToPlay = playableCardGO;
+            }
+        }
+
+        return cardToPlay;
     }
 
     private List<GameObject> getPlayableCards()
