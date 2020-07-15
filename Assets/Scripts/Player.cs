@@ -104,7 +104,7 @@ public class Player : MonoBehaviour
             {
                 Debug.Log("Choice to make");
                 var cardToPlay = playableCards.First();
-                var bestCardWorth = -10;
+                float bestCardWorth = -100f;
                 foreach(var playableCardGO in playableCards)
                 {
                     var playableCard = playableCardGO.GetComponent<Card>();
@@ -142,7 +142,14 @@ public class Player : MonoBehaviour
                         distDown++;
                     }
 
-                    int currentWorth = distUp + distDown - suitCardCount;
+                    float currentWorth = distUp + distDown - suitCardCount;
+
+                    //in the event of a tie favour cards nearer to the ends
+                    currentWorth += Math.Abs(7 - playableCard.Number) / 10;
+
+                    //if still a tie then don't always pick the first suit (add some "flavour")
+
+                    currentWorth += UnityEngine.Random.Range(0.01f, 0.09f);
 
                     Debug.Log($"Card {playableCardGO.name} gets worth of {currentWorth}");
 
