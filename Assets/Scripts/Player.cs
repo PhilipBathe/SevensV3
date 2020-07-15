@@ -261,9 +261,9 @@ public class Player : MonoBehaviour
         optionsPanel.SetActive(true);
 
         Dictionary<string, int> suitPositions = new Dictionary<string, int>{
-            { "Diamond", 140 },
+            { "Heart", 140 },
             { "Spade", 50 },
-            { "Heart", -40 },
+            { "Diamond", -40 },
             { "Club", -130 }
         };
 
