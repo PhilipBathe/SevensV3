@@ -260,7 +260,12 @@ public class Player : MonoBehaviour
 
         optionsPanel.SetActive(true);
 
-        int i = 0;
+        Dictionary<string, int> suitPositions = new Dictionary<string, int>{
+            { "Diamond", 140 },
+            { "Spade", 50 },
+            { "Heart", -40 },
+            { "Club", -130 }
+        };
 
         foreach(var card in playableCards)
         {
@@ -268,9 +273,11 @@ public class Player : MonoBehaviour
 
             dupCard.transform.SetParent(optionsPanel.transform, false);
             dupCard.transform.localScale = new Vector3(4, 4, 4);
-            dupCard.transform.localPosition = new Vector3(35+(i % 2) * 80, 140 - ((float)Math.Floor(i/2.0) * 90), -1);
-            
-            i++;
+
+            var cardProperties = card.GetComponent<Card>();
+            int x = cardProperties.Number <= 7 ? 35 : 115;
+            int y = suitPositions[cardProperties.Suit];
+            dupCard.transform.localPosition = new Vector3(x, y, -1);
         }
     }
 
