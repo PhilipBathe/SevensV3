@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class SortCards : MonoBehaviour
+public class Hand : MonoBehaviour
 {
-    public void Run()
+    public void SortCards()
     {
         List<GameObject> cards = new List<GameObject>();
 
@@ -29,7 +29,17 @@ public class SortCards : MonoBehaviour
                 cardsOrdered[i].transform.localPosition.y, 
                 cardsOrdered[i].transform.localPosition.z - ((i + 1) * 0.01f));
         }
+    }
 
-
+    public void ClearHand()
+    {
+        foreach(Transform child in this.transform)
+        {
+            if (child.tag == "Card")
+            {
+                Destroy(child.gameObject);
+            }
+        }
+        this.transform.DetachChildren();
     }
 }

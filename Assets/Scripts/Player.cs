@@ -163,7 +163,7 @@ public class Player : MonoBehaviour
             float currentWorth = distUp + distDown - suitCardCount;
 
             //in the event of a tie favour cards nearer to the ends
-            currentWorth += Math.Abs(7 - playableCard.Number) / 10;
+            currentWorth += Math.Abs(7 - playableCard.Number) / 10f;
 
             //if still a tie then don't always pick the first suit ("add some flavour")
             currentWorth += UnityEngine.Random.Range(0.01f, 0.09f);

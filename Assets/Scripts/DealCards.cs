@@ -5,15 +5,14 @@ using System.Linq;
 
 public class DealCards : MonoBehaviour
 {
-    public GameObject DealerPuck;
-
     private int dealerIndex = -1;
     private TableManager tableManager;
     private BoardManager boardManager;
     private GameObject pack;
+    private GameObject dealerPuck;
     private List<GameObject> cards = new List<GameObject>();
     private List<GameObject> players;
-    private List<GameObject> playerHands = new List<GameObject>();
+    private List<GameObject> hands = new List<GameObject>();
 
 
     void Start()
@@ -21,17 +20,39 @@ public class DealCards : MonoBehaviour
         boardManager = GameObject.Find("Board").GetComponent<BoardManager>();
         tableManager = GameObject.Find("TableManager").GetComponent<TableManager>();
         pack = GameObject.Find("Pack");
+        dealerPuck = GameObject.Find("DealerPuck");
 
-        players = tableManager.GetPlayers();
-
+        //TODO: move this to the pack to organise itself?
         foreach(Transform child in pack.transform)
         {
-            //Debug.Log("child");
             if (child.tag == "Card")
             {
                 cards.Add(child.gameObject);
             }
         }
+    }
+
+    public void OnClick()
+    {
+        refreshPlayerLists();
+        collectCards();
+        changeDealer();
+        deal();
+        sortCards();
+        findFirstPlayer();
+    }
+
+    private void refreshPlayerLists()
+    {
+        //refetch players to allow people to join and leave between games
+        players = tableManager.GetPlayers();
+
+        hands = getPlayerHands();
+    }
+
+    private List<GameObject> getPlayerHands()
+    {
+        var playerHands = new List<GameObject>();
 
         foreach(var player in players)
         {
@@ -43,40 +64,29 @@ public class DealCards : MonoBehaviour
                 }
             }
         }
-    }
 
-    public void OnClick()
-    {
-        changeDealer();
-        collectCards();
-        deal();
-        sortCards();
-        findFirstPlayer();
+        return playerHands;
     }
 
     private void changeDealer()
     {
+        //this may need to change when we start allowing players to join and leave the table
         dealerIndex++;
         if(dealerIndex >= players.Count)
         {
             dealerIndex = 0;
         }
 
-        DealerPuck.transform.SetParent(players[dealerIndex].transform, false);
+        dealerPuck.transform.SetParent(players[dealerIndex].transform, false);
     }
 
     private void collectCards()
     {
-        foreach(var hand in playerHands)
+        //This is just wiping player hands - we should move this to the hand and just call it from here (same as sort cards)
+        //this would let players leave after a game has been played
+        foreach(var hand in hands)
         {
-            foreach(Transform child in hand.transform)
-            {
-                if (child.tag == "Card")
-                {
-                    Destroy(child.gameObject);
-                }
-            }
-            hand.transform.DetachChildren();
+            hand.GetComponent<Hand>().ClearHand();
         }
 
         boardManager.ClearBoard();
@@ -92,20 +102,22 @@ public class DealCards : MonoBehaviour
 
             var playerIndex = (i + dealerIndex + 1) % players.Count;
 
-            playerCard.transform.SetParent(playerHands[playerIndex].transform, false);
+            playerCard.transform.SetParent(hands[playerIndex].transform, false);
         }
     }
 
     private void sortCards()
     {
-        foreach(var hand in playerHands)
+        foreach(var hand in hands)
         {
-            hand.GetComponent<SortCards>().Run();
+            hand.GetComponent<Hand>().SortCards();
         }
     }
 
     private void findFirstPlayer()
     {
+        //TODO: have tablemanager expose a method called FindFirstPlayer and let this then call NextPlayer internally 
+        //so we don't need to know what this boolean is for
         tableManager.NextPlayer(true);
     }
 }
