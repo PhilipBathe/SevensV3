@@ -261,10 +261,10 @@ public class Player : MonoBehaviour
         optionsPanel.SetActive(true);
 
         Dictionary<string, int> suitPositions = new Dictionary<string, int>{
-            { "Heart", 140 },
-            { "Spade", 50 },
-            { "Diamond", -40 },
-            { "Club", -130 }
+            { "Heart", -60 },
+            { "Spade", -160 },
+            { "Diamond", -260 },
+            { "Club", -360 }
         };
 
         foreach(var card in playableCards)
