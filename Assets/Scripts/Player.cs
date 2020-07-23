@@ -247,8 +247,6 @@ public class Player : MonoBehaviour
 
     private void displayOptions(List<GameObject> playableCards)
     {
-        //Debug.Log("Need to display options");
-
         if(playableCards.Count == 0)
         {
             //show knock button
@@ -272,18 +270,23 @@ public class Player : MonoBehaviour
             var dupCard = Instantiate(card, Vector2.zero, Quaternion.identity);
 
             dupCard.transform.SetParent(optionsPanel.transform, false);
-            dupCard.GetComponent<Image>().rectTransform.sizeDelta = new Vector2(80, 80);
+            dupCard.GetComponent<Card>().IsClickable = true;
 
-            var cardProperties = card.GetComponent<Card>();
-            int x = cardProperties.Number <= 7 ? 50 : 150;
-            int y = suitPositions[cardProperties.Suit];
-            dupCard.transform.localPosition = new Vector2(x, y);
+            foreach(Transform child in this.hand)
+            {
+                if (child.tag == "Card" 
+                    && child.GetComponent<Card>().Number == card.GetComponent<Card>().Number
+                    && child.GetComponent<Card>().Suit == card.GetComponent<Card>().Suit)
+                {
+                    child.gameObject.SetActive(false);
+                }
+            }  
         }
     }
 
     public void SelectCard(GameObject card)
     {
-        Debug.Log("Selecting Card");
+        //Debug.Log($"Selecting Card {card.name}");
         var cardToPlay = getPlayableCards().First(c => c.GetComponent<Card>().Suit == card.GetComponent<Card>().Suit && c.GetComponent<Card>().Number == card.GetComponent<Card>().Number);
 
         foreach(Transform child in optionsPanel.transform)
@@ -294,7 +297,15 @@ public class Player : MonoBehaviour
             }
         }
         optionsPanel.transform.DetachChildren();
-        optionsPanel.SetActive(false);        
+        optionsPanel.SetActive(false); 
+
+        foreach(Transform child in this.hand)
+        {
+            if (child.tag == "Card")
+            {
+                child.gameObject.SetActive(true);
+            }
+        }       
         
         playCard(cardToPlay);
     }
