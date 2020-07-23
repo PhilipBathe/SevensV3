@@ -269,21 +269,21 @@ public class Player : MonoBehaviour
 
         foreach(var card in playableCards)
         {
-            var dupCard = Instantiate(card, Vector3.zero, Quaternion.identity);
+            var dupCard = Instantiate(card, Vector2.zero, Quaternion.identity);
 
             dupCard.transform.SetParent(optionsPanel.transform, false);
-            dupCard.transform.localScale = new Vector3(4, 4, 4);
+            dupCard.GetComponent<Image>().rectTransform.sizeDelta = new Vector2(80, 80);
 
             var cardProperties = card.GetComponent<Card>();
-            int x = cardProperties.Number <= 7 ? 35 : 115;
+            int x = cardProperties.Number <= 7 ? 50 : 150;
             int y = suitPositions[cardProperties.Suit];
-            dupCard.transform.localPosition = new Vector3(x, y, -1);
+            dupCard.transform.localPosition = new Vector2(x, y);
         }
     }
 
     public void SelectCard(GameObject card)
     {
-        //Debug.Log("Selecting Card");
+        Debug.Log("Selecting Card");
         var cardToPlay = getPlayableCards().First(c => c.GetComponent<Card>().Suit == card.GetComponent<Card>().Suit && c.GetComponent<Card>().Number == card.GetComponent<Card>().Number);
 
         foreach(Transform child in optionsPanel.transform)

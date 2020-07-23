@@ -94,11 +94,13 @@ public class DealCards : MonoBehaviour
 
     private void deal()
     {
+        Debug.Log("deal");
+        Debug.Log(cards.Count);
         List<GameObject> shuffledCards = cards.OrderBy(a => Guid.NewGuid()).ToList();
 
         for(var i = 0; i < shuffledCards.Count; i++)
         {
-            GameObject playerCard = Instantiate(shuffledCards[i], new Vector3(0, 0, 0), Quaternion.identity);
+            GameObject playerCard = Instantiate(shuffledCards[i], Vector2.zero, Quaternion.identity);
 
             var playerIndex = (i + dealerIndex + 1) % players.Count;
 
