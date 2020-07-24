@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
     private bool isTakingTurn = false;
 
     private Transform hand;
+    private Transform lastGo;
     private TableManager tableManager;
     private BoardManager boardManager;
     private GameObject optionsPanel;
@@ -43,6 +44,11 @@ public class Player : MonoBehaviour
             if (child.tag == "Hand")
             {
                 this.hand = child;
+            }
+
+            if(child.name == "LastGo")
+            {
+                this.lastGo = child;
             }
         }
     }
@@ -225,7 +231,8 @@ public class Player : MonoBehaviour
     private void knock()
     {
         Debug.Log("Knock!");
-        //TODO: show "knock"
+        //TODO: need a knock icon
+        this.lastGo.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/Joker_Monochrome");
         tableManager.NextPlayer();
         isTakingTurn = false;
     }
@@ -233,7 +240,8 @@ public class Player : MonoBehaviour
     private void playCard(GameObject card)
     {
         //Debug.Log($"Playing {card.name}");
-        //TODO: show playing card
+        
+        this.lastGo.GetComponent<Image>().sprite = card.GetComponent<Image>().sprite;
         boardManager.PlayCard(card);
         if(this.cardCount() == 0)
         {
@@ -305,8 +313,8 @@ public class Player : MonoBehaviour
             {
                 child.gameObject.SetActive(true);
             }
-        }       
-        
+        }
+
         playCard(cardToPlay);
     }
 }
