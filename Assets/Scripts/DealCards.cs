@@ -89,6 +89,11 @@ public class DealCards : MonoBehaviour
             hand.GetComponent<Hand>().ClearHand();
         }
 
+        foreach(var player in players)
+        {
+            player.GetComponent<Player>().Reset();
+        }
+
         boardManager.ClearBoard();
     }
 
