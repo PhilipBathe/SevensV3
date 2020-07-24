@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BoardManager : MonoBehaviour
 {
@@ -39,18 +40,19 @@ public class BoardManager : MonoBehaviour
         GameObject suitSlot = suitHolders[card.GetComponent<Card>().Suit];
 
         card.transform.SetParent(suitSlot.transform, false);
+        card.GetComponent<Image>().rectTransform.sizeDelta = new Vector2(80, 80);
 
         var cardNumber = card.GetComponent<Card>().Number;
         float y = 0f;
 
         if(cardNumber < 7)
         {
-            y = (cardNumber - 7) * 0.5f - 1f;
+            y = (cardNumber - 7) * 5f - 50f;
         }
 
         if(cardNumber > 7)
         {
-            y = (cardNumber - 7) * 0.5f + 1f;
+            y = (cardNumber - 7) * 5f + 50f;
         }
 
         card.transform.localPosition = new Vector3(0f, y, Math.Abs(cardNumber - 7) * -0.01f);

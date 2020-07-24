@@ -32,13 +32,13 @@ public class CreatePack : MonoBehaviour
     {
         GameObject newCard = Instantiate(CardPrefab, this.transform.position, this.transform.rotation);
         newCard.name = cardName;
-        newCard.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>($"Sprites/{cardName}");
+        newCard.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/{cardName}");
         newCard.GetComponent<Card>().SortOrder = sortOrder;
         newCard.GetComponent<Card>().Suit = suit;
         newCard.GetComponent<Card>().Number = number;
 
-        Vector2 S = newCard.GetComponent<SpriteRenderer>().sprite.bounds.size;
-        newCard.GetComponent<BoxCollider2D>().size = S;
+        // Vector2 S = newCard.GetComponent<SpriteRenderer>().sprite.bounds.size;
+        // newCard.GetComponent<BoxCollider2D>().size = S;
 
         newCard.transform.SetParent(this.transform, false);
     }

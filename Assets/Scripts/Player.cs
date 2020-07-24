@@ -17,6 +17,8 @@ public class Player : MonoBehaviour
     private bool isTakingTurn = false;
 
     private Transform hand;
+    private Transform lastGo;
+    private Transform placed;
     private TableManager tableManager;
     private BoardManager boardManager;
     private GameObject optionsPanel;
@@ -44,6 +46,18 @@ public class Player : MonoBehaviour
             {
                 this.hand = child;
             }
+
+            if(child.name == "LastGo")
+            {
+                this.lastGo = child;
+            }
+
+            if(child.name == "Placed")
+            {
+                this.placed = child;
+            }
+
+
         }
     }
 
@@ -163,7 +177,7 @@ public class Player : MonoBehaviour
             float currentWorth = distUp + distDown - suitCardCount;
 
             //in the event of a tie favour cards nearer to the ends
-            currentWorth += Math.Abs(7 - playableCard.Number) / 10;
+            currentWorth += Math.Abs(7 - playableCard.Number) / 10f;
 
             //if still a tie then don't always pick the first suit ("add some flavour")
             currentWorth += UnityEngine.Random.Range(0.01f, 0.09f);
@@ -225,7 +239,8 @@ public class Player : MonoBehaviour
     private void knock()
     {
         Debug.Log("Knock!");
-        //TODO: show "knock"
+        //TODO: need a knock icon
+        this.lastGo.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/knock");
         tableManager.NextPlayer();
         isTakingTurn = false;
     }
@@ -233,12 +248,15 @@ public class Player : MonoBehaviour
     private void playCard(GameObject card)
     {
         //Debug.Log($"Playing {card.name}");
-        //TODO: show playing card
+        
+        this.lastGo.GetComponent<Image>().sprite = card.GetComponent<Image>().sprite;
         boardManager.PlayCard(card);
         if(this.cardCount() == 0)
         {
             var position = tableManager.OutOfCards();
-            //TODO: show final position in game
+            //TODO: deal with greater than 9 players???
+            placed.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/{position}");
+            
         }
         tableManager.NextPlayer();
         isTakingTurn = false;
@@ -247,8 +265,6 @@ public class Player : MonoBehaviour
 
     private void displayOptions(List<GameObject> playableCards)
     {
-        //Debug.Log("Need to display options");
-
         if(playableCards.Count == 0)
         {
             //show knock button
@@ -261,29 +277,34 @@ public class Player : MonoBehaviour
         optionsPanel.SetActive(true);
 
         Dictionary<string, int> suitPositions = new Dictionary<string, int>{
-            { "Heart", 140 },
-            { "Spade", 50 },
-            { "Diamond", -40 },
-            { "Club", -130 }
+            { "Heart", -60 },
+            { "Spade", -160 },
+            { "Diamond", -260 },
+            { "Club", -360 }
         };
 
         foreach(var card in playableCards)
         {
-            var dupCard = Instantiate(card, Vector3.zero, Quaternion.identity);
+            var dupCard = Instantiate(card, Vector2.zero, Quaternion.identity);
 
             dupCard.transform.SetParent(optionsPanel.transform, false);
-            dupCard.transform.localScale = new Vector3(4, 4, 4);
+            dupCard.GetComponent<Card>().IsClickable = true;
 
-            var cardProperties = card.GetComponent<Card>();
-            int x = cardProperties.Number <= 7 ? 35 : 115;
-            int y = suitPositions[cardProperties.Suit];
-            dupCard.transform.localPosition = new Vector3(x, y, -1);
+            foreach(Transform child in this.hand)
+            {
+                if (child.tag == "Card" 
+                    && child.GetComponent<Card>().Number == card.GetComponent<Card>().Number
+                    && child.GetComponent<Card>().Suit == card.GetComponent<Card>().Suit)
+                {
+                    child.gameObject.SetActive(false);
+                }
+            }  
         }
     }
 
     public void SelectCard(GameObject card)
     {
-        //Debug.Log("Selecting Card");
+        //Debug.Log($"Selecting Card {card.name}");
         var cardToPlay = getPlayableCards().First(c => c.GetComponent<Card>().Suit == card.GetComponent<Card>().Suit && c.GetComponent<Card>().Number == card.GetComponent<Card>().Number);
 
         foreach(Transform child in optionsPanel.transform)
@@ -294,8 +315,21 @@ public class Player : MonoBehaviour
             }
         }
         optionsPanel.transform.DetachChildren();
-        optionsPanel.SetActive(false);        
-        
+        optionsPanel.SetActive(false); 
+
+        foreach(Transform child in this.hand)
+        {
+            if (child.tag == "Card")
+            {
+                child.gameObject.SetActive(true);
+            }
+        }
+
         playCard(cardToPlay);
+    }
+
+    public void Reset() 
+    {
+        placed.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/transparent");
     }
 }

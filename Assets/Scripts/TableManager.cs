@@ -21,14 +21,17 @@ public class TableManager : MonoBehaviour
     {
         players = new List<GameObject>();
 
-        var canvas = GameObject.Find("Canvas").transform;
+        var canvas = GameObject.Find("Canvas");
+        var enemiesPanel = GameObject.Find("Enemies");
 
-        var player = Instantiate(PlayerPrefab, new Vector3(-2, -3, 0), Quaternion.identity) as GameObject;
+        var player = Instantiate(PlayerPrefab, Vector2.zero, Quaternion.identity) as GameObject;
         players.Add(player);
+        player.transform.SetParent(canvas.transform, false);
 
         for (int i = 0; i < NumberOfEnemies; i++)
         {
-            var enemy = Instantiate(EnemyPrefab, new Vector3((-5*(1-i))-1,4), Quaternion.identity) as GameObject;
+            var enemy = Instantiate(EnemyPrefab, Vector2.zero, Quaternion.identity) as GameObject;
+            enemy.transform.SetParent(enemiesPanel.transform, false);
             players.Add(enemy);
         }
     }
