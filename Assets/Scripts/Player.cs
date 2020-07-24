@@ -18,6 +18,7 @@ public class Player : MonoBehaviour
 
     private Transform hand;
     private Transform lastGo;
+    private Transform placed;
     private TableManager tableManager;
     private BoardManager boardManager;
     private GameObject optionsPanel;
@@ -50,6 +51,13 @@ public class Player : MonoBehaviour
             {
                 this.lastGo = child;
             }
+
+            if(child.name == "Placed")
+            {
+                this.placed = child;
+            }
+
+
         }
     }
 
@@ -232,7 +240,7 @@ public class Player : MonoBehaviour
     {
         Debug.Log("Knock!");
         //TODO: need a knock icon
-        this.lastGo.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/Joker_Monochrome");
+        this.lastGo.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/knock");
         tableManager.NextPlayer();
         isTakingTurn = false;
     }
@@ -246,7 +254,9 @@ public class Player : MonoBehaviour
         if(this.cardCount() == 0)
         {
             var position = tableManager.OutOfCards();
-            //TODO: show final position in game
+            //TODO: deal with greater than 9 players???
+            placed.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/{position}");
+            
         }
         tableManager.NextPlayer();
         isTakingTurn = false;
@@ -316,5 +326,10 @@ public class Player : MonoBehaviour
         }
 
         playCard(cardToPlay);
+    }
+
+    public void Reset() 
+    {
+        placed.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/transparent");
     }
 }
