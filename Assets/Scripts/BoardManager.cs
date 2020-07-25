@@ -36,7 +36,7 @@ public class BoardManager : MonoBehaviour
 
     public void PlayCard(GameObject card)
     {
-        Debug.Log($"playing card {card.name}");
+        //Debug.Log($"playing card {card.name}");
         GameObject suitSlot = suitHolders[card.GetComponent<Card>().Suit];
 
         card.transform.SetParent(suitSlot.transform, false);

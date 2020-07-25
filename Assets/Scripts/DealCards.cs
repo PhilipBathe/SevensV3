@@ -34,12 +34,24 @@ public class DealCards : MonoBehaviour
 
     public void OnClick()
     {
+        hideButton();
         refreshPlayerLists();
         collectCards();
         changeDealer();
         deal();
         sortCards();
         findFirstPlayer();
+    }
+
+    private void hideButton()
+    {
+        //TODO: dealButton.SetBool("isHidden", true);
+    }
+
+    public void ShowButton()
+    {
+        Debug.Log("show deal button");
+        //TODO: dealButton.SetBool("isHidden", false);
     }
 
     private void refreshPlayerLists()
@@ -99,8 +111,8 @@ public class DealCards : MonoBehaviour
 
     private void deal()
     {
-        Debug.Log("deal");
-        Debug.Log(cards.Count);
+        //Debug.Log("deal");
+        //Debug.Log(cards.Count);
         List<GameObject> shuffledCards = cards.OrderBy(a => Guid.NewGuid()).ToList();
 
         for(var i = 0; i < shuffledCards.Count; i++)

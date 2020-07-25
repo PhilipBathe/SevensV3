@@ -323,3 +323,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsActive: 0
   IsAI: 1
+  WaitTimeForAI: 0

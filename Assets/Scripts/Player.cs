@@ -12,6 +12,8 @@ public class Player : MonoBehaviour
 
     public bool IsAI = false;
 
+    public float WaitTimeForAI = 1f;
+
 
 
     private bool isTakingTurn = false;
@@ -101,7 +103,7 @@ public class Player : MonoBehaviour
     IEnumerator AiThinkingCoroutine(List<GameObject> playableCards)
     {
         //Thinking time!
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(WaitTimeForAI);
 
         if(playableCards.Count == 0)
         {
@@ -125,7 +127,7 @@ public class Player : MonoBehaviour
 
     private GameObject chooseCard(List<GameObject> playableCards)
     {
-        Debug.Log("Choice to make");
+        //Debug.Log("Choice to make");
 
         var cardToPlay = playableCards.First();
         float bestCardWorth = -100f;
@@ -184,7 +186,7 @@ public class Player : MonoBehaviour
 
             //TODO: maybe add some stupid setting ("Wine level")?
 
-            Debug.Log($"Card {playableCardGO.name} gets worth of {currentWorth}");
+            //Debug.Log($"Card {playableCardGO.name} gets worth of {currentWorth}");
 
             if(currentWorth > bestCardWorth)
             {
@@ -238,7 +240,7 @@ public class Player : MonoBehaviour
 
     private void knock()
     {
-        Debug.Log("Knock!");
+        //Debug.Log("Knock!");
         //TODO: need a knock icon
         this.lastGo.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/knock");
         tableManager.NextPlayer();

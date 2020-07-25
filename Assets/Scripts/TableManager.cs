@@ -76,6 +76,7 @@ public class TableManager : MonoBehaviour
             if(players.Count <= finishedPlayers.Count)
             {
                 Debug.Log("All done!");
+                GameObject.Find("DealButton").GetComponent<DealCards>().ShowButton();
                 return;
             }
 

@@ -311,6 +311,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsActive: 0
   IsAI: 0
+  WaitTimeForAI: 0
 --- !u!1 &6028511075111182551
 GameObject:
   m_ObjectHideFlags: 0
