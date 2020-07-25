@@ -14,6 +14,8 @@ public class DealCards : MonoBehaviour
     private List<GameObject> players;
     private List<GameObject> hands = new List<GameObject>();
 
+    public Animator dealButton;
+
 
     void Start()
     {
@@ -45,13 +47,13 @@ public class DealCards : MonoBehaviour
 
     private void hideButton()
     {
-        //TODO: dealButton.SetBool("isHidden", true);
+        dealButton.SetBool("isHidden", true);
     }
 
     public void ShowButton()
     {
         Debug.Log("show deal button");
-        //TODO: dealButton.SetBool("isHidden", false);
+        dealButton.SetBool("isHidden", false);
     }
 
     private void refreshPlayerLists()
