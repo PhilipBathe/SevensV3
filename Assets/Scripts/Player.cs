@@ -337,5 +337,6 @@ public class Player : MonoBehaviour
     public void Reset() 
     {
         placed.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/transparent");
+        lastGo.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/transparent");
     }
 }
