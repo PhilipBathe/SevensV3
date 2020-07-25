@@ -18,7 +18,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
         
         if(IsClickable)
         {
-            var player = GameObject.FindGameObjectsWithTag("Player").First(p => p.GetComponent<Player>().IsActive);
+            var player = GameObject.FindGameObjectsWithTag("Player").First(p => p.GetComponent<Player>().IsActivePlayer);
             player.GetComponent<Player>().SelectCard(this.gameObject);
         }
     }

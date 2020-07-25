@@ -10,12 +10,11 @@ public class DealCards : MonoBehaviour
     private TableManager tableManager;
     private BoardManager boardManager;
     private GameObject pack;
-    private GameObject dealerPuck;
     private List<GameObject> cards = new List<GameObject>();
     private List<GameObject> players;
     private List<GameObject> hands = new List<GameObject>();
 
-    public Animator dealButton;
+    public Animator newGamePanel;
 
 
     void Start()
@@ -23,7 +22,6 @@ public class DealCards : MonoBehaviour
         boardManager = GameObject.Find("Board").GetComponent<BoardManager>();
         tableManager = GameObject.Find("TableManager").GetComponent<TableManager>();
         pack = GameObject.Find("Pack");
-        dealerPuck = GameObject.Find("DealerPuck");
 
         //TODO: move this to the pack to organise itself?
         foreach(Transform child in pack.transform)
@@ -37,7 +35,7 @@ public class DealCards : MonoBehaviour
 
     public void OnClick()
     {
-        hideButton();
+        hideNextGamePanel();
         refreshPlayerLists();
         collectCards();
         changeDealer();
@@ -46,15 +44,14 @@ public class DealCards : MonoBehaviour
         findFirstPlayer();
     }
 
-    private void hideButton()
+    private void hideNextGamePanel()
     {
-        dealButton.SetBool("isHidden", true);
+        newGamePanel.SetBool("isHidden", true);
     }
 
-    public void ShowButton()
+    public void ShowNextGamePanel()
     {
-        //Debug.Log("show deal button");
-        dealButton.SetBool("isHidden", false);
+        newGamePanel.SetBool("isHidden", false);
     }
 
     private void refreshPlayerLists()
@@ -92,7 +89,7 @@ public class DealCards : MonoBehaviour
             dealerIndex = 0;
         }
 
-        dealerPuck.transform.SetParent(players[dealerIndex].transform, false);
+        players[dealerIndex].GetComponent<Player>().ShowIsDealer();
     }
 
     private void collectCards()

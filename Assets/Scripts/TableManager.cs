@@ -7,33 +7,60 @@ public class TableManager : MonoBehaviour
 {
     public GameObject PlayerPrefab;
     public GameObject EnemyPrefab;
-    public int NumberOfEnemies = 3;
+    private int numberOfEnemies = 3;
 
 
-    private List<GameObject> players;
+    private List<GameObject> players = new List<GameObject>();
 
     void Start()
     {
         setupPlayers();
+        setupEnemies();
     }
 
     private void setupPlayers()
     {
-        players = new List<GameObject>();
-
         var canvas = GameObject.Find("Canvas");
-        var enemiesPanel = GameObject.Find("Enemies");
 
         var player = Instantiate(PlayerPrefab, Vector2.zero, Quaternion.identity) as GameObject;
         players.Add(player);
         player.transform.SetParent(canvas.transform, false);
+    }
 
-        for (int i = 0; i < NumberOfEnemies; i++)
+    private void setupEnemies()
+    {
+        var enemiesPanel = GameObject.Find("Enemies");
+
+        for (int i = 0; i < numberOfEnemies; i++)
         {
             var enemy = Instantiate(EnemyPrefab, Vector2.zero, Quaternion.identity) as GameObject;
             enemy.transform.SetParent(enemiesPanel.transform, false);
             players.Add(enemy);
         }
+    }
+
+    public void ChangeNumberOfEnemies(float numberOfPlayers)
+    {
+        int newNumberOfEnemies = (int)numberOfPlayers - 1;
+
+        if(numberOfEnemies != newNumberOfEnemies)
+        {
+            numberOfEnemies = newNumberOfEnemies;
+            clearEnemies();
+            setupEnemies();
+        }
+    }
+
+    private void clearEnemies()
+    {
+        Debug.Log("clear enemies");
+        var enemiesPanel = GameObject.Find("Enemies");
+        foreach(Transform enemy in enemiesPanel.transform)
+        {
+            players.Remove(enemy.gameObject);
+            Destroy(enemy.gameObject);
+        }
+        enemiesPanel.transform.DetachChildren();
     }
 
     public List<GameObject> GetPlayers()
@@ -58,12 +85,12 @@ public class TableManager : MonoBehaviour
             for(int i = 0; i < players.Count; i++)
             {
                 var player = players[i].GetComponent<Player>();
-                player.IsActive = false;
+                player.IsActivePlayer = false;
                 if(player.HasSevenOfDiamonds()) 
                 {
                     //Debug.Log("Found 7 of diamonds");
-                    player.IsActive = true;
                     activePlayerIndex = i;
+                    player.StartTurn();
                 }
             }
             return;
@@ -71,12 +98,12 @@ public class TableManager : MonoBehaviour
         else
         {
             var player = players[activePlayerIndex].GetComponent<Player>();
-            player.IsActive = false;
+            player.IsActivePlayer = false;
 
             if(players.Count <= finishedPlayers.Count)
             {
                 Debug.Log("All done!");
-                GameObject.Find("DealButton").GetComponent<DealCards>().ShowButton();
+                GameObject.Find("DealButton").GetComponent<DealCards>().ShowNextGamePanel();
                 return;
             }
 
@@ -96,7 +123,7 @@ public class TableManager : MonoBehaviour
             }
 
             player = players[activePlayerIndex].GetComponent<Player>();
-            player.IsActive = true;
+            player.StartTurn();
         }
 
     }

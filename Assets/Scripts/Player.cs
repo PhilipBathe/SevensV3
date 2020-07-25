@@ -8,18 +8,18 @@ using System;
 public class Player : MonoBehaviour
 {
     // Start is called before the first frame update
-    public bool IsActive = false;
+    public bool IsActivePlayer = false;
 
     public bool IsAI = false;
 
     public float WaitTimeForAI = 1f;
 
 
-    private bool isTakingTurn = false;
-
     private Transform hand;
     private Transform lastGo;
     private Transform placed;
+    private Transform thinking;
+    private Transform dealer;
     private TableManager tableManager;
     private BoardManager boardManager;
     private GameObject optionsPanel;
@@ -62,32 +62,23 @@ public class Player : MonoBehaviour
                 this.placed = child;
             }
 
-
-        }
-    }
-
-    void Update()
-    {
-        //FIXME: probably a better way to work out if should be taking turn, than checking active flag on every frame!
-        if(IsActive)
-        {
-            
-            if(isTakingTurn)
+            if(child.name == "Thinking")
             {
-                return;
+                this.thinking = child;
             }
-            else
+
+            if(child.name == "Dealer")
             {
-                startTurn();
+                this.dealer = child;
             }
         }
     }
 
-    private void startTurn()
+    public void StartTurn()
     {
+        IsActivePlayer = true;
 
-        isTakingTurn = true;
-        GameObject.Find("ActivePointer").transform.SetParent(this.transform, false);
+        showIsThinking();
 
         List<GameObject> playableCards = getPlayableCards();
 
@@ -99,8 +90,6 @@ public class Player : MonoBehaviour
         {
             displayOptions(playableCards);
         }
-
-
     }
 
     IEnumerator AiThinkingCoroutine(List<GameObject> playableCards)
@@ -125,7 +114,6 @@ public class Player : MonoBehaviour
                 playCard(cardToPlay);
             }
         }
-        isTakingTurn = false;
     }
 
     private GameObject chooseCard(List<GameObject> playableCards)
@@ -244,10 +232,8 @@ public class Player : MonoBehaviour
     public void Knock()
     {
         //Debug.Log("Knock!");
-        //TODO: need a knock icon
         this.lastGo.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/knock");
-        tableManager.NextPlayer();
-        isTakingTurn = false;
+        finishedTurn();
     }
 
     private void playCard(GameObject card)
@@ -267,8 +253,13 @@ public class Player : MonoBehaviour
             placed.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/{position}");
             
         }
+        finishedTurn();
+    }
+
+    private void finishedTurn()
+    {
+        clearThinking();
         tableManager.NextPlayer();
-        isTakingTurn = false;
     }
 
 
@@ -276,11 +267,9 @@ public class Player : MonoBehaviour
     {
         if(playableCards.Count == 0)
         {
-            //show knock button
-            //TODO: auto knock option
+            //could add an auto knock option?
             knockButton.GetComponent<Knock>().SetActivePlayer(gameObject);
             knockButtonAnimator.SetBool("isHidden", false);
-            //knock();
 
             return;
         }
@@ -311,6 +300,8 @@ public class Player : MonoBehaviour
                 }
             }  
         }
+
+        //TODO: if no unplayable cards left disable panel so we can click the whole card
     }
 
     public void SelectCard(GameObject card)
@@ -343,5 +334,22 @@ public class Player : MonoBehaviour
     {
         placed.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/transparent");
         lastGo.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/transparent");
+        clearThinking();
+        dealer.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/transparent");
+    }
+
+    private void showIsThinking()
+    {
+        thinking.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/thinking");
+    }
+
+    private void clearThinking()
+    {
+        thinking.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/transparent"); 
+    }
+
+    public void ShowIsDealer()
+    {
+        dealer.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/dealer");
     }
 }
