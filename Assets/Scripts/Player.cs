@@ -221,12 +221,12 @@ public class Player : MonoBehaviour
             //in the event of a tie favour cards nearer to the ends
             currentWorth += Math.Abs(7 - playableCard.Number) / 10f;
 
-            Debug.Log($"Card {playableCardGO.name} had worth of {currentWorth}");
+            //Debug.Log($"Card {playableCardGO.name} had worth of {currentWorth}");
 
             //if still a tie then don't always pick the first suit ("add some flavour")
             currentWorth += UnityEngine.Random.Range(0.01f, AIWineLevel + 0.09f);
 
-            Debug.Log($"Card {playableCardGO.name} gets wine worth of {currentWorth}");
+            //Debug.Log($"Card {playableCardGO.name} gets wine worth of {currentWorth}");
 
             if(currentWorth > bestCardWorth)
             {
