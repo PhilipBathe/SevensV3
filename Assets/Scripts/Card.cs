@@ -30,7 +30,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
     {
         if(cardBack == null)
         {
-            cardBack = Resources.Load<Sprite>($"Sprites/backColor_Red");
+            cardBack = Resources.Load<Sprite>($"Sprites/backColor_Black");
         }
 
         Sprite currentSprite = gameObject.GetComponent<Image>().sprite;

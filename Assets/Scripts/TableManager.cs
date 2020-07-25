@@ -35,6 +35,7 @@ public class TableManager : MonoBehaviour
         {
             var enemy = Instantiate(EnemyPrefab, Vector2.zero, Quaternion.identity) as GameObject;
             enemy.GetComponent<Player>().SetName($"AI Player {i + 1}");
+            enemy.GetComponent<Player>().PickRandomColor();
             enemy.transform.SetParent(enemiesPanel.transform, false);
             players.Add(enemy);
         }

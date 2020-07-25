@@ -20,6 +20,7 @@ public class Player : MonoBehaviour
     private Transform placed;
     private Transform thinking;
     private Transform dealer;
+    
     private TableManager tableManager;
     private BoardManager boardManager;
     private GameObject optionsPanel;
@@ -83,6 +84,30 @@ public class Player : MonoBehaviour
                 text.text = name;
             }
         }
+    }
+
+    public void PickRandomColor()
+    {   
+        Transform background = null;
+
+        foreach(Transform child in this.transform)
+        {
+            if(child.name == "Background")
+            {
+                background = child;
+            }
+        }
+
+        if(background == null)
+        {
+            return;
+        }
+
+        string[] colors = new string[] {"black", "blue", "grey", "orange", "pink", "purple", "red"};
+
+        int randomIndex = UnityEngine.Random.Range(0, colors.Length);
+
+        background.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/enemy_background_{colors[randomIndex]}");
     }
 
     public void StartTurn()
