@@ -40,22 +40,25 @@ public class BoardManager : MonoBehaviour
         GameObject suitSlot = suitHolders[card.GetComponent<Card>().Suit];
 
         card.transform.SetParent(suitSlot.transform, false);
-        card.GetComponent<Image>().rectTransform.sizeDelta = new Vector2(80, 80);
+        card.GetComponent<Image>().rectTransform.sizeDelta = new Vector2(96, 96);
 
         var cardNumber = card.GetComponent<Card>().Number;
         float y = 0f;
 
         if(cardNumber < 7)
         {
-            y = (cardNumber - 7) * 5f - 50f;
+            y = (cardNumber - 7) * 6f - 44f;
         }
 
         if(cardNumber > 7)
         {
-            y = (cardNumber - 7) * 5f + 50f;
+            y = (cardNumber - 7) * 6f + 44f;
         }
 
-        card.transform.localPosition = new Vector3(0f, y, Math.Abs(cardNumber - 7) * -0.01f);
+        float xWonkiness = 0f; //UnityEngine.Random.Range(-5f, 5f);
+        //Could also introduce a z rotation for more wonkiness?
+
+        card.transform.localPosition = new Vector2(xWonkiness, y);
 
     }
 

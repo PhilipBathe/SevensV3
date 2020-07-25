@@ -2,6 +2,7 @@
 using UnityEngine;
 using System;
 using System.Linq;
+using UnityEngine.UI;
 
 public class DealCards : MonoBehaviour
 {
@@ -52,7 +53,7 @@ public class DealCards : MonoBehaviour
 
     public void ShowButton()
     {
-        Debug.Log("show deal button");
+        //Debug.Log("show deal button");
         dealButton.SetBool("isHidden", false);
     }
 
@@ -124,6 +125,11 @@ public class DealCards : MonoBehaviour
             var playerIndex = (i + dealerIndex + 1) % players.Count;
 
             playerCard.transform.SetParent(hands[playerIndex].transform, false);
+            if(playerIndex > 0)
+            {
+                playerCard.GetComponent<Card>().Flip();
+                playerCard.GetComponent<Image>().rectTransform.sizeDelta = new Vector2(50, 50);
+            }
         }
     }
 

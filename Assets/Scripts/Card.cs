@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class Card : MonoBehaviour, IPointerClickHandler
 {
@@ -19,6 +20,33 @@ public class Card : MonoBehaviour, IPointerClickHandler
         {
             var player = GameObject.FindGameObjectsWithTag("Player").First(p => p.GetComponent<Player>().IsActive);
             player.GetComponent<Player>().SelectCard(this.gameObject);
+        }
+    }
+
+    private Sprite cardFront;
+    private Sprite cardBack;
+
+    public void Flip()
+    {
+        if(cardBack == null)
+        {
+            cardBack = Resources.Load<Sprite>($"Sprites/backColor_Red");
+        }
+
+        Sprite currentSprite = gameObject.GetComponent<Image>().sprite;
+
+        if(cardFront == null)
+        {
+            cardFront = currentSprite;
+        }
+
+        if (currentSprite == cardFront)
+        {
+            gameObject.GetComponent<Image>().sprite = cardBack;
+        }
+        else
+        {
+            gameObject.GetComponent<Image>().sprite = cardFront;
         }
     }
 }

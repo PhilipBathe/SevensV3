@@ -118,7 +118,7 @@ public class Player : MonoBehaviour
             else
             {
                 var cardToPlay = chooseCard(playableCards);
-
+                
                 playCard(cardToPlay);
             }
         }
@@ -250,6 +250,10 @@ public class Player : MonoBehaviour
     private void playCard(GameObject card)
     {
         //Debug.Log($"Playing {card.name}");
+        if(IsAI)
+        {
+            card.GetComponent<Card>().Flip();
+        }
         
         this.lastGo.GetComponent<Image>().sprite = card.GetComponent<Image>().sprite;
         boardManager.PlayCard(card);
