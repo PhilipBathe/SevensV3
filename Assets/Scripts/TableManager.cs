@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class TableManager : MonoBehaviour
 {
@@ -33,16 +34,60 @@ public class TableManager : MonoBehaviour
 
     private void setupEnemies()
     {
+        firstNames = new string[] {"Alberto", "Ali", "Andrew", "Alice", "Art", "Ant", "Amy", "Alesha", "Anjie", "Archie", "Arry", "Alex", "Angel", "Axl"}.ToList();
+        secondNames = new string[] {"Idioso", "Ideas", "Ikea", "Izzard", "Ip-Dip", "III", "Imp", "Idiot", "Inky", "Insipid", "I-Smell", "Ice Tea", "Itchy", "Inbred"}.ToList();
+        colors = new string[] {"black", "blue", "grey", "orange", "pink", "purple", "red"}.ToList();
+
         for (int i = 0; i < numberOfEnemies; i++)
         {
             var enemy = Instantiate(EnemyPrefab, Vector2.zero, Quaternion.identity) as GameObject;
             //enemy.GetComponent<Player>().SetName($"AI Player {i + 1}");
-            enemy.GetComponent<Player>().PickRandomName();
-            enemy.GetComponent<Player>().PickRandomColor();
+            enemy.GetComponent<Player>().SetName(pickRandomName());
+            enemy.GetComponent<Player>().SetColor(pickRandomColor());
             enemy.GetComponent<Player>().AIWineLevel = wineLevel;
             enemy.transform.SetParent(enemiesPanel.transform, false);
             players.Add(enemy);
         }
+    }
+
+    private List<string> firstNames;
+    private List<string> secondNames;
+
+    private string pickRandomName()
+    {
+        if(firstNames == null || firstNames.Any() == false || secondNames == null || secondNames.Any() == false)
+        {
+            Debug.Log("Ran out of names!");
+            return "AI Name Missing";
+        }
+
+        int firstIndex = UnityEngine.Random.Range(0, firstNames.Count);
+        string firstName = firstNames[firstIndex];
+        firstNames.Remove(firstName);
+
+        int secondIndex = UnityEngine.Random.Range(0, secondNames.Count);
+        string secondName = secondNames[secondIndex];
+        secondNames.Remove(secondName);
+
+        return $"{firstName} {secondName}";
+    }
+
+    private List<string> colors;
+
+    public string pickRandomColor()
+    {   
+        if(colors == null || colors.Any() == false)
+        {
+            Debug.Log("Ran out of colors!");
+            return "black";
+        }
+        int randomIndex = UnityEngine.Random.Range(0, colors.Count);
+
+        string color = colors[randomIndex];
+
+        colors.Remove(color);
+
+        return color;
     }
 
     public void ChangeNumberOfEnemies(float numberOfPlayers)
@@ -72,7 +117,7 @@ public class TableManager : MonoBehaviour
 
     private void clearEnemies()
     {
-        Debug.Log("clear enemies");
+        //Debug.Log("clear enemies");
 
         foreach(Transform enemy in enemiesPanel.transform)
         {

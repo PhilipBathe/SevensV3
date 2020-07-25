@@ -88,20 +88,16 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void PickRandomName()
+    public void SetColor(string color)
     {
-        string[] firstNames = new string[] {"Alberto", "Ali", "Andrew", "Alice", "Art", "Ant", "Amy", "Alesha", "Anjie", "Archie", "Arry", "Alex", "Angel", "Axl"};
-        string[] secondNames = new string[] {"Invento", "Ideas", "Ikea", "Italy", "Intel", "Izzard", "Ip-Dip", "Inoklew", "Imp", "Idiot", "Inky", "Insipid", "Ismell", "Ice"};
-
-        int firstIndex = UnityEngine.Random.Range(0, firstNames.Length);
-        int secondIndex = UnityEngine.Random.Range(0, secondNames.Length);
-
-        SetName($"{firstNames[firstIndex]} {secondNames[secondIndex]}");
-    }
-
-    public void PickRandomColor()
-    {   
         Transform background = null;
+        Sprite sprite = Resources.Load<Sprite>($"Sprites/enemy_background_{color}");
+
+        if(sprite == null)
+        {
+            sprite = Resources.Load<Sprite>($"Sprites/enemy_background_black");
+            Debug.Log($"Couldn't find background resource for color '{color}'");
+        }
 
         foreach(Transform child in this.transform)
         {
@@ -116,11 +112,7 @@ public class Player : MonoBehaviour
             return;
         }
 
-        string[] colors = new string[] {"black", "blue", "grey", "orange", "pink", "purple", "red"};
-
-        int randomIndex = UnityEngine.Random.Range(0, colors.Length);
-
-        background.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/enemy_background_{colors[randomIndex]}");
+        background.GetComponent<Image>().sprite = sprite;
     }
 
     public void StartTurn()
