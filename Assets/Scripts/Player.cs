@@ -15,7 +15,6 @@ public class Player : MonoBehaviour
     public float WaitTimeForAI = 1f;
 
 
-
     private bool isTakingTurn = false;
 
     private Transform hand;
@@ -24,6 +23,8 @@ public class Player : MonoBehaviour
     private TableManager tableManager;
     private BoardManager boardManager;
     private GameObject optionsPanel;
+    private Animator knockButtonAnimator;
+    private GameObject knockButton;
 
     public bool HasSevenOfDiamonds()
     {
@@ -35,6 +36,8 @@ public class Player : MonoBehaviour
     void Start() {
         boardManager = GameObject.Find("Board").GetComponent<BoardManager>();
         tableManager = GameObject.Find("TableManager").GetComponent<TableManager>();
+        knockButton = GameObject.Find("KnockButton");
+        knockButtonAnimator = knockButton.GetComponent<Animator>();
 
         if(IsAI == false)
         {
@@ -107,7 +110,7 @@ public class Player : MonoBehaviour
 
         if(playableCards.Count == 0)
         {
-            knock();
+            Knock();
         }
         else
         {
@@ -238,7 +241,7 @@ public class Player : MonoBehaviour
         return count;
     }
 
-    private void knock()
+    public void Knock()
     {
         //Debug.Log("Knock!");
         //TODO: need a knock icon
@@ -275,7 +278,9 @@ public class Player : MonoBehaviour
         {
             //show knock button
             //TODO: auto knock option
-            knock();
+            knockButton.GetComponent<Knock>().SetActivePlayer(gameObject);
+            knockButtonAnimator.SetBool("isHidden", false);
+            //knock();
 
             return;
         }
