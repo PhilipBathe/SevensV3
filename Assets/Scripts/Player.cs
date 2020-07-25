@@ -14,6 +14,8 @@ public class Player : MonoBehaviour
 
     public float WaitTimeForAI = 1f;
 
+    public float AIWineLevel = 0;
+
 
     private Transform hand;
     private Transform lastGo;
@@ -88,8 +90,8 @@ public class Player : MonoBehaviour
 
     public void PickRandomName()
     {
-        string[] firstNames = new string[] {"Alberto", "Ali", "Andrew", "Alice", "Art", "Ant", "Amy", "Alesha"};
-        string[] secondNames = new string[] {"Invento", "Ideas", "Ikea", "Italy", "Intel", "Izzard", "Ip-Dip"};
+        string[] firstNames = new string[] {"Alberto", "Ali", "Andrew", "Alice", "Art", "Ant", "Amy", "Alesha", "Anjie", "Archie", "Arry", "Alex", "Angel", "Axl"};
+        string[] secondNames = new string[] {"Invento", "Ideas", "Ikea", "Italy", "Intel", "Izzard", "Ip-Dip", "Inoklew", "Imp", "Idiot", "Inky", "Insipid", "Ismell", "Ice"};
 
         int firstIndex = UnityEngine.Random.Range(0, firstNames.Length);
         int secondIndex = UnityEngine.Random.Range(0, secondNames.Length);
@@ -219,12 +221,12 @@ public class Player : MonoBehaviour
             //in the event of a tie favour cards nearer to the ends
             currentWorth += Math.Abs(7 - playableCard.Number) / 10f;
 
+            Debug.Log($"Card {playableCardGO.name} had worth of {currentWorth}");
+
             //if still a tie then don't always pick the first suit ("add some flavour")
-            currentWorth += UnityEngine.Random.Range(0.01f, 0.09f);
+            currentWorth += UnityEngine.Random.Range(0.01f, AIWineLevel + 0.09f);
 
-            //TODO: maybe add some stupid setting ("Wine level")?
-
-            //Debug.Log($"Card {playableCardGO.name} gets worth of {currentWorth}");
+            Debug.Log($"Card {playableCardGO.name} gets wine worth of {currentWorth}");
 
             if(currentWorth > bestCardWorth)
             {

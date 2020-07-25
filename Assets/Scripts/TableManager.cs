@@ -8,12 +8,16 @@ public class TableManager : MonoBehaviour
     public GameObject PlayerPrefab;
     public GameObject EnemyPrefab;
     private int numberOfEnemies = 3;
+    private float wineLevel = 0;
+
+    private GameObject enemiesPanel;
 
 
     private List<GameObject> players = new List<GameObject>();
 
     void Start()
     {
+        enemiesPanel = GameObject.Find("Enemies");
         setupPlayers();
         setupEnemies();
     }
@@ -29,14 +33,13 @@ public class TableManager : MonoBehaviour
 
     private void setupEnemies()
     {
-        var enemiesPanel = GameObject.Find("Enemies");
-
         for (int i = 0; i < numberOfEnemies; i++)
         {
             var enemy = Instantiate(EnemyPrefab, Vector2.zero, Quaternion.identity) as GameObject;
             //enemy.GetComponent<Player>().SetName($"AI Player {i + 1}");
             enemy.GetComponent<Player>().PickRandomName();
             enemy.GetComponent<Player>().PickRandomColor();
+            enemy.GetComponent<Player>().AIWineLevel = wineLevel;
             enemy.transform.SetParent(enemiesPanel.transform, false);
             players.Add(enemy);
         }
@@ -54,10 +57,23 @@ public class TableManager : MonoBehaviour
         }
     }
 
+    public void SetWineLevelOfEnemies(float newWineLevel)
+    {
+        if(wineLevel != newWineLevel)
+        {
+            wineLevel = newWineLevel;
+
+            foreach(Transform enemy in enemiesPanel.transform)
+            {
+               enemy.gameObject.GetComponent<Player>().AIWineLevel = wineLevel;
+            }
+        }
+    }
+
     private void clearEnemies()
     {
         Debug.Log("clear enemies");
-        var enemiesPanel = GameObject.Find("Enemies");
+
         foreach(Transform enemy in enemiesPanel.transform)
         {
             players.Remove(enemy.gameObject);

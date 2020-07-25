@@ -636,3 +636,4 @@ MonoBehaviour:
   IsActivePlayer: 0
   IsAI: 1
   WaitTimeForAI: 1
+  AIWineLevel: 0
