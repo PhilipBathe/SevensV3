@@ -125,7 +125,7 @@ public class DealCards : MonoBehaviour
             if(playerIndex > 0)
             {
                 playerCard.GetComponent<Card>().Flip();
-                playerCard.GetComponent<Image>().rectTransform.sizeDelta = new Vector2(50, 50);
+                playerCard.GetComponent<Image>().rectTransform.sizeDelta = new Vector2(40, 40);
             }
         }
     }

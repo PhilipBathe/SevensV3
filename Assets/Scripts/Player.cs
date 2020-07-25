@@ -74,6 +74,17 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void SetName(string name)
+    {
+        foreach (Text text in gameObject.GetComponentsInChildren<Text> ())
+        {
+            if(text.name == "PlayerNameText")
+            {
+                text.text = name;
+            }
+        }
+    }
+
     public void StartTurn()
     {
         IsActivePlayer = true;
