@@ -86,6 +86,17 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void PickRandomName()
+    {
+        string[] firstNames = new string[] {"Alberto", "Ali", "Andrew", "Alice", "Art", "Ant", "Amy", "Alesha"};
+        string[] secondNames = new string[] {"Invento", "Ideas", "Ikea", "Italy", "Intel", "Izzard", "Ip-Dip"};
+
+        int firstIndex = UnityEngine.Random.Range(0, firstNames.Length);
+        int secondIndex = UnityEngine.Random.Range(0, secondNames.Length);
+
+        SetName($"{firstNames[firstIndex]} {secondNames[secondIndex]}");
+    }
+
     public void PickRandomColor()
     {   
         Transform background = null;
