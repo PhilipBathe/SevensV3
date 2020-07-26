@@ -19,8 +19,8 @@ public class TableManager : MonoBehaviour
     void Start()
     {
         enemiesPanel = GameObject.Find("Enemies");
-        setupPlayers();
-        setupEnemies();
+        // setupPlayers();
+        // setupEnemies();
     }
 
     private void setupPlayers()

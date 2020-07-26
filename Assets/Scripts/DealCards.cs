@@ -19,18 +19,18 @@ public class DealCards : MonoBehaviour
 
     void Start()
     {
-        boardManager = GameObject.Find("Board").GetComponent<BoardManager>();
-        tableManager = GameObject.Find("TableManager").GetComponent<TableManager>();
-        pack = GameObject.Find("Pack");
+        // boardManager = GameObject.Find("Board").GetComponent<BoardManager>();
+        // tableManager = GameObject.Find("TableManager").GetComponent<TableManager>();
+        // pack = GameObject.Find("Pack");
 
-        //TODO: move this to the pack to organise itself?
-        foreach(Transform child in pack.transform)
-        {
-            if (child.tag == "Card")
-            {
-                cards.Add(child.gameObject);
-            }
-        }
+        // //TODO: move this to the pack to organise itself?
+        // foreach(Transform child in pack.transform)
+        // {
+        //     if (child.tag == "Card")
+        //     {
+        //         cards.Add(child.gameObject);
+        //     }
+        // }
     }
 
     public void OnClick()

@@ -4,8 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using System;
+using Mirror;
 
-public class Player : MonoBehaviour
+public class Player : NetworkBehaviour
 {
     // Start is called before the first frame update
     public bool IsActivePlayer = false;
@@ -37,44 +38,44 @@ public class Player : MonoBehaviour
     }
 
     void Start() {
-        boardManager = GameObject.Find("Board").GetComponent<BoardManager>();
-        tableManager = GameObject.Find("TableManager").GetComponent<TableManager>();
-        knockButton = GameObject.Find("KnockButton");
-        knockButtonAnimator = knockButton.GetComponent<Animator>();
+        //boardManager = GameObject.Find("Board").GetComponent<BoardManager>();
+        //tableManager = GameObject.Find("TableManager").GetComponent<TableManager>();
+        // knockButton = GameObject.Find("KnockButton");
+        // knockButtonAnimator = knockButton.GetComponent<Animator>();
 
-        if(IsAI == false)
-        {
-            optionsPanel = GameObject.Find("OptionsPanel");
-            optionsPanel.SetActive(false);
-        }
+        // if(IsAI == false)
+        // {
+        //     optionsPanel = GameObject.Find("OptionsPanel");
+        //     optionsPanel.SetActive(false);
+        // }
 
-        foreach(Transform child in this.transform)
-        {
-            if (child.tag == "Hand")
-            {
-                this.hand = child;
-            }
+        // foreach(Transform child in this.transform)
+        // {
+        //     if (child.tag == "Hand")
+        //     {
+        //         this.hand = child;
+        //     }
 
-            if(child.name == "LastGo")
-            {
-                this.lastGo = child;
-            }
+        //     if(child.name == "LastGo")
+        //     {
+        //         this.lastGo = child;
+        //     }
 
-            if(child.name == "Placed")
-            {
-                this.placed = child;
-            }
+        //     if(child.name == "Placed")
+        //     {
+        //         this.placed = child;
+        //     }
 
-            if(child.name == "Thinking")
-            {
-                this.thinking = child;
-            }
+        //     if(child.name == "Thinking")
+        //     {
+        //         this.thinking = child;
+        //     }
 
-            if(child.name == "Dealer")
-            {
-                this.dealer = child;
-            }
-        }
+        //     if(child.name == "Dealer")
+        //     {
+        //         this.dealer = child;
+        //     }
+        // }
     }
 
     public void SetName(string name)
@@ -392,5 +393,16 @@ public class Player : MonoBehaviour
     public void ShowIsDealer()
     {
         dealer.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/dealer");
+    }
+
+    public void SetStatus(string status)
+    {
+        foreach (Text text in gameObject.GetComponentsInChildren<Text> ())
+        {
+            if(text.name == "StatusText")
+            {
+                text.text = status;
+            }
+        }
     }
 }
