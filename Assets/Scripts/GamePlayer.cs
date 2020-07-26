@@ -28,7 +28,7 @@ public class GamePlayer
 
     public void ShowCardsInUI()
     {
-        //TODO:implement
+        this.GameObject.GetComponent<Enemy>().CardCount = Cards.Count;
     }
 
     public bool HasSevenOfDiamonds()

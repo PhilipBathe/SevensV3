@@ -18,9 +18,17 @@ public class Enemy : NetworkBehaviour
     [SyncVar(hook = nameof(OnParentChanged))]
     public GameObject Parent;
 
-
     [SyncVar(hook = nameof(OnStatusChanged))]
     public string Status;
+
+    [SyncVar(hook = nameof(OnCardCountChanged))]
+    public int CardCount;
+
+
+
+    public GameObject EnemyCardPrefab;
+
+    public GameObject Hand;
     
 
     void OnPlayerNameChanged(string oldPlayerName, string newPlayerName)
@@ -82,7 +90,29 @@ public class Enemy : NetworkBehaviour
     [Server]
     public void Reset() {
         Status = string.Empty;
+        clearHand();
         //TODO: reset other bits
+    }
+
+    void OnCardCountChanged(int oldCardCount, int newCardCount)
+    {
+        //TODO: less clunky way of reducing hands as cards are played
+        clearHand();
+        for(int i = 0; i < newCardCount; i++)
+        {
+            GameObject playerCard = Instantiate(EnemyCardPrefab, Vector2.zero, Quaternion.identity, Hand.transform);
+            NetworkServer.Spawn(playerCard);
+        }
+    }
+
+    private void clearHand()
+    {
+        foreach(Transform child in Hand.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        Hand.transform.DetachChildren();
     }
 
 }
