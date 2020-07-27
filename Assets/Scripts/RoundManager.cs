@@ -75,10 +75,82 @@ public class RoundManager : NetworkBehaviour
         }
     }
 
+    private int currentPlayerIndex = -1;
+
     private void findFirstPlayer()
     {
-        //TODO: this
-        Debug.Log("findFirstPlayer");
+        //start to the left of the dealer and find the first player with a 7 of diamonds
+        //in multipack games we need to find the first to the left as there might be more than one player with a 7d
+
+        for(int i = 0; i < players.Count; i++)
+        {
+             var playerIndex = (i + dealerIndex) % players.Count;
+
+             if(players[playerIndex].HasSevenOfDiamonds())
+             {
+                 currentPlayerIndex = playerIndex;
+                 players[playerIndex].SetAsCurrentPlayer();
+                 break;
+             }
+        }
     }
+
+    public void Knock()
+    {
+        //TODO: check player can knock - if not pick a random card for them!
+
+        players[currentPlayerIndex].ShowKnock();
+
+        nextPlayer();
+    }
+
+    public void PlayCard(PlayingCard cardPlayed)
+    {
+        //TODO: check card is playable and owned by the current player
+
+        //TODO: play card!
+
+        //TODO: check player is finished
+
+        nextPlayer();
+    }
+
+    private List<int> finishedPlayerIndices = new List<int>();
+
+    private void nextPlayer()
+    {
+        //flag current player as done
+
+        // var player = players[currentPlayerIndex].GetComponent<Player>();
+        //     player.IsActivePlayer = false;
+
+        //check game has ended
+
+            // if(players.Count <= finishedPlayers.Count)
+            // {
+            //     Debug.Log("All done!");
+            //     GameObject.Find("DealButton").GetComponent<DealCards>().ShowNextGamePanel();
+            //     return;
+            // }
+
+            currentPlayerIndex++;
+            if(currentPlayerIndex >= players.Count)
+            {
+                currentPlayerIndex = 0;
+            }
+
+            while(finishedPlayerIndices.Contains(currentPlayerIndex))
+            {
+                currentPlayerIndex++;
+                if(currentPlayerIndex >= players.Count)
+                {
+                    currentPlayerIndex = 0;
+                }
+            }
+
+            players[currentPlayerIndex].SetAsCurrentPlayer();
+    }
+
+
 
 }

@@ -661,6 +661,7 @@ GameObject:
   - component: {fileID: 6466289169792125501}
   - component: {fileID: 1640030498098426838}
   - component: {fileID: 6887783300943007829}
+  - component: {fileID: 5489901989941953971}
   m_Layer: 5
   m_Name: EnemyPrefab
   m_TagString: Player
@@ -757,6 +758,25 @@ MonoBehaviour:
   Parent: {fileID: 0}
   Status: 
   CardCount: 0
+  IsThinking: 0
+  IsDealer: 0
   EnemyCardPrefab: {fileID: 3242007404850113729, guid: 6498c25146e59304baced467cc8db256,
     type: 3}
   Hand: {fileID: 8781862539491087243}
+--- !u!114 &5489901989941953971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9043006365726958630}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5aa7b8276205a3b4f88c8db95c1cef23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  DealerTransform: {fileID: 7534815591159610366}
+  ThinkingTransform: {fileID: 605195546581168308}
+  LastGoTransform: {fileID: 2083262459}

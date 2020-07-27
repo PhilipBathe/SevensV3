@@ -15,6 +15,6 @@ public class Knock : MonoBehaviour
     public void OnClick()
     {
         KnockButtonAnimator.SetBool("isHidden", true);
-        activePlayer.GetComponent<Player>().Knock();
+        activePlayer.GetComponent<NetworkPlayer>().Knock();
     }
 }

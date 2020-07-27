@@ -462,6 +462,8 @@ GameObject:
   - component: {fileID: 1470785379024461938}
   - component: {fileID: 6574101599231118455}
   - component: {fileID: 1582056279455756785}
+  - component: {fileID: 1163017162955541961}
+  - component: {fileID: 1089108303883057614}
   m_Layer: 5
   m_Name: PlayerPrefab
   m_TagString: Player
@@ -545,10 +547,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54b9750d215bb6e419deb6232c6c0d9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   IsActivePlayer: 0
   IsAI: 0
   WaitTimeForAI: 0
   AIWineLevel: 0
+--- !u!114 &1163017162955541961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5887231587625598555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  m_AssetId: 
+  hasSpawned: 0
+--- !u!114 &1089108303883057614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5887231587625598555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5aa7b8276205a3b4f88c8db95c1cef23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  DealerTransform: {fileID: 8311557362143963804}
+  ThinkingTransform: {fileID: 8864766733498250270}
+  LastGoTransform: {fileID: 1057960645}
 --- !u!1 &6028511075111182551
 GameObject:
   m_ObjectHideFlags: 0

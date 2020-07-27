@@ -49,8 +49,8 @@ public class SeatManager : NetworkBehaviour
 
     public void StartNewGame()
     {
-        hideNextGamePanel();
         isGameInProgress = true;
+        hideNextGamePanel();
         RoundManager.StartNewGame(gamePlayers);
     }
 
@@ -87,7 +87,7 @@ public class SeatManager : NetworkBehaviour
         enemy.Parent = EnemiesPanel;
         enemy.Status = "Waiting for next game";
 
-        gamePlayer.GameObject = go;
+        gamePlayer.EnemyPlayerGO = go;
 
         //enemy.GetComponent<AIPlayer>().AIWineLevel = wineLevel;
     }

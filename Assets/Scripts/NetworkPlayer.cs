@@ -100,6 +100,13 @@ public class NetworkPlayer : NetworkBehaviour
     }
 
     [ClientRpc]
+    public void RpcSetIsDealer()
+    {
+        var commonPlayerUI = playerUI.GetComponent<CommonPlayerUI>();
+        commonPlayerUI.ShowIsDealer();
+    }
+
+    [ClientRpc]
     public void RpcShowCards(PlayingCard[] cards)
     {
         if(isLocalPlayer)
@@ -126,6 +133,73 @@ public class NetworkPlayer : NetworkBehaviour
 
             newCard.transform.SetParent(playerUI.GetComponentInChildren<Hand>().transform, false);
         }
+    }
+
+    [ClientRpc]
+    public void RpcTakeTurn(PlayingCard[] playableCards)
+    {
+        Debug.Log("RpcTakeTurn");
+        Debug.Log($"isLocalPlayer {isLocalPlayer}");
+        Debug.Log(playerUI == null);
+
+        if(isLocalPlayer)
+        {
+            var commonPlayerUI = playerUI.GetComponent<CommonPlayerUI>();
+            commonPlayerUI.ShowIsThinking();
+
+            displayOptions(playableCards);
+        }
+    }
+
+    [Client]
+    private void displayOptions(PlayingCard[] playableCards)
+    {
+        GameObject optionsPanel = GameObject.Find("OptionsPanel");
+        GameObject knockButton = GameObject.Find("KnockButton");
+
+        if(playableCards.Count() == 0)
+        {
+            //could add an auto knock option?
+            knockButton.GetComponent<Knock>().SetActivePlayer(gameObject);
+            knockButton.GetComponent<Animator>().SetBool("isHidden", false);
+
+            return;
+        }
+
+        optionsPanel.SetActive(true);
+
+        foreach(var card in playableCards)
+        {
+            foreach(Transform child in playerUI.GetComponentInChildren<Hand>().transform)
+            {
+                if (child.tag == "Card" 
+                    && child.GetComponent<Card>().Number == card.Number
+                    && child.GetComponent<Card>().Suit == card.Suit)
+                {
+                    child.transform.SetParent(optionsPanel.transform, false);
+                    child.GetComponent<Card>().IsClickable = true;
+                    continue; //to prevent duplicates being moved with multipacks
+                }
+            }  
+        }
+
+        //TODO: if no unplayable cards left disable panel so we can click the whole card
+    }
+
+    [Client]
+    public void Knock()
+    {
+        var commonPlayerUI = playerUI.GetComponent<CommonPlayerUI>();
+        commonPlayerUI.ShowKnock();
+        commonPlayerUI.ClearIsThinking();
+
+        CmdKnock();
+    }
+
+    [Command]
+    private void CmdKnock()
+    {
+        GameObject.Find("SeatManager").GetComponent<RoundManager>().Knock();
     }
 
 }

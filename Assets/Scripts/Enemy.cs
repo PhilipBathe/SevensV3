@@ -15,6 +15,7 @@ public class Enemy : NetworkBehaviour
     [SyncVar]
     public int SeatNumber;
 
+
     [SyncVar(hook = nameof(OnParentChanged))]
     public GameObject Parent;
 
@@ -24,11 +25,51 @@ public class Enemy : NetworkBehaviour
     [SyncVar(hook = nameof(OnCardCountChanged))]
     public int CardCount;
 
+    [SyncVar(hook = nameof(OnIsThinkingChanged))]
+    public bool IsThinking;
+
+    [SyncVar(hook = nameof(OnIsDealerChanged))]
+    public bool IsDealer;
+
 
 
     public GameObject EnemyCardPrefab;
 
     public GameObject Hand;
+
+    void OnIsDealerChanged(bool oldIsDealer, bool newIsDealer)
+    {
+        var commonPlayerUI = gameObject.GetComponent<CommonPlayerUI>();
+        if(newIsDealer)
+        {
+            commonPlayerUI.ShowIsDealer();
+        }
+        else
+        {
+            commonPlayerUI.ClearIsDealer();
+        }
+    }
+
+    void OnIsThinkingChanged(bool oldIsThinking, bool newIsThinking)
+    {
+        //Debug.Log($"newIsThinking {newIsThinking}");
+        var commonPlayerUI = gameObject.GetComponent<CommonPlayerUI>();
+        if(newIsThinking)
+        {
+            commonPlayerUI.ShowIsThinking();
+        }
+        else
+        {
+            commonPlayerUI.ClearIsThinking();
+        }
+    }
+
+    [ClientRpc ]
+    public void RpcKnock()
+    {
+        var commonPlayerUI = gameObject.GetComponent<CommonPlayerUI>();
+        commonPlayerUI.ShowKnock();
+    }
     
 
     void OnPlayerNameChanged(string oldPlayerName, string newPlayerName)
@@ -91,6 +132,10 @@ public class Enemy : NetworkBehaviour
     public void Reset() {
         Status = string.Empty;
         CardCount = 0;
+
+        var commonPlayerUI = gameObject.GetComponent<CommonPlayerUI>();
+        commonPlayerUI.ClearIsThinking();
+
         //TODO: reset other bits
     }
 
