@@ -66,5 +66,5 @@ MonoBehaviour:
   SeatNumber: 0
   PlayerPrefab: {fileID: 5887231587625598555, guid: 97da122c3606e6d4088d2f2012dd5a97,
     type: 3}
-  EnemyPrefab: {fileID: 9043006365726958630, guid: e24ae74ece3f9c941a11c96462fcdf71,
+  CardPrefab: {fileID: 4323195780029615099, guid: c69265798b6d64b49be9d94d218db8f0,
     type: 3}

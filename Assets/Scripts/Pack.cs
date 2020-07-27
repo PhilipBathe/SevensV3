@@ -20,10 +20,12 @@ public static class Pack
             {
                 id = $"0{i}";
                 cardName = suit + id.Substring(id.Length - 2);
+
                 cards.Add(new PlayingCard {
                     Suit = suit,
                     Number = i,
-                    SortOrder = sortOrder++
+                    SortOrder = sortOrder++,
+                    CardName = cardName
                 });
             }
         }

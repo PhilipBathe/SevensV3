@@ -16,9 +16,8 @@ public class GamePlayer
 
     public void Reset()
     {
-        //TODO:implement
         this.GameObject.GetComponent<Enemy>().Reset();
-        //this.NetworkPlayerGO.GetComponent<Player>().Reset();
+        this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcResetUI();
     }
 
     public void ShowIsDealer()
@@ -29,6 +28,7 @@ public class GamePlayer
     public void ShowCardsInUI()
     {
         this.GameObject.GetComponent<Enemy>().CardCount = Cards.Count;
+        this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcShowCards(Cards.ToArray());
     }
 
     public bool HasSevenOfDiamonds()

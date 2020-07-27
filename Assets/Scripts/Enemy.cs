@@ -90,18 +90,31 @@ public class Enemy : NetworkBehaviour
     [Server]
     public void Reset() {
         Status = string.Empty;
-        clearHand();
+        CardCount = 0;
         //TODO: reset other bits
     }
 
     void OnCardCountChanged(int oldCardCount, int newCardCount)
     {
-        //TODO: less clunky way of reducing hands as cards are played
+        if(newCardCount == 0)
+        {
+            clearHand();
+            return;
+        }
+
+        if(newCardCount == oldCardCount-1)
+        {
+            removeOneCard();
+            return;
+        }
+
+        //if we are here then we should be creating a new hand at the start of a new game
+
         clearHand();
+
         for(int i = 0; i < newCardCount; i++)
         {
             GameObject playerCard = Instantiate(EnemyCardPrefab, Vector2.zero, Quaternion.identity, Hand.transform);
-            NetworkServer.Spawn(playerCard);
         }
     }
 
@@ -113,6 +126,15 @@ public class Enemy : NetworkBehaviour
         }
 
         Hand.transform.DetachChildren();
+    }
+
+    private void removeOneCard()
+    {
+        foreach(Transform child in Hand.transform)
+        {
+            Destroy(child.gameObject);
+            break;
+        }
     }
 
 }
