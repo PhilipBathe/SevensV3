@@ -19,8 +19,6 @@ public class Enemy : NetworkBehaviour
     [SyncVar(hook = nameof(OnParentChanged))]
     public GameObject Parent;
 
-    [SyncVar(hook = nameof(OnStatusChanged))]
-    public string Status;
 
     [SyncVar(hook = nameof(OnCardCountChanged))]
     public int CardCount;
@@ -39,6 +37,7 @@ public class Enemy : NetworkBehaviour
 
     void OnIsDealerChanged(bool oldIsDealer, bool newIsDealer)
     {
+        //Debug.Log($"newIsDealer {newIsDealer}");
         var commonPlayerUI = gameObject.GetComponent<CommonPlayerUI>();
         if(newIsDealer)
         {
@@ -117,26 +116,19 @@ public class Enemy : NetworkBehaviour
         this.transform.SetParent(newParent.transform, false);
     }
 
-    void OnStatusChanged(string oldStatus, string newStatus)
-    {
-        foreach (Text text in gameObject.GetComponentsInChildren<Text> ())
-        {
-            if(text.name == "StatusText")
-            {
-                text.text = newStatus;
-            }
-        }
-    }
-
     [Server]
     public void Reset() {
-        Status = string.Empty;
         CardCount = 0;
-
-        var commonPlayerUI = gameObject.GetComponent<CommonPlayerUI>();
-        commonPlayerUI.ClearIsThinking();
+        RpcResetUI();
 
         //TODO: reset other bits
+    }
+
+    [ClientRpc]
+    private void RpcResetUI()
+    {
+        var commonPlayerUI = gameObject.GetComponent<CommonPlayerUI>();
+        commonPlayerUI.ClearAll();
     }
 
     void OnCardCountChanged(int oldCardCount, int newCardCount)

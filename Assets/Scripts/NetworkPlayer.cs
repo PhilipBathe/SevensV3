@@ -66,7 +66,9 @@ public class NetworkPlayer : NetworkBehaviour
 
             playerUI = Instantiate(PlayerPrefab, Vector2.zero, Quaternion.identity) as GameObject;
             playerUI.transform.SetParent(canvas.transform, false);
-            playerUI.GetComponent<Player>().SetStatus($"Waiting for next game");
+
+            var commonPlayerUI = playerUI.GetComponent<CommonPlayerUI>();
+            commonPlayerUI.SetStatusText($"Waiting for next game");
         }
     }
 
@@ -82,7 +84,9 @@ public class NetworkPlayer : NetworkBehaviour
                 return;
             }
 
-            playerUI.GetComponent<Player>().SetStatus(string.Empty);
+            var commonPlayerUI = playerUI.GetComponent<CommonPlayerUI>();
+            commonPlayerUI.ClearAll();
+
 
             clearHand();
         }
@@ -102,8 +106,11 @@ public class NetworkPlayer : NetworkBehaviour
     [ClientRpc]
     public void RpcSetIsDealer()
     {
-        var commonPlayerUI = playerUI.GetComponent<CommonPlayerUI>();
-        commonPlayerUI.ShowIsDealer();
+        if(isLocalPlayer)
+        {
+            var commonPlayerUI = playerUI.GetComponent<CommonPlayerUI>();
+            commonPlayerUI.ShowIsDealer();
+        }
     }
 
     [ClientRpc]

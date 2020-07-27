@@ -583,9 +583,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  StatusText: {fileID: 6045647622612853330}
   DealerTransform: {fileID: 8311557362143963804}
   ThinkingTransform: {fileID: 8864766733498250270}
   LastGoTransform: {fileID: 1057960645}
+  PlacedTransform: {fileID: 8323548919371691139}
 --- !u!1 &6028511075111182551
 GameObject:
   m_ObjectHideFlags: 0

@@ -232,7 +232,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Status Text Here
+  m_Text: Waiting for next game
 --- !u!1 &3434241551393088930
 GameObject:
   m_ObjectHideFlags: 0
@@ -756,7 +756,6 @@ MonoBehaviour:
   PlayerColor: 
   SeatNumber: 0
   Parent: {fileID: 0}
-  Status: 
   CardCount: 0
   IsThinking: 0
   IsDealer: 0
@@ -777,6 +776,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  StatusText: {fileID: 3294490687315398813}
   DealerTransform: {fileID: 7534815591159610366}
   ThinkingTransform: {fileID: 605195546581168308}
   LastGoTransform: {fileID: 2083262459}
+  PlacedTransform: {fileID: 5465811316846329768}

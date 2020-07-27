@@ -20,8 +20,14 @@ public class RoundManager : NetworkBehaviour
     public void StartNewGame(List<GamePlayer> gamePlayers)
     {
         players = gamePlayers;
+        StartCoroutine(NewGameCoroutine());
+    }
+
+    IEnumerator NewGameCoroutine()
+    {
         resetPlayers();
         clearBoard();
+        yield return new WaitForSeconds(1);
         changeDealer();
         deal();
         showHands();
