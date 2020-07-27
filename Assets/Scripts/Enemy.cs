@@ -38,6 +38,8 @@ public class Enemy : NetworkBehaviour
 
     public GameObject Hand;
 
+    public bool IsAI;
+
     void OnPlacedChanged(int oldPlaced, int newPlaced)
     {
         //Debug.Log($"newIsDealer {newIsDealer}");

@@ -11,6 +11,7 @@ public class SeatManager : NetworkBehaviour
     public GameObject EnemiesPanel;
 
     public int MinPlayers = 3;
+    public int NumberOfAIPlayers = 0;
 
     public Animator NewGamePanel;
 
@@ -42,9 +43,50 @@ public class SeatManager : NetworkBehaviour
 
         gamePlayers.Add(gamePlayer);
 
-        checkIfWeCanPlay();
+        checkForHostStartPanel();
 
         //TODO: deal with people leaving the table affecting seatnumber (and remove them from enemies panel)
+    }
+
+    public void ChangeNumberOfAIPlayers(float numberOfPlayers)
+    {
+        int newNumber = (int)numberOfPlayers;
+
+        if(NumberOfAIPlayers != newNumber)
+        {
+            NumberOfAIPlayers = newNumber;
+            killAllAIPlayers();
+            createNewAIPlayers();
+        }
+    }
+
+    private void killAllAIPlayers()
+    {
+        gamePlayers.RemoveAll(p => p.IsAI == true);
+        List<GameObject> buggersToKill = new List<GameObject>();
+
+        foreach(Transform child in EnemiesPanel.transform)
+        {
+            if(child.GetComponent<Enemy>().IsAI == true)
+            {
+                buggersToKill.Add(child.gameObject);
+            }
+        }
+
+        foreach(var child in buggersToKill)
+        {
+            child.transform.SetParent(null);
+            Destroy(child);
+        }
+    }
+
+    private void createNewAIPlayers()
+    {
+        //Debug.Log($"createNewAIPlayers {NumberOfAIPlayers}");
+        for(int i = 0; i < NumberOfAIPlayers; i++)
+        {
+            addAIPlayer();
+        }
     }
 
     private void addAIPlayer()
@@ -58,12 +100,20 @@ public class SeatManager : NetworkBehaviour
         spawnNewGameObject(gamePlayer);
 
         gamePlayers.Add(gamePlayer);
-
-        checkIfWeCanPlay();
     }
 
     public void StartNewGame()
     {
+        if(isLegalToPlay() == false)
+        {
+            Debug.Log("trying to play when we can't");
+            //TODO: tell host there is a problem 
+            // maybe show a minimum player slider?
+            // and/or disable start button
+            // or maybe auto generate AI players?
+            //assuming the game isn't in progress
+        }
+
         isGameInProgress = true;
         hideNextGamePanel();
         RoundManager.StartNewGame(gamePlayers);
@@ -72,20 +122,28 @@ public class SeatManager : NetworkBehaviour
     public void GameFinished()
     {
         isGameInProgress = false;
-        Debug.Log("nothing bad yet!");
 
-        checkIfWeCanPlay();
+        checkForHostStartPanel();
     }
 
 
-    private void checkIfWeCanPlay()
+    private bool isLegalToPlay()
     {
         if(gamePlayers.Count < MinPlayers)
         {
-            addAIPlayer();
-            return;
+            return false;
         }
 
+        if(isGameInProgress == true)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private void checkForHostStartPanel()
+    {
         if(isGameInProgress == false)
         {
             //show new game options to first player
@@ -106,11 +164,10 @@ public class SeatManager : NetworkBehaviour
         enemy.PlayerName = gamePlayer.PlayerName;
         enemy.SeatNumber = gamePlayer.SeatNumber;
         enemy.PlayerColor = pickRandomColor();
+        enemy.IsAI = gamePlayer.IsAI;
         enemy.Parent = EnemiesPanel;
 
         gamePlayer.EnemyPlayerGO = go;
-
-        //enemy.GetComponent<AIPlayer>().AIWineLevel = wineLevel;
     }
 
     private List<string> colors;

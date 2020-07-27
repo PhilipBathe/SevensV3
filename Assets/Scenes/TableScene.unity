@@ -517,7 +517,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 4
   m_WholeNumbers: 1
-  m_Value: 2
+  m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -533,9 +533,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: TableManager, Assembly-CSharp
-        m_MethodName: ChangeNumberOfEnemies
+      - m_Target: {fileID: 399748560}
+        m_TargetAssemblyTypeName: SeatManager, Assembly-CSharp
+        m_MethodName: ChangeNumberOfAIPlayers
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -657,6 +657,7 @@ MonoBehaviour:
     type: 3}
   EnemiesPanel: {fileID: 1207875756}
   MinPlayers: 3
+  NumberOfAIPlayers: 2
   NewGamePanel: {fileID: 663326684}
   RoundManager: {fileID: 399748563}
 --- !u!114 &399748561
@@ -1363,7 +1364,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 2
+  m_Text: 0
 --- !u!222 &840692201
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1923,7 +1924,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Number of AI Players
+  m_Text: AI Players
 --- !u!222 &1156009727
 CanvasRenderer:
   m_ObjectHideFlags: 0
