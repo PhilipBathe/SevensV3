@@ -29,11 +29,28 @@ public class Enemy : NetworkBehaviour
     [SyncVar(hook = nameof(OnIsDealerChanged))]
     public bool IsDealer;
 
+    [SyncVar(hook = nameof(OnPlacedChanged))]
+    public int Placed;
+
 
 
     public GameObject EnemyCardPrefab;
 
     public GameObject Hand;
+
+    void OnPlacedChanged(int oldPlaced, int newPlaced)
+    {
+        //Debug.Log($"newIsDealer {newIsDealer}");
+        var commonPlayerUI = gameObject.GetComponent<CommonPlayerUI>();
+        if(newPlaced == 0)
+        {
+            commonPlayerUI.ClearPlaced();
+        }
+        else
+        {
+            commonPlayerUI.ShowPlaced(newPlaced);
+        }
+    }
 
     void OnIsDealerChanged(bool oldIsDealer, bool newIsDealer)
     {
@@ -63,11 +80,16 @@ public class Enemy : NetworkBehaviour
         }
     }
 
-    [ClientRpc ]
+    [ClientRpc]
     public void RpcKnock()
     {
-        var commonPlayerUI = gameObject.GetComponent<CommonPlayerUI>();
-        commonPlayerUI.ShowKnock();
+        gameObject.GetComponent<CommonPlayerUI>().ShowKnock();
+    }
+
+    [ClientRpc]
+    public void RpcPlayedCard(PlayingCard card)
+    {
+        gameObject.GetComponent<CommonPlayerUI>().ShowLastGo(card);
     }
     
 
@@ -119,6 +141,9 @@ public class Enemy : NetworkBehaviour
     [Server]
     public void Reset() {
         CardCount = 0;
+        Placed = 0;
+        IsDealer = false;
+        IsThinking = false;
         RpcResetUI();
 
         //TODO: reset other bits

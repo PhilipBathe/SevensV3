@@ -39,9 +39,9 @@ public class CommonPlayerUI : NetworkBehaviour
         ThinkingTransform.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/transparent"); 
     }
 
-    public void ShowLastGo(Sprite sprite)
+    public void ShowLastGo(PlayingCard card)
     {
-        LastGoTransform.GetComponent<Image>().sprite = sprite;
+        LastGoTransform.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/{card.CardName}"); 
     }
 
     public void ClearLastGo()

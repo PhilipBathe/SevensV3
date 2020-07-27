@@ -6,7 +6,7 @@ public static class Pack
 {
     public static List<PlayingCard> GetCards()
     {
-        string[] suits = new string[] {"Diamond"}; //, "Club", "Heart", "Spade"};
+        string[] suits = new string[] {"Diamond", "Club", "Heart", "Spade"};
 
         List<PlayingCard> cards = new List<PlayingCard>();
 

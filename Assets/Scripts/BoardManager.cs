@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Mirror;
 
-public class BoardManager : MonoBehaviour
+public class BoardManager : NetworkBehaviour
 {
+    public GameObject CardPrefab;
+
     private Dictionary<string, GameObject> suitHolders = new Dictionary<string, GameObject>();
 
     void Start()
@@ -18,7 +21,8 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    public void ClearBoard()
+    [ClientRpc]
+    public void RpcClearBoard()
     {
         foreach(var suit in suitHolders)
         {
@@ -34,56 +38,29 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    public void PlayCard(GameObject card)
+    [ClientRpc]
+    public void RpcPlayCard(PlayingCard card)
     {
-        //Debug.Log($"playing card {card.name}");
-        GameObject suitSlot = suitHolders[card.GetComponent<Card>().Suit];
+        Debug.Log($"playing card {card.CardName}");
+        GameObject suitSlot = suitHolders[card.Suit];
 
-        card.transform.SetParent(suitSlot.transform, false);
-        card.GetComponent<Image>().rectTransform.sizeDelta = new Vector2(96, 96);
+        
+        GameObject playerCard = Instantiate(CardPrefab, Vector2.zero, Quaternion.identity, suitSlot.transform);
+        playerCard.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/{card.CardName}");
+        playerCard.GetComponent<Image>().rectTransform.sizeDelta = new Vector2(96, 96);
 
-        var cardNumber = card.GetComponent<Card>().Number;
         float y = 0f;
 
-        if(cardNumber < 7)
+        if(card.Number < 7)
         {
-            y = (cardNumber - 7) * 6f - 44f;
+            y = (card.Number - 7) * 6f - 44f;
         }
 
-        if(cardNumber > 7)
+        if(card.Number > 7)
         {
-            y = (cardNumber - 7) * 6f + 44f;
+            y = (card.Number - 7) * 6f + 44f;
         }
 
-        float xWonkiness = 0f; //UnityEngine.Random.Range(-5f, 5f);
-        //Could also introduce a z rotation for more wonkiness?
-
-        card.transform.localPosition = new Vector2(xWonkiness, y);
-
-    }
-
-    public bool IsCardPlayable(GameObject card)
-    {
-        var cardNumber = card.GetComponent<Card>().Number;
-
-        if(cardNumber == 7)
-        {
-            return true;
-        }
-
-        GameObject suitSlot = suitHolders[card.GetComponent<Card>().Suit];
-
-        foreach(Transform child in suitSlot.transform)
-        {
-            if (child.tag == "Card")
-            {
-                if(Math.Abs(child.GetComponent<Card>().Number - cardNumber) == 1)
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        playerCard.transform.localPosition = new Vector2(0f, y);
     }
 }

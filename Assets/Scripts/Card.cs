@@ -11,42 +11,14 @@ public class Card : MonoBehaviour, IPointerClickHandler
     public string Suit;
     public int Number;
     public bool IsClickable;
+    public PlayingCard PlayingCard;
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        //Debug.Log("Mouse Clicked");
-        
         if(IsClickable)
         {
-            var player = GameObject.FindGameObjectsWithTag("Player").First(p => p.GetComponent<Player>().IsActivePlayer);
-            player.GetComponent<Player>().SelectCard(this.gameObject);
-        }
-    }
-
-    private Sprite cardFront;
-    private Sprite cardBack;
-
-    public void Flip()
-    {
-        if(cardBack == null)
-        {
-            cardBack = Resources.Load<Sprite>($"Sprites/hamlet-card");
-        }
-
-        Sprite currentSprite = gameObject.GetComponent<Image>().sprite;
-
-        if(cardFront == null)
-        {
-            cardFront = currentSprite;
-        }
-
-        if (currentSprite == cardFront)
-        {
-            gameObject.GetComponent<Image>().sprite = cardBack;
-        }
-        else
-        {
-            gameObject.GetComponent<Image>().sprite = cardFront;
+            //Debug.Log("Mouse Clicked");
+            GameObject.Find("LocalNetworkPlayer").GetComponent<NetworkPlayer>().PlayCard(PlayingCard);
         }
     }
 }

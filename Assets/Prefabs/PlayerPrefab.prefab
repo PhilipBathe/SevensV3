@@ -86,6 +86,7 @@ GameObject:
   - component: {fileID: 1795082679}
   - component: {fileID: 1795082681}
   - component: {fileID: 1951312960}
+  - component: {fileID: 5072545825633610832}
   m_Layer: 5
   m_Name: OptionsPanel
   m_TagString: Untagged
@@ -146,6 +147,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &5072545825633610832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1795082678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e9f48e4747859f4ba84f7cc907c329e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1702285832415673341
 GameObject:
   m_ObjectHideFlags: 0
@@ -461,7 +474,6 @@ GameObject:
   - component: {fileID: 248875925166955943}
   - component: {fileID: 1470785379024461938}
   - component: {fileID: 6574101599231118455}
-  - component: {fileID: 1582056279455756785}
   - component: {fileID: 1163017162955541961}
   - component: {fileID: 1089108303883057614}
   m_Layer: 5
@@ -535,24 +547,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1582056279455756785
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5887231587625598555}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54b9750d215bb6e419deb6232c6c0d9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  IsActivePlayer: 0
-  IsAI: 0
-  WaitTimeForAI: 0
-  AIWineLevel: 0
 --- !u!114 &1163017162955541961
 MonoBehaviour:
   m_ObjectHideFlags: 0

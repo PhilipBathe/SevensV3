@@ -533,7 +533,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1480545338}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: TableManager, Assembly-CSharp
         m_MethodName: ChangeNumberOfEnemies
         m_Mode: 0
@@ -687,7 +687,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &399748563
 MonoBehaviour:
@@ -1851,7 +1851,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1156009724
 GameObject:
@@ -2018,8 +2018,9 @@ GameObject:
   - component: {fileID: 1198720874}
   - component: {fileID: 1198720878}
   - component: {fileID: 1198720877}
-  - component: {fileID: 1198720876}
   - component: {fileID: 1198720875}
+  - component: {fileID: 1198720879}
+  - component: {fileID: 1198720876}
   m_Layer: 5
   m_Name: Board
   m_TagString: Untagged
@@ -2085,9 +2086,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1198720873}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b00765a2badb0549941510752bf3ef1, type: 3}
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 1388992468
+  serverOnly: 0
+  m_AssetId: 
+  hasSpawned: 0
 --- !u!114 &1198720877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2126,49 +2131,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1198720873}
   m_CullTransparentMesh: 0
---- !u!1 &1204763124
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1204763125}
-  - component: {fileID: 1204763126}
-  m_Layer: 0
-  m_Name: Pack
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &1204763125
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1204763124}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -330, y: 241, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1204763126
+--- !u!114 &1198720879
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1204763124}
+  m_GameObject: {fileID: 1198720873}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 922508726818d964c8fa3eaf04be4187, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b00765a2badb0549941510752bf3ef1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   CardPrefab: {fileID: 4323195780029615099, guid: c69265798b6d64b49be9d94d218db8f0,
     type: 3}
 --- !u!1 &1207875756
@@ -2379,7 +2355,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1480545338}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: TableManager, Assembly-CSharp
         m_MethodName: SetWineLevelOfEnemies
         m_Mode: 0
@@ -2506,53 +2482,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &1480545337
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1480545339}
-  - component: {fileID: 1480545338}
-  m_Layer: 0
-  m_Name: TableManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &1480545338
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1480545337}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c07e4043b6d98454baded898bd538451, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PlayerPrefab: {fileID: 5887231587625598555, guid: 97da122c3606e6d4088d2f2012dd5a97,
-    type: 3}
-  EnemyPrefab: {fileID: 9043006365726958630, guid: e24ae74ece3f9c941a11c96462fcdf71,
-    type: 3}
---- !u!4 &1480545339
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1480545337}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -6.11, z: 90}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1573603248
 GameObject:
   m_ObjectHideFlags: 0
@@ -3053,7 +2982,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a4049ffd5663ec4593fa61f06086bd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  newGamePanel: {fileID: 663326684}
 --- !u!114 &2130712904
 MonoBehaviour:
   m_ObjectHideFlags: 0

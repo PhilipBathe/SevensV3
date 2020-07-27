@@ -12,6 +12,8 @@ public class RoundManager : NetworkBehaviour
     private int dealerIndex = -1;
 
     private List<PlayingCard> cards;
+    private List<PlayingCard> playedCards = new List<PlayingCard>();
+    private List<int> finishedPlayers = new List<int>();
 
     void Start() {
         cards = Pack.GetCards(); 
@@ -20,6 +22,8 @@ public class RoundManager : NetworkBehaviour
     public void StartNewGame(List<GamePlayer> gamePlayers)
     {
         players = gamePlayers;
+        playedCards = new List<PlayingCard>();
+        finishedPlayers = new List<int>();
         StartCoroutine(NewGameCoroutine());
     }
 
@@ -44,7 +48,7 @@ public class RoundManager : NetworkBehaviour
 
     private void clearBoard()
     {
-        //TODO: clear the board
+        GameObject.Find("Board").GetComponent<BoardManager>().RpcClearBoard();
     }
 
     private void changeDealer()
@@ -110,53 +114,74 @@ public class RoundManager : NetworkBehaviour
         nextPlayer();
     }
 
-    public void PlayCard(PlayingCard cardPlayed)
+    public void PlayCard(PlayingCard card)
     {
         //TODO: check card is playable and owned by the current player
 
-        //TODO: play card!
+        playedCards.Add(card);
 
-        //TODO: check player is finished
+        players[currentPlayerIndex].Cards.Remove(card);
+        players[currentPlayerIndex].ShowPlayedCard(card);
+        
+        GameObject.Find("Board").GetComponent<BoardManager>().RpcPlayCard(card);
+
+        checkPlayerOutOfCards();
 
         nextPlayer();
     }
 
-    private List<int> finishedPlayerIndices = new List<int>();
+    private void checkPlayerOutOfCards()
+    {
+        if(players[currentPlayerIndex].Cards.Count == 0)
+        {
+            finishedPlayers.Add(currentPlayerIndex);
+            players[currentPlayerIndex].SetFinalPosition(finishedPlayers.Count);
+        }
+    }
 
     private void nextPlayer()
     {
-        //flag current player as done
+        if(players.Count <= finishedPlayers.Count)  
+        {
+            Debug.Log("All done!");
+            GameObject.Find("SeatManager").GetComponent<SeatManager>().GameFinished();
+            return;
+        }
 
-        // var player = players[currentPlayerIndex].GetComponent<Player>();
-        //     player.IsActivePlayer = false;
+        currentPlayerIndex++;
+        if(currentPlayerIndex >= players.Count)
+        {
+            currentPlayerIndex = 0;
+        }
 
-        //check game has ended
-
-            // if(players.Count <= finishedPlayers.Count)
-            // {
-            //     Debug.Log("All done!");
-            //     GameObject.Find("DealButton").GetComponent<DealCards>().ShowNextGamePanel();
-            //     return;
-            // }
-
+        while(finishedPlayers.Contains(currentPlayerIndex))
+        {
             currentPlayerIndex++;
             if(currentPlayerIndex >= players.Count)
             {
                 currentPlayerIndex = 0;
             }
+        }
 
-            while(finishedPlayerIndices.Contains(currentPlayerIndex))
-            {
-                currentPlayerIndex++;
-                if(currentPlayerIndex >= players.Count)
-                {
-                    currentPlayerIndex = 0;
-                }
-            }
-
-            players[currentPlayerIndex].SetAsCurrentPlayer();
+        players[currentPlayerIndex].SetAsCurrentPlayer();
     }
 
+    public bool IsCardPlayable(PlayingCard card)
+    {
+         if(card.Number == 7)
+        {
+            return true;
+        }
 
+        foreach(var playedCard in playedCards.Where(c => c.Suit == card.Suit))
+        {
+            if(Math.Abs(playedCard.Number - card.Number) == 1)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 }

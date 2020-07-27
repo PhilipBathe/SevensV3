@@ -57,6 +57,8 @@ public class SeatManager : NetworkBehaviour
     public void GameFinished()
     {
         isGameInProgress = false;
+        Debug.Log("nothing bad yet!");
+
         checkIfWeCanPlay();
     }
 

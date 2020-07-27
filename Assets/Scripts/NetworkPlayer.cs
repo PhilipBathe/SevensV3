@@ -32,6 +32,8 @@ public class NetworkPlayer : NetworkBehaviour
     // This only fires on the local client when this player object is network-ready
     public override void OnStartLocalPlayer()
     {
+        gameObject.name = "LocalNetworkPlayer";
+
         base.OnStartLocalPlayer();
 
         var name = PlayerPrefs.GetString("username").Trim();
@@ -84,9 +86,7 @@ public class NetworkPlayer : NetworkBehaviour
                 return;
             }
 
-            var commonPlayerUI = playerUI.GetComponent<CommonPlayerUI>();
-            commonPlayerUI.ClearAll();
-
+            playerUI.GetComponent<CommonPlayerUI>().ClearAll();
 
             clearHand();
         }
@@ -108,8 +108,16 @@ public class NetworkPlayer : NetworkBehaviour
     {
         if(isLocalPlayer)
         {
-            var commonPlayerUI = playerUI.GetComponent<CommonPlayerUI>();
-            commonPlayerUI.ShowIsDealer();
+            playerUI.GetComponent<CommonPlayerUI>().ShowIsDealer();
+        }
+    }
+
+     [ClientRpc]
+    public void RpcSetPlaced(int placed)
+    {
+        if(isLocalPlayer)
+        {
+            playerUI.GetComponent<CommonPlayerUI>().ShowPlaced(placed);
         }
     }
 
@@ -134,6 +142,9 @@ public class NetworkPlayer : NetworkBehaviour
             GameObject newCard = Instantiate(CardPrefab, this.transform.position, this.transform.rotation);
             newCard.name = card.CardName;
             newCard.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/{card.CardName}");
+            newCard.GetComponent<Card>().PlayingCard = card;
+
+            //TODO: get rid of these other properties now we are attaching the PlayingCard
             newCard.GetComponent<Card>().SortOrder = card.SortOrder;
             newCard.GetComponent<Card>().Suit = card.Suit;
             newCard.GetComponent<Card>().Number = card.Number;
@@ -145,9 +156,9 @@ public class NetworkPlayer : NetworkBehaviour
     [ClientRpc]
     public void RpcTakeTurn(PlayingCard[] playableCards)
     {
-        Debug.Log("RpcTakeTurn");
-        Debug.Log($"isLocalPlayer {isLocalPlayer}");
-        Debug.Log(playerUI == null);
+        // Debug.Log("RpcTakeTurn");
+        // Debug.Log($"isLocalPlayer {isLocalPlayer}");
+        // Debug.Log(playerUI == null);
 
         if(isLocalPlayer)
         {
@@ -173,8 +184,6 @@ public class NetworkPlayer : NetworkBehaviour
             return;
         }
 
-        optionsPanel.SetActive(true);
-
         foreach(var card in playableCards)
         {
             foreach(Transform child in playerUI.GetComponentInChildren<Hand>().transform)
@@ -189,6 +198,8 @@ public class NetworkPlayer : NetworkBehaviour
                 }
             }  
         }
+
+        optionsPanel.GetComponent<OptionsPanel>().SortCards();
 
         //TODO: if no unplayable cards left disable panel so we can click the whole card
     }
@@ -207,6 +218,54 @@ public class NetworkPlayer : NetworkBehaviour
     private void CmdKnock()
     {
         GameObject.Find("SeatManager").GetComponent<RoundManager>().Knock();
+    }
+
+    [Client]
+    public void PlayCard(PlayingCard card)
+    {
+        GameObject optionsPanel = GameObject.Find("OptionsPanel");
+        List<GameObject> buggersToKill = new List<GameObject>();
+        List<GameObject> buggersToMove = new List<GameObject>();
+
+        foreach(Transform child in optionsPanel.transform)
+        {
+            Debug.Log($"card found {child.GetComponent<Card>().PlayingCard.CardName}");
+
+            if (child.GetComponent<Card>().Number == card.Number && child.GetComponent<Card>().Suit == card.Suit)
+            {
+                buggersToKill.Add(child.gameObject);
+            }
+            else
+            {
+                buggersToMove.Add(child.gameObject);
+            }
+        }
+
+        foreach(var child in buggersToKill)
+        {
+            child.transform.SetParent(null);
+            Destroy(child);
+        }
+
+        foreach(var child in buggersToMove)
+        {
+            child.transform.SetParent(playerUI.GetComponentInChildren<Hand>().transform, false);
+            child.GetComponent<Card>().IsClickable = false;
+        }
+
+        playerUI.GetComponentInChildren<Hand>().SortCards();
+
+        var commonPlayerUI = playerUI.GetComponent<CommonPlayerUI>();
+        commonPlayerUI.ShowLastGo(card);
+        commonPlayerUI.ClearIsThinking();
+
+        CmdPlayCard(card);
+    }
+
+    [Command]
+    private void CmdPlayCard(PlayingCard card)
+    {
+        GameObject.Find("SeatManager").GetComponent<RoundManager>().PlayCard(card);
     }
 
 }

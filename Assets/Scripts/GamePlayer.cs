@@ -50,11 +50,19 @@ public class GamePlayer
     {
         List<PlayingCard> playableCards = new List<PlayingCard>();
 
-        // if(HasSevenOfDiamonds())
-        // {
-        //     playableCards.Add(Cards.First(c => c.Suit == "Diamond" && c.Number == 7));
-        //     return playableCards;
-        // }
+        if(HasSevenOfDiamonds())
+        {
+            playableCards.Add(Cards.First(c => c.Suit == "Diamond" && c.Number == 7));
+            return playableCards;
+        }
+
+        foreach(var card in Cards)
+        {
+            if(GameObject.Find("SeatManager").GetComponent<RoundManager>().IsCardPlayable(card))
+            {
+                playableCards.Add(card);
+            }
+        }
 
         return playableCards;
     }
@@ -69,5 +77,19 @@ public class GamePlayer
     private void endTurn()
     {
         this.EnemyPlayerGO.GetComponent<Enemy>().IsThinking = false;
+    }
+
+    public void ShowPlayedCard(PlayingCard card)
+    {
+        this.EnemyPlayerGO.GetComponent<Enemy>().CardCount = Cards.Count;
+        this.EnemyPlayerGO.GetComponent<Enemy>().RpcPlayedCard(card);
+
+        endTurn();
+    }
+
+    public void SetFinalPosition(int position)
+    {
+        this.EnemyPlayerGO.GetComponent<Enemy>().Placed = position;
+        this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcSetPlaced(position);
     }
 }

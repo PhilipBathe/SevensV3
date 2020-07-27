@@ -8,7 +8,7 @@ using Mirror;
 
 public class Player : NetworkBehaviour
 {
-    // Start is called before the first frame update
+ /*   // Start is called before the first frame update
     public bool IsActivePlayer = false;
 
     public bool IsAI = false;
@@ -404,5 +404,5 @@ public class Player : NetworkBehaviour
                 text.text = status;
             }
         }
-    }
+    } */
 }
