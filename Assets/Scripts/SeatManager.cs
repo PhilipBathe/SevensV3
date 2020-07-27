@@ -10,7 +10,7 @@ public class SeatManager : NetworkBehaviour
 
     public GameObject EnemiesPanel;
 
-    public int MinPlayers = 1;
+    public int MinPlayers = 3;
 
     public Animator NewGamePanel;
 
@@ -47,6 +47,21 @@ public class SeatManager : NetworkBehaviour
         //TODO: deal with people leaving the table affecting seatnumber (and remove them from enemies panel)
     }
 
+    private void addAIPlayer()
+    {
+        GamePlayer gamePlayer = new GamePlayer { 
+            PlayerName = pickRandomName(),
+            SeatNumber = ++seatNumber,
+            IsAI = true
+        };
+
+        spawnNewGameObject(gamePlayer);
+
+        gamePlayers.Add(gamePlayer);
+
+        checkIfWeCanPlay();
+    }
+
     public void StartNewGame()
     {
         isGameInProgress = true;
@@ -65,7 +80,12 @@ public class SeatManager : NetworkBehaviour
 
     private void checkIfWeCanPlay()
     {
-        //gamePlayers.Count >= MinPlayers && 
+        if(gamePlayers.Count < MinPlayers)
+        {
+            addAIPlayer();
+            return;
+        }
+
         if(isGameInProgress == false)
         {
             //show new game options to first player
@@ -109,6 +129,34 @@ public class SeatManager : NetworkBehaviour
         colors.Remove(color);
 
         return color;
+    }
+
+    private List<string> firstNames;
+    private List<string> secondNames;
+
+    private string pickRandomName()
+    {
+        if(firstNames == null || firstNames.Any() == false) //secondNames == null || secondNames.Any() == false)
+        {
+            firstNames = new string[] {"Alberto", "Ali", "Andrew", "Alice", "Art", "Ant", "Amy", "Alesha", "Anjie", "Archie", "Arry", "Alex", "Angel", "Axl"}.ToList();
+            Debug.Log("Ran out of first names!");
+        }
+
+        if(secondNames == null || secondNames.Any() == false)
+        {
+            secondNames = new string[] {"Idioso", "Ideas", "Ikea", "Izzard", "Ip-Dip", "III", "Imp", "Idiot", "Inky", "Insipid", "I-Smell", "Ice Tea", "Itchy", "Inbred"}.ToList();
+            Debug.Log("Ran out of second names!");
+        }
+
+        int firstIndex = UnityEngine.Random.Range(0, firstNames.Count);
+        string firstName = firstNames[firstIndex];
+        firstNames.Remove(firstName);
+
+        int secondIndex = UnityEngine.Random.Range(0, secondNames.Count);
+        string secondName = secondNames[secondIndex];
+        secondNames.Remove(secondName);
+
+        return $"{firstName} {secondName}";
     }
 
     private void hideNextGamePanel()

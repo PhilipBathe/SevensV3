@@ -2,12 +2,13 @@ using UnityEngine;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class GamePlayer
 {
     public string PlayerName;
     public int SeatNumber;
-    //public bool IsAI;
+    public bool IsAI;
 
     public GameObject EnemyPlayerGO;
     public GameObject NetworkPlayerGO;
@@ -17,19 +18,28 @@ public class GamePlayer
     public void Reset()
     {
         this.EnemyPlayerGO.GetComponent<Enemy>().Reset();
-        this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcResetUI();
+        if(IsAI == false)
+        {
+            this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcResetUI();
+        }
     }
 
     public void ShowIsDealer()
     {
         this.EnemyPlayerGO.GetComponent<Enemy>().IsDealer = true;
-        this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcSetIsDealer();
+        if(IsAI == false)
+        {
+            this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcSetIsDealer();
+        }
     }
 
     public void ShowCardsInUI()
     {
         this.EnemyPlayerGO.GetComponent<Enemy>().CardCount = Cards.Count;
-        this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcShowCards(Cards.ToArray());
+        if(IsAI == false)
+        {
+            this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcShowCards(Cards.ToArray());
+        }
     }
 
     public bool HasSevenOfDiamonds()
@@ -43,7 +53,14 @@ public class GamePlayer
 
         List<PlayingCard> playableCards = getPlayableCards();
 
-        this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcTakeTurn(playableCards.ToArray());
+        if(IsAI == false)
+        {
+            this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcTakeTurn(playableCards.ToArray());
+        }
+        else
+        {
+            this.EnemyPlayerGO.GetComponent<AIPlayer>().MakeChoice(playableCards, Cards);
+        }
     }
 
     private List<PlayingCard> getPlayableCards()
@@ -90,6 +107,9 @@ public class GamePlayer
     public void SetFinalPosition(int position)
     {
         this.EnemyPlayerGO.GetComponent<Enemy>().Placed = position;
-        this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcSetPlaced(position);
+        if(IsAI == false)
+        {
+            this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcSetPlaced(position);
+        }
     }
 }
