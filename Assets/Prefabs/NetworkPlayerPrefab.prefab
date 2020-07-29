@@ -68,3 +68,4 @@ MonoBehaviour:
     type: 3}
   CardPrefab: {fileID: 4323195780029615099, guid: c69265798b6d64b49be9d94d218db8f0,
     type: 3}
+  NewGamePanel: {fileID: 0}

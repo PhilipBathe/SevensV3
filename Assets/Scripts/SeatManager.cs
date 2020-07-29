@@ -12,8 +12,7 @@ public class SeatManager : NetworkBehaviour
 
     public int MinPlayers = 3;
     public int NumberOfAIPlayers = 0;
-
-    public Animator NewGamePanel;
+    public int CountdownSeconds = 10;
 
     public RoundManager RoundManager;
 
@@ -43,7 +42,7 @@ public class SeatManager : NetworkBehaviour
 
         gamePlayers.Add(gamePlayer);
 
-        checkForHostStartPanel();
+        startNewGame();
 
         //TODO: deal with people leaving the table affecting seatnumber (and remove them from enemies panel)
     }
@@ -101,8 +100,13 @@ public class SeatManager : NetworkBehaviour
         gamePlayers.Add(gamePlayer);
     }
 
-    public void StartNewGame()
+    private void startNewGame()
     {
+        if(isGameInProgress == false)
+        {
+            showNextGamePanel();
+        }
+
         if(isLegalToPlay() == false)
         {
             Debug.Log("trying to play when we can't");
@@ -111,18 +115,58 @@ public class SeatManager : NetworkBehaviour
             // and/or disable start button
             // or maybe auto generate AI players?
             //assuming the game isn't in progress
+
+            //Temporary for testing
+            NumberOfAIPlayers = 2;
+            createNewAIPlayers();
+
+
+            //return;
         }
+
+        StartCoroutine(countdown());
+    }
+    IEnumerator countdown()
+    {
+        startClientCountdown(CountdownSeconds);
+        yield return new WaitForSeconds(CountdownSeconds);
+
+        //TODO: check isLegalToPlay again (for players who have sat out or left)
 
         isGameInProgress = true;
         hideNextGamePanel();
         RoundManager.StartNewGame(gamePlayers);
     }
 
+    private void showNextGamePanel()
+    {
+        foreach(GameObject networkPlayer in networkPlayers)
+        {
+            networkPlayer.GetComponent<NetworkPlayer>().RpcShowNextGamePanel();
+        }
+    }
+
+    private void startClientCountdown(int countdownSeconds)
+    {
+        foreach(GameObject networkPlayer in networkPlayers)
+        {
+            networkPlayer.GetComponent<NetworkPlayer>().RpcStartCountdown(countdownSeconds);
+        }      
+    }
+
+    private void hideNextGamePanel()
+    {
+        foreach(GameObject networkPlayer in networkPlayers)
+        {
+            networkPlayer.GetComponent<NetworkPlayer>().RpcHideNextGamePanel();
+        }      
+    }
+
     public void GameFinished()
     {
         isGameInProgress = false;
 
-        checkForHostStartPanel();
+        startNewGame();
     }
 
 
@@ -139,17 +183,6 @@ public class SeatManager : NetworkBehaviour
         }
 
         return true;
-    }
-
-    private void checkForHostStartPanel()
-    {
-        if(isGameInProgress == false)
-        {
-            //show new game options to first player
-
-            //TODO: trigger this in one player's UI (currently running on host)
-            showNextGamePanel();
-        }
     }
 
     private void spawnNewGameObject(GamePlayer gamePlayer)
@@ -213,15 +246,5 @@ public class SeatManager : NetworkBehaviour
         secondNames.Remove(secondName);
 
         return $"{firstName} {secondName}";
-    }
-
-    private void hideNextGamePanel()
-    {
-        NewGamePanel.SetBool("isHidden", true);
-    }
-
-    private void showNextGamePanel()
-    {
-        NewGamePanel.SetBool("isHidden", false);
     }
 }
