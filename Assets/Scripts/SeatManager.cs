@@ -75,8 +75,7 @@ public class SeatManager : NetworkBehaviour
 
         foreach(var child in buggersToKill)
         {
-            child.transform.SetParent(null);
-            Destroy(child);
+            child.GetComponent<Enemy>().RpcDie();
         }
     }
 

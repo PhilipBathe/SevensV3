@@ -201,4 +201,11 @@ public class Enemy : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    public void RpcDie()
+    {
+        this.transform.SetParent(null);
+        Destroy(gameObject);
+    }
+
 }
