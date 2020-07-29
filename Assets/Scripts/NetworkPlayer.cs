@@ -26,6 +26,8 @@ public class NetworkPlayer : NetworkBehaviour
 
     private GameObject countdownGO;
 
+    private UnityEngine.UI.Slider aiNumberSlider;
+
 
     // This fires on server when this player object is network-ready
     public override void OnStartServer()
@@ -170,10 +172,6 @@ public class NetworkPlayer : NetworkBehaviour
     [ClientRpc]
     public void RpcTakeTurn(PlayingCard[] playableCards)
     {
-        // Debug.Log("RpcTakeTurn");
-        // Debug.Log($"isLocalPlayer {isLocalPlayer}");
-        // Debug.Log(playerUI == null);
-
         if(isLocalPlayer)
         {
             var commonPlayerUI = playerUI.GetComponent<CommonPlayerUI>();
@@ -358,11 +356,11 @@ public class NetworkPlayer : NetworkBehaviour
         }
     }
 
-
     [Command]
     private void CmdChangeNumberOfAIPlayers(int number)
     {
         GameObject.Find("SeatManager").GetComponent<SeatManager>().ChangeNumberOfAIPlayers(number);
+        GameObject.Find("AIManager").GetComponent<AIManager>().NumberOfAIPlayers = number;
     }
 
 }

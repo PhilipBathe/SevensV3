@@ -664,7 +664,7 @@ GameObject:
   - component: {fileID: 2351249000525098347}
   m_Layer: 5
   m_Name: EnemyPrefab
-  m_TagString: Player
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -745,6 +745,7 @@ MonoBehaviour:
   EnemyCardPrefab: {fileID: 3242007404850113729, guid: 6498c25146e59304baced467cc8db256,
     type: 3}
   Hand: {fileID: 8781862539491087243}
+  IsAI: 0
 --- !u!114 &5489901989941953971
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -776,3 +777,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5f44f61cb6785045bf60e20bd3fa6ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  WaitTimeForAI: 0.5
+  AIWineLevel: 0

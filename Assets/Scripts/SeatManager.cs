@@ -65,17 +65,18 @@ public class SeatManager : NetworkBehaviour
         gamePlayers.RemoveAll(p => p.IsAI == true);
         List<GameObject> buggersToKill = new List<GameObject>();
 
-        foreach(Transform child in EnemiesPanel.transform)
+        foreach(GameObject child in GameObject.FindGameObjectsWithTag("Enemy"))
         {
             if(child.GetComponent<Enemy>().IsAI == true)
             {
-                buggersToKill.Add(child.gameObject);
+                buggersToKill.Add(child);
             }
         }
 
         foreach(var child in buggersToKill)
         {
             child.GetComponent<Enemy>().RpcDie();
+            Destroy(child);
         }
     }
 
