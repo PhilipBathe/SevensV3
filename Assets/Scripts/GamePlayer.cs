@@ -4,8 +4,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public class GamePlayer
+public class GamePlayer : ICloneable
 {
+    public object Clone() {
+        return this.MemberwiseClone();
+    }
+    
     public string PlayerName;
     public int SeatNumber;
     public bool IsAI;

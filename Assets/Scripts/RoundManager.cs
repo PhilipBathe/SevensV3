@@ -5,6 +5,14 @@ using Mirror;
 using System.Linq;
 using System;
 
+public static class Extensions
+{
+    public static List<T> Clone<T>(this List<T> listToClone) where T: ICloneable
+    {
+        return listToClone.Select(item => (T)item.Clone()).ToList();
+    }
+}
+
 public class RoundManager : NetworkBehaviour
 {
     private List<GamePlayer> players;
@@ -21,7 +29,7 @@ public class RoundManager : NetworkBehaviour
 
     public void StartNewGame(List<GamePlayer> gamePlayers)
     {
-        players = gamePlayers;
+        players = gamePlayers.Clone();
         playedCards = new List<PlayingCard>();
         finishedPlayers = new List<int>();
         StartCoroutine(NewGameCoroutine());

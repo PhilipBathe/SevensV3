@@ -28,9 +28,7 @@ public class SceneLoader : NetworkBehaviour
                 networkManager.StartClient();
                 break;
         }
-
-        
-
     }
 
+    //TODO: handle when people leave
 }
