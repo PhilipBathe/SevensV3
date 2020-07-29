@@ -10,9 +10,6 @@ public class Slider : MonoBehaviour
     void Start()
     {
         sliderValueText = GetComponent<Text>();
-
-        //GetComponentInParent<Slider>().on
-        //.OnValueChanged.AddListener(HandleValueChanged);
     }
 
     public void HandleValueChanged(float value)

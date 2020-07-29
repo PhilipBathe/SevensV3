@@ -4,6 +4,7 @@ using UnityEngine;
 using Mirror;
 using System.Linq;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class NetworkPlayer : NetworkBehaviour
 {
@@ -17,9 +18,13 @@ public class NetworkPlayer : NetworkBehaviour
 
     public GameObject CardPrefab;
 
-    private GameObject NewGamePanel;
-
     private GameObject playerUI;
+
+    private GameObject newGamePanel;
+
+    private GameObject waitingGO;
+
+    private GameObject countdownGO;
 
 
     // This fires on server when this player object is network-ready
@@ -51,6 +56,9 @@ public class NetworkPlayer : NetworkBehaviour
 
         CmdSetPlayerName(name);
         setupUI();
+
+        GameObject.Find("AIManager").GetComponent<AIManager>().NumberChangedEvent.AddListener(CmdChangeNumberOfAIPlayers);
+
     }
 
     [Command]
@@ -74,7 +82,9 @@ public class NetworkPlayer : NetworkBehaviour
             var commonPlayerUI = playerUI.GetComponent<CommonPlayerUI>();
             commonPlayerUI.SetStatusText($"Waiting for next game");
 
-            NewGamePanel = GameObject.Find("NextGame");
+            newGamePanel = GameObject.Find("NextGame");
+            waitingGO = GameObject.Find("WaitingForPlayers");
+            countdownGO = GameObject.Find("StartCountdown");
         }
     }
 
@@ -272,31 +282,58 @@ public class NetworkPlayer : NetworkBehaviour
         GameObject.Find("SeatManager").GetComponent<RoundManager>().PlayCard(card);
     }
 
-    [ClientRpc]
-    public void RpcShowNextGamePanel()
-    {
-        if(isLocalPlayer)
-        {
-            NewGamePanel.transform.SetAsLastSibling();
-            NewGamePanel.GetComponent<Animator>().SetBool("isHidden", false);
-        }
-    }
 
     [ClientRpc]
     public void RpcHideNextGamePanel()
     {
         if(isLocalPlayer)
         {
-            NewGamePanel.GetComponent<Animator>().SetBool("isHidden", true);
+            newGamePanel.GetComponent<Animator>().SetBool("isHidden", true);
         }
     }
+
+    private Coroutine countdownCoroutine;
 
     [ClientRpc]
     public void RpcStartCountdown(int countdownSeconds)
     {
         if(isLocalPlayer)
         {
-           StartCoroutine(countdown(countdownSeconds));
+            showNextGamePanel();
+
+            setNextGameState(false);
+
+            if(countdownCoroutine != null)
+            {
+                StopCoroutine(countdownCoroutine);
+            }
+            countdownCoroutine = StartCoroutine(countdown(countdownSeconds));
+        }
+    }
+
+    [ClientRpc]
+    public void RpcShowWaitingForPlayers()
+    {
+        if(isLocalPlayer)
+        {
+            showNextGamePanel();
+
+            setNextGameState(true);
+
+            if(countdownCoroutine != null)
+            {
+                StopCoroutine(countdownCoroutine);
+            }
+        }
+    }
+
+    [Client]
+    private void showNextGamePanel()
+    {
+        if(isLocalPlayer)
+        {
+            newGamePanel.transform.SetAsLastSibling();
+            newGamePanel.GetComponent<Animator>().SetBool("isHidden", false);
         }
     }
 
@@ -304,11 +341,28 @@ public class NetworkPlayer : NetworkBehaviour
     private IEnumerator countdown(int countdownSeconds)
     {
         var text = GameObject.Find("CountdownText").GetComponent<Text>();
-        for(int i = countdownSeconds; i > 0; i--)
+        for(int i = countdownSeconds; i >= 0; i--)
         {
             text.text = i.ToString();
             yield return new WaitForSeconds(1);
         }
+    }
+
+    [Client]
+    private void setNextGameState(bool isWaitingForPlayers)
+    {
+        if(isLocalPlayer)
+        {
+            waitingGO.SetActive(isWaitingForPlayers);
+            countdownGO.SetActive(!isWaitingForPlayers);
+        }
+    }
+
+
+    [Command]
+    private void CmdChangeNumberOfAIPlayers(int number)
+    {
+        GameObject.Find("SeatManager").GetComponent<SeatManager>().ChangeNumberOfAIPlayers(number);
     }
 
 }
