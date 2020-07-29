@@ -2207,7 +2207,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerNameField: {fileID: 1310844242}
-  ipAddressField: {fileID: 0}
+  ipAddressField: {fileID: 1241102735}
 --- !u!4 &2031625230
 Transform:
   m_ObjectHideFlags: 0

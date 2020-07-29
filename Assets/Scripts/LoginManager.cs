@@ -11,8 +11,8 @@ public class LoginManager : MonoBehaviour
 
     void Start()
     {
-        playerNameField.text = PlayerPrefs.GetString("username");
-        ipAddressField.text = PlayerPrefs.GetString("ipAddress");
+        playerNameField.text = PlayerPrefs.GetString("username").Trim();
+        ipAddressField.text = PlayerPrefs.GetString("ipAddress").Trim();
     }
 
     public void HostLan()
