@@ -19,13 +19,13 @@ public class CommonPlayerUI : NetworkBehaviour
 
     public void ShowIsDealer()
     {
-        Debug.Log("ShowIsDealer");
+        //Debug.Log("ShowIsDealer");
         DealerTransform.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/dealer");
     }
 
     public void ClearIsDealer()
     {
-        Debug.Log("ClearIsDealer");
+        //Debug.Log("ClearIsDealer");
         DealerTransform.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/transparent");
     }
 

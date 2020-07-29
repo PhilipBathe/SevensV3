@@ -73,8 +73,8 @@ public class RoundManager : NetworkBehaviour
 
     private void deal()
     {
-        Debug.Log("deal");
-        Debug.Log(cards.Count);
+        //Debug.Log("deal");
+        //Debug.Log(cards.Count);
         List<PlayingCard> shuffledCards = cards.OrderBy(a => Guid.NewGuid()).ToList();
 
         for(var i = 0; i < shuffledCards.Count; i++)
@@ -151,7 +151,7 @@ public class RoundManager : NetworkBehaviour
     {
         if(players.Count <= finishedPlayers.Count)  
         {
-            Debug.Log("All done!");
+            //Debug.Log("All done!");
             GameObject.Find("SeatManager").GetComponent<SeatManager>().GameFinished();
             return;
         }
@@ -172,6 +172,18 @@ public class RoundManager : NetworkBehaviour
         }
 
         players[currentPlayerIndex].SetAsCurrentPlayer();
+    }
+
+    public void NetworkPlayerNowAI(int seatNumber)
+    {
+        var lostPlayer = players.First(p => p.SeatNumber == seatNumber);
+        lostPlayer.IsAI = true;
+        lostPlayer.NetworkPlayerGO = null;   
+        
+        if(players[currentPlayerIndex].SeatNumber == seatNumber)
+        {
+            players[currentPlayerIndex].SetAsCurrentPlayer();
+        }
     }
 
     public bool IsCardPlayable(PlayingCard card)

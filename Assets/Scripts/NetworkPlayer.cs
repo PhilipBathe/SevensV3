@@ -362,5 +362,4 @@ public class NetworkPlayer : NetworkBehaviour
         GameObject.Find("SeatManager").GetComponent<SeatManager>().ChangeNumberOfAIPlayers(number);
         GameObject.Find("AIManager").GetComponent<AIManager>().NumberOfAIPlayers = number;
     }
-
 }

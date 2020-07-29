@@ -60,6 +60,29 @@ public class SeatManager : NetworkBehaviour
         }
     }
 
+
+    public void NetworkPlayerDestroyed(GameObject networkPlayer)
+    {
+        //we turn them into AI so any existing game does not end
+        int seatNumber = networkPlayer.GetComponent<NetworkPlayer>().SeatNumber;
+
+        Debug.Log($"Goodbye Number {seatNumber}");
+
+        var leaver = gamePlayers.First(g => g.SeatNumber == seatNumber);
+        
+        leaver.IsAI = true;
+        leaver.EnemyPlayerGO.GetComponent<Enemy>().IsAI = true;
+        leaver.EnemyPlayerGO.GetComponent<Enemy>().PlayerName = $"*{leaver.EnemyPlayerGO.GetComponent<Enemy>().PlayerName}";
+        leaver.NetworkPlayerGO = null;
+
+        networkPlayers.Remove(networkPlayer);
+
+        if(isGameInProgress == true)
+        {
+            RoundManager.NetworkPlayerNowAI(seatNumber);
+        }
+    }
+
     private void killAllAIPlayers()
     {
         gamePlayers.RemoveAll(p => p.IsAI == true);
@@ -173,20 +196,9 @@ public class SeatManager : NetworkBehaviour
         startNewGame();
     }
 
-
     private bool isLegalToPlay()
     {
-        if(gamePlayers.Count < MinPlayers)
-        {
-            return false;
-        }
-
-        // if(isGameInProgress == true)
-        // {
-        //     return false;
-        // }
-
-        return true;
+        return gamePlayers.Count >= MinPlayers;
     }
 
     private void spawnNewGameObject(GamePlayer gamePlayer)
@@ -232,13 +244,13 @@ public class SeatManager : NetworkBehaviour
         if(firstNames == null || firstNames.Any() == false) //secondNames == null || secondNames.Any() == false)
         {
             firstNames = new string[] {"Alberto", "Ali", "Andrew", "Alice", "Art", "Ant", "Amy", "Alesha", "Anjie", "Archie", "Arry", "Alex", "Angel", "Axl"}.ToList();
-            Debug.Log("Ran out of first names!");
+            //Debug.Log("Ran out of first names!");
         }
 
         if(secondNames == null || secondNames.Any() == false)
         {
             secondNames = new string[] {"Idioso", "Ideas", "Ikea", "Izzard", "Ip-Dip", "III", "Imp", "Idiot", "Inky", "Insipid", "I-Smell", "Ice Tea", "Itchy", "Inbred"}.ToList();
-            Debug.Log("Ran out of second names!");
+            //Debug.Log("Ran out of second names!");
         }
 
         int firstIndex = UnityEngine.Random.Range(0, firstNames.Count);

@@ -8,7 +8,7 @@ public class SceneLoader : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var networkManager = this.GetComponent<NetworkManager>();
+        var networkManager = this.GetComponent<SevensNetworkManager>();
 
         var entranceChoice = PlayerPrefs.GetString("entranceChoice").Trim();
 
