@@ -7,17 +7,49 @@ using UnityEngine.UI;
 public class LoginManager : MonoBehaviour
 {
    public InputField playerNameField;
+   public InputField ipAddressField;
 
     void Start()
     {
-        playerNameField.text = PlayerPrefs.GetString("username").Trim();
+        playerNameField.text = PlayerPrefs.GetString("username");
+        ipAddressField.text = PlayerPrefs.GetString("ipAddress");
     }
 
-    public void JoinTable() 
+    public void HostLan()
     {
-        PlayerPrefs.SetString("username", playerNameField.text);
+        PlayerPrefs.SetString("username", playerNameField.text.Trim());
+        joinTable("HostLan");
+    }
+
+    public void JoinOnline()
+    {
+        PlayerPrefs.SetString("username", playerNameField.text.Trim());
+        joinTable("JoinOnline");
+    }
+
+    public void SinglePlayer()
+    {
+        joinTable("SinglePlayer");
+    }
+
+    public void LanServer()
+    {
+        joinTable("LanServer");
+    }
+
+    public void JoinLan()
+    {
+        PlayerPrefs.SetString("username", playerNameField.text.Trim());
+        PlayerPrefs.SetString("ipAddress", ipAddressField.text.Trim());
+        joinTable("JoinLan");
+    }
+
+    private void joinTable(string entranceChoice)
+    {
+        //TODO: use something other than magic strings here!
+        PlayerPrefs.SetString("entranceChoice", entranceChoice);
+
         PlayerPrefs.Save();
-        //Debug.Log(name.text);
 
         SceneManager.LoadScene("TableScene");
     }
