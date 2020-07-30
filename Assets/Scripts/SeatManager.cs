@@ -12,6 +12,7 @@ public class SeatManager : NetworkBehaviour
 
     public int MinPlayers = 3;
     public int NumberOfAIPlayers = 0;
+    public int AIWineLevel = 1;
     public int CountdownSeconds = 10;
 
     public RoundManager RoundManager;
@@ -60,6 +61,16 @@ public class SeatManager : NetworkBehaviour
         }
     }
 
+    public void ChangeWineLevel(int wineLevel)
+    {
+        //Debug.Log($"ChangeWineLevel {wineLevel}");
+        AIWineLevel = wineLevel;
+        foreach(var player in gamePlayers)
+        {
+            player.WineLevel = AIWineLevel;
+        }
+    }
+
 
     public void NetworkPlayerDestroyed(GameObject networkPlayer)
     {
@@ -71,6 +82,7 @@ public class SeatManager : NetworkBehaviour
         var leaver = gamePlayers.First(g => g.SeatNumber == seatNumber);
         
         leaver.IsAI = true;
+        leaver.WineLevel = AIWineLevel;
         leaver.EnemyPlayerGO.GetComponent<Enemy>().IsAI = true;
         leaver.EnemyPlayerGO.GetComponent<Enemy>().PlayerName = $"*{leaver.EnemyPlayerGO.GetComponent<Enemy>().PlayerName}";
         leaver.NetworkPlayerGO = null;
@@ -121,7 +133,8 @@ public class SeatManager : NetworkBehaviour
         GamePlayer gamePlayer = new GamePlayer { 
             PlayerName = pickRandomName(),
             SeatNumber = ++seatNumber,
-            IsAI = true
+            IsAI = true,
+            WineLevel = AIWineLevel
         };
 
         spawnNewGameObject(gamePlayer);

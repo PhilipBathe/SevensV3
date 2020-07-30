@@ -13,6 +13,7 @@ public class GamePlayer : ICloneable
     public string PlayerName;
     public int SeatNumber;
     public bool IsAI;
+    public int WineLevel;
 
     public GameObject EnemyPlayerGO;
     public GameObject NetworkPlayerGO;
@@ -63,7 +64,7 @@ public class GamePlayer : ICloneable
         }
         else
         {
-            this.EnemyPlayerGO.GetComponent<AIPlayer>().MakeChoice(playableCards, Cards);
+            this.EnemyPlayerGO.GetComponent<AIPlayer>().MakeChoice(playableCards, Cards, WineLevel);
         }
     }
 

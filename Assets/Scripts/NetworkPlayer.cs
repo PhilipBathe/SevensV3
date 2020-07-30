@@ -60,7 +60,21 @@ public class NetworkPlayer : NetworkBehaviour
         setupUI();
 
         GameObject.Find("AIManager").GetComponent<AIManager>().NumberChangedEvent.AddListener(CmdChangeNumberOfAIPlayers);
+        GameObject.Find("AIManager").GetComponent<AIManager>().WineLevelChangedEvent.AddListener(CmdChangeWineLevel);
+    }
 
+    [Command]
+    private void CmdChangeNumberOfAIPlayers(int number)
+    {
+        GameObject.Find("SeatManager").GetComponent<SeatManager>().ChangeNumberOfAIPlayers(number);
+        GameObject.Find("AIManager").GetComponent<AIManager>().NumberOfAIPlayers = number;
+    }
+
+    [Command]
+    private void CmdChangeWineLevel(int number)
+    {
+        GameObject.Find("SeatManager").GetComponent<SeatManager>().ChangeWineLevel(number);
+        //TODO: might want to highlight selected button GameObject.Find("AIManager").GetComponent<AIManager>().NumberOfAIPlayers = number;
     }
 
     [Command]
@@ -354,12 +368,5 @@ public class NetworkPlayer : NetworkBehaviour
             waitingGO.SetActive(isWaitingForPlayers);
             countdownGO.SetActive(!isWaitingForPlayers);
         }
-    }
-
-    [Command]
-    private void CmdChangeNumberOfAIPlayers(int number)
-    {
-        GameObject.Find("SeatManager").GetComponent<SeatManager>().ChangeNumberOfAIPlayers(number);
-        GameObject.Find("AIManager").GetComponent<AIManager>().NumberOfAIPlayers = number;
     }
 }
