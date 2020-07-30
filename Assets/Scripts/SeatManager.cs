@@ -231,6 +231,7 @@ public class SeatManager : NetworkBehaviour
         enemy.PlayerColor = pickRandomColor();
         enemy.IsAI = gamePlayer.IsAI;
         enemy.Parent = EnemiesPanel;
+        enemy.StatusText = "Waiting for next game";
 
         gamePlayer.EnemyPlayerGO = go;
     }

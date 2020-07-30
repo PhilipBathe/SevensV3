@@ -23,7 +23,10 @@ public class AIManager : NetworkBehaviour
 
     void Start()
     {
-        OnWineLevelChanged(0, WineLevel);
+        if(isLocalPlayer)
+        {
+            OnWineLevelChanged(0, WineLevel);
+        }
     }
 
     public void SetNumberOfAIPlayers(float numberOfPlayers)

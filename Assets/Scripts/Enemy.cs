@@ -32,6 +32,9 @@ public class Enemy : NetworkBehaviour
     [SyncVar(hook = nameof(OnPlacedChanged))]
     public int Placed;
 
+    [SyncVar(hook = nameof(OnStatusTextChanged))]
+    public string StatusText;
+
 
 
     public GameObject EnemyCardPrefab;
@@ -39,6 +42,12 @@ public class Enemy : NetworkBehaviour
     public GameObject Hand;
 
     public bool IsAI;
+
+
+    void OnStatusTextChanged(string oldStatusText, string newStatusText)
+    {
+        gameObject.GetComponent<CommonPlayerUI>().SetStatusText(newStatusText);
+    }
 
     void OnPlacedChanged(int oldPlaced, int newPlaced)
     {
@@ -146,16 +155,14 @@ public class Enemy : NetworkBehaviour
         Placed = 0;
         IsDealer = false;
         IsThinking = false;
+        StatusText = string.Empty;
         RpcResetUI();
-
-        //TODO: reset other bits
     }
 
     [ClientRpc]
     private void RpcResetUI()
     {
-        var commonPlayerUI = gameObject.GetComponent<CommonPlayerUI>();
-        commonPlayerUI.ClearAll();
+        gameObject.GetComponent<CommonPlayerUI>().ClearAll();
     }
 
     void OnCardCountChanged(int oldCardCount, int newCardCount)
