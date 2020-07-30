@@ -3,14 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class AIManager : NetworkBehaviour
 {
     [SyncVar(hook = nameof(OnNumberOfAIPlayersChanged))]
     public int NumberOfAIPlayers = 0;
 
+    [SyncVar(hook = nameof(OnWineLevelChanged))]
+    public int WineLevel = 1;
+
     public UnityEvent<int> NumberChangedEvent = new UnityEvent<int>();
     public UnityEvent<int> WineLevelChangedEvent = new UnityEvent<int>();
+
+    public Toggle Wine1Button;
+    public Toggle Wine2Button;
+    public Toggle Wine3Button;
+    public Toggle Wine4Button;
+
+    void Start()
+    {
+        OnWineLevelChanged(0, WineLevel);
+    }
 
     public void SetNumberOfAIPlayers(float numberOfPlayers)
     {
@@ -29,6 +43,14 @@ public class AIManager : NetworkBehaviour
         }
     }
 
+    [Client]
+    private void OnWineLevelChanged(int oldNumber, int newNumber)
+    {
+        Wine1Button.isOn = newNumber == 1;
+        Wine2Button.isOn = newNumber == 2;
+        Wine3Button.isOn = newNumber == 3;
+        Wine4Button.isOn = newNumber == 4;
+    }
     public void SetWineLevel_1()
     {
         WineLevelChangedEvent.Invoke(1);

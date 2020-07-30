@@ -74,7 +74,7 @@ public class NetworkPlayer : NetworkBehaviour
     private void CmdChangeWineLevel(int number)
     {
         GameObject.Find("SeatManager").GetComponent<SeatManager>().ChangeWineLevel(number);
-        //TODO: might want to highlight selected button GameObject.Find("AIManager").GetComponent<AIManager>().NumberOfAIPlayers = number;
+        GameObject.Find("AIManager").GetComponent<AIManager>().WineLevel = number;
     }
 
     [Command]
@@ -255,7 +255,7 @@ public class NetworkPlayer : NetworkBehaviour
 
         foreach(Transform child in optionsPanel.transform)
         {
-            Debug.Log($"card found {child.GetComponent<Card>().PlayingCard.CardName}");
+            //Debug.Log($"card found {child.GetComponent<Card>().PlayingCard.CardName}");
 
             if (child.GetComponent<Card>().Number == card.Number && child.GetComponent<Card>().Suit == card.Suit)
             {

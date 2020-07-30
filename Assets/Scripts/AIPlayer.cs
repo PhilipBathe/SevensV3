@@ -50,7 +50,7 @@ public class AIPlayer : NetworkBehaviour
      [Server]
     private PlayingCard chooseCard(List<PlayingCard> playableCards, List<PlayingCard> allCards, int wineLevel)
     {
-        Debug.Log($"Choice to make with wineLevel {wineLevel}");
+        //Debug.Log($"Choice to make with wineLevel {wineLevel}");
 
         float randomness = 0.09f;
         if(wineLevel == 2) //two glasses of wine so try to make a good decision but with a wider randomness range
