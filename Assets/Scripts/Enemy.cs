@@ -145,8 +145,8 @@ public class Enemy : NetworkBehaviour
 
     void OnParentChanged(GameObject oldParent, GameObject newParent)
     {
-        //TODO: hide ourselves?
         this.transform.SetParent(newParent.transform, false);
+        this.transform.localScale = new Vector2(1, 1);
     }
 
     [Server]

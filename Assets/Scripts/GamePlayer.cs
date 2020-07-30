@@ -117,4 +117,12 @@ public class GamePlayer : ICloneable
             this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcSetPlaced(position);
         }
     }
+
+    public void SortEnemies()
+    {
+        if(IsAI == false)
+        {
+            this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcSortEnemies();
+        }
+    }
 }

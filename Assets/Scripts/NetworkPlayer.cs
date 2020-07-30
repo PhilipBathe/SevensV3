@@ -26,7 +26,6 @@ public class NetworkPlayer : NetworkBehaviour
 
     private GameObject countdownGO;
 
-    private UnityEngine.UI.Slider aiNumberSlider;
 
 
     // This fires on server when this player object is network-ready
@@ -367,6 +366,58 @@ public class NetworkPlayer : NetworkBehaviour
         {
             waitingGO.SetActive(isWaitingForPlayers);
             countdownGO.SetActive(!isWaitingForPlayers);
+        }
+    }
+
+    [ClientRpc]
+    public void RpcSortEnemies()
+    {
+        if(isLocalPlayer)
+        {
+            var enemiesPanel = GameObject.Find("Enemies");
+
+            List<GameObject> enemies = new List<GameObject>();
+
+            GameObject self = null;
+
+            foreach(Transform child in enemiesPanel.transform)
+            {
+                if(child.gameObject.GetComponent<Enemy>().SeatNumber == SeatNumber)
+                {
+                    self = child.gameObject;
+                }
+                else
+                {
+                    enemies.Add(child.gameObject);
+                }
+            }
+
+            if(self != null)
+            {
+                self.transform.SetParent(null);
+            }
+
+            List<GameObject> enemiesOrderedLower = enemies
+                                                .Where(go => go.GetComponent<Enemy>().SeatNumber < SeatNumber)
+                                                .OrderBy(go => go.GetComponent<Enemy>().SeatNumber).ToList();
+
+            List<GameObject> enemiesOrderedUpper = enemies
+                                                .Where(go => go.GetComponent<Enemy>().SeatNumber > SeatNumber)
+                                                .OrderBy(go => go.GetComponent<Enemy>().SeatNumber).ToList();
+
+
+
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                if(i < enemiesOrderedUpper.Count)
+                {
+                    enemiesOrderedUpper[i].transform.SetSiblingIndex(i);
+                }
+                else
+                {
+                    enemiesOrderedLower[i-enemiesOrderedUpper.Count].transform.SetSiblingIndex(i);
+                }
+            }
         }
     }
 }

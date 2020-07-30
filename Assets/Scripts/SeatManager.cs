@@ -39,7 +39,7 @@ public class SeatManager : NetworkBehaviour
             NetworkPlayerGO = networkPlayer
         };
 
-        spawnNewGameObject(gamePlayer);
+        spawnNewEnemyGameObject(gamePlayer);
 
         gamePlayers.Add(gamePlayer);
 
@@ -137,7 +137,7 @@ public class SeatManager : NetworkBehaviour
             WineLevel = AIWineLevel
         };
 
-        spawnNewGameObject(gamePlayer);
+        spawnNewEnemyGameObject(gamePlayer);
 
         gamePlayers.Add(gamePlayer);
     }
@@ -218,7 +218,7 @@ public class SeatManager : NetworkBehaviour
         return gamePlayers.Count >= MinPlayers;
     }
 
-    private void spawnNewGameObject(GamePlayer gamePlayer)
+    private void spawnNewEnemyGameObject(GamePlayer gamePlayer)
     {
         var go = Instantiate(EnemyPrefab, Vector2.zero, Quaternion.identity);
 
@@ -234,6 +234,23 @@ public class SeatManager : NetworkBehaviour
         enemy.StatusText = "Waiting for next game";
 
         gamePlayer.EnemyPlayerGO = go;
+
+        StartCoroutine(HackyCoroutine());
+    }
+
+    //Waiting for last gameobject to get its transform synced up - there is probably a better way!
+    private IEnumerator HackyCoroutine()
+    {
+        yield return new WaitForSeconds(1);
+        AnnounceNewEnemy();
+    }
+
+    private void AnnounceNewEnemy()
+    {
+        foreach(var player in gamePlayers)
+        {
+            player.SortEnemies();
+        }
     }
 
     private List<string> colors;
