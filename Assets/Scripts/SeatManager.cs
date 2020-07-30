@@ -77,6 +77,10 @@ public class SeatManager : NetworkBehaviour
 
         networkPlayers.Remove(networkPlayer);
 
+        //Debug.Log($"NumberOfAIPlayers {NumberOfAIPlayers}");
+
+        GameObject.Find("AIManager").GetComponent<AIManager>().NumberOfAIPlayers = ++NumberOfAIPlayers;
+
         if(isGameInProgress == true)
         {
             RoundManager.NetworkPlayerNowAI(seatNumber);

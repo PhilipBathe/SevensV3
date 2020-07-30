@@ -732,7 +732,7 @@ MonoBehaviour:
     type: 3}
   EnemiesPanel: {fileID: 1207875756}
   MinPlayers: 3
-  NumberOfAIPlayers: 2
+  NumberOfAIPlayers: 0
   CountdownSeconds: 10
   RoundManager: {fileID: 399748563}
 --- !u!114 &399748561
