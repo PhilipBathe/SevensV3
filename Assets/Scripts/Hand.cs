@@ -24,16 +24,4 @@ public class Hand : MonoBehaviour
             cardsOrdered[i].transform.SetSiblingIndex(i);
         }
     }
-
-    public void ClearHand()
-    {
-        foreach(Transform child in this.transform)
-        {
-            if (child.tag == "Card")
-            {
-                Destroy(child.gameObject);
-            }
-        }
-        this.transform.DetachChildren();
-    }
 }

@@ -46,8 +46,8 @@ public class BoardManager : NetworkBehaviour
 
         
         GameObject playerCard = Instantiate(CardPrefab, Vector2.zero, Quaternion.identity, suitSlot.transform);
-        playerCard.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/{card.CardName}");
-        playerCard.GetComponent<Image>().rectTransform.sizeDelta = new Vector2(96, 96);
+        playerCard.GetComponentInChildren<Image>().sprite = Resources.Load<Sprite>($"Sprites/{card.CardName}");
+        playerCard.GetComponentInChildren<Image>().rectTransform.sizeDelta = new Vector2(96, 96);
 
         float y = 0f;
 

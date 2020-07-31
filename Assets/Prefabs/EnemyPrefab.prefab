@@ -469,11 +469,10 @@ GameObject:
   - component: {fileID: 3698427898362784609}
   - component: {fileID: 1700201572430855265}
   - component: {fileID: 6562326611078020264}
-  - component: {fileID: 7785058077056602822}
   - component: {fileID: 2737068652896505880}
   m_Layer: 5
   m_Name: Hand
-  m_TagString: Hand
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -535,18 +534,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7785058077056602822
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8781862539491087243}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65e23a94ac3d0c443acd5166edd38e79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2737068652896505880
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -742,6 +729,7 @@ MonoBehaviour:
   IsThinking: 0
   IsDealer: 0
   Placed: 0
+  StatusText: 
   EnemyCardPrefab: {fileID: 3242007404850113729, guid: 6498c25146e59304baced467cc8db256,
     type: 3}
   Hand: {fileID: 8781862539491087243}
@@ -780,4 +768,3 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   WaitTimeForAI: 0.5
-  AIWineLevel: 0

@@ -80,7 +80,6 @@ public class NetworkPlayer : NetworkBehaviour
                 Debug.Log("Stop host");
                 networkManager.StopHost();
             } 
-            //UnityEngine.SceneManagement.SceneManager.LoadScene("LoginScene");
         }
     }
 
@@ -146,12 +145,12 @@ public class NetworkPlayer : NetworkBehaviour
     [Client]
     private void clearHand()
     {
-        foreach(Transform child in playerUI.GetComponentInChildren<Hand>().transform)
-        {
-            Destroy(child.gameObject);
-        }
+        // foreach(Transform child in playerUI.GetComponentInChildren<Hand>().transform)
+        // {
+        //     Destroy(child.gameObject);
+        // }
 
-        playerUI.GetComponentInChildren<Hand>().transform.DetachChildren();
+        // playerUI.GetComponentInChildren<Hand>().transform.DetachChildren();
     }
 
     [ClientRpc]
@@ -181,7 +180,20 @@ public class NetworkPlayer : NetworkBehaviour
             {
                 addCard(card);
             }
-            playerUI.GetComponentInChildren<Hand>().SortCards();
+            sortCards();
+        }
+    }
+
+    [Client]
+    private void sortCards()
+    {
+        if(isLocalPlayer)
+        {
+            foreach(var hand in GameObject.FindGameObjectsWithTag("Hand"))
+            {
+                Debug.Log($"hand with name {hand.name}");
+                hand.GetComponent<Hand>().SortCards();
+            }
         }
     }
 
@@ -192,7 +204,7 @@ public class NetworkPlayer : NetworkBehaviour
         {
             GameObject newCard = Instantiate(CardPrefab, this.transform.position, this.transform.rotation);
             newCard.name = card.CardName;
-            newCard.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/{card.CardName}");
+            newCard.GetComponentInChildren<Image>().sprite = Resources.Load<Sprite>($"Sprites/{card.CardName}");
             newCard.GetComponent<Card>().PlayingCard = card;
 
             //TODO: get rid of these other properties now we are attaching the PlayingCard
@@ -200,7 +212,9 @@ public class NetworkPlayer : NetworkBehaviour
             newCard.GetComponent<Card>().Suit = card.Suit;
             newCard.GetComponent<Card>().Number = card.Number;
 
-            newCard.transform.SetParent(playerUI.GetComponentInChildren<Hand>().transform, false);
+            var parentTransform = GameObject.Find($"{card.Suit}Cards").transform;
+
+            newCard.transform.SetParent(parentTransform, false);
         }
     }
 
@@ -219,7 +233,6 @@ public class NetworkPlayer : NetworkBehaviour
     [Client]
     private void displayOptions(PlayingCard[] playableCards)
     {
-        GameObject optionsPanel = GameObject.Find("OptionsPanel");
         GameObject knockButton = GameObject.Find("KnockButton");
 
         if(playableCards.Count() == 0)
@@ -233,20 +246,22 @@ public class NetworkPlayer : NetworkBehaviour
 
         foreach(var card in playableCards)
         {
-            foreach(Transform child in playerUI.GetComponentInChildren<Hand>().transform)
+            var parentTransform = GameObject.Find($"{card.Suit}Cards").transform;
+            foreach(Transform child in parentTransform)
             {
                 if (child.tag == "Card" 
                     && child.GetComponent<Card>().Number == card.Number
                     && child.GetComponent<Card>().Suit == card.Suit)
                 {
-                    child.transform.SetParent(optionsPanel.transform, false);
+                    var newParentTransform = GameObject.Find($"{card.Suit}Playable").transform;
+                    child.transform.SetParent(newParentTransform, false);
                     child.GetComponent<Card>().IsClickable = true;
                     continue; //to prevent duplicates being moved with multipacks
                 }
             }  
         }
 
-        optionsPanel.GetComponent<OptionsPanel>().SortCards();
+        sortCards();
 
         //TODO: if no unplayable cards left disable panel so we can click the whole card
     }
@@ -277,14 +292,16 @@ public class NetworkPlayer : NetworkBehaviour
         foreach(Transform child in optionsPanel.transform)
         {
             //Debug.Log($"card found {child.GetComponent<Card>().PlayingCard.CardName}");
-
-            if (child.GetComponent<Card>().Number == card.Number && child.GetComponent<Card>().Suit == card.Suit)
+            foreach(Transform grandChild in child)
             {
-                buggersToKill.Add(child.gameObject);
-            }
-            else
-            {
-                buggersToMove.Add(child.gameObject);
+                if (grandChild.GetComponent<Card>().Number == card.Number && grandChild.GetComponent<Card>().Suit == card.Suit)
+                {
+                    buggersToKill.Add(grandChild.gameObject);
+                }
+                else
+                {
+                    buggersToMove.Add(grandChild.gameObject);
+                }
             }
         }
 
@@ -296,11 +313,12 @@ public class NetworkPlayer : NetworkBehaviour
 
         foreach(var child in buggersToMove)
         {
-            child.transform.SetParent(playerUI.GetComponentInChildren<Hand>().transform, false);
+            var parentTransform = GameObject.Find($"{child.GetComponent<Card>().Suit}Cards").transform;
+            child.transform.SetParent(parentTransform, false);
             child.GetComponent<Card>().IsClickable = false;
         }
 
-        playerUI.GetComponentInChildren<Hand>().SortCards();
+        sortCards();
 
         var commonPlayerUI = playerUI.GetComponent<CommonPlayerUI>();
         commonPlayerUI.ShowLastGo(card);

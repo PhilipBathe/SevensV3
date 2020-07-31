@@ -3682,6 +3682,7 @@ MonoBehaviour:
   spawnPrefabs:
   - {fileID: 9043006365726958630, guid: e24ae74ece3f9c941a11c96462fcdf71, type: 3}
   - {fileID: 3242007404850113729, guid: 6498c25146e59304baced467cc8db256, type: 3}
+  - {fileID: 5887231587625598555, guid: 97da122c3606e6d4088d2f2012dd5a97, type: 3}
   SeatManager: {fileID: 399748560}
 --- !u!1 &1143787220
 GameObject:
