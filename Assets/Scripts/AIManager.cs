@@ -51,12 +51,34 @@ public class AIManager : NetworkBehaviour
     [Client]
     private void OnWineLevelChanged(int oldNumber, int newNumber)
     {
-        Wine1Button.isOn = newNumber == 1;
-        Wine2Button.isOn = newNumber == 2;
-        Wine3Button.isOn = newNumber == 3;
-        Wine4Button.isOn = newNumber == 4;
-        Wine5Button.isOn = newNumber == 5;
+        // Wine1Button.isOn = newNumber == 1;
+        // Wine2Button.isOn = newNumber == 2;
+        // Wine3Button.isOn = newNumber == 3;
+        // Wine4Button.isOn = newNumber == 4;
+        // Wine5Button.isOn = newNumber == 5;
+
+        switch(newNumber)
+        {
+            case 1:
+                Wine1Button.isOn = true;
+                break;
+            case 2:
+                Wine2Button.isOn = true;
+                break;
+            case 3:
+                Wine3Button.isOn = true;
+                break;
+            case 4:
+                Wine4Button.isOn = true;
+                break;
+            case 5:
+                Wine5Button.isOn = true;
+                break;
+        }
+
+        
     }
+
     public void SetWineLevel_1()
     {
         WineLevelChangedEvent.Invoke(1);
