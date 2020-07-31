@@ -35,6 +35,10 @@ public class AIPlayer : NetworkBehaviour
                 var randomIndex = UnityEngine.Random.Range(0, playableCards.Count);
                 cardToPlay = playableCards[randomIndex];
             }
+            if(wineLevel == 5) //drunk owl so nearest number to 7
+            {
+                cardToPlay = chooseCardNearestToSeven(playableCards);
+            }
             else
             {
                 if(playableCards.Count > 1)
@@ -46,8 +50,14 @@ public class AIPlayer : NetworkBehaviour
             GameObject.Find("SeatManager").GetComponent<RoundManager>().PlayCard(cardToPlay);
         }
     }
+    
+    [Server]
+    private PlayingCard chooseCardNearestToSeven(List<PlayingCard> playableCards)
+    {
+        return playableCards.OrderBy(p => Math.Abs(7 - p.Number)).ThenBy(a => Guid.NewGuid()).First();
+    }
 
-     [Server]
+    [Server]
     private PlayingCard chooseCard(List<PlayingCard> playableCards, List<PlayingCard> allCards, int wineLevel)
     {
         //Debug.Log($"Choice to make with wineLevel {wineLevel}");

@@ -20,6 +20,7 @@ public class AIManager : NetworkBehaviour
     public Toggle Wine2Button;
     public Toggle Wine3Button;
     public Toggle Wine4Button;
+    public Toggle Wine5Button;
 
     void Start()
     {
@@ -53,6 +54,7 @@ public class AIManager : NetworkBehaviour
         Wine2Button.isOn = newNumber == 2;
         Wine3Button.isOn = newNumber == 3;
         Wine4Button.isOn = newNumber == 4;
+        Wine5Button.isOn = newNumber == 5;
     }
     public void SetWineLevel_1()
     {
@@ -72,5 +74,10 @@ public class AIManager : NetworkBehaviour
     public void SetWineLevel_4()
     {
         WineLevelChangedEvent.Invoke(4);
+    }
+
+    public void SetWineLevel_5()
+    {
+        WineLevelChangedEvent.Invoke(5);
     }
 }

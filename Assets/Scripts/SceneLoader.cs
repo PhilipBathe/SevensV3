@@ -5,7 +5,6 @@ using Mirror;
 
 public class SceneLoader : NetworkBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
         var networkManager = this.GetComponent<SevensNetworkManager>();
@@ -15,20 +14,23 @@ public class SceneLoader : NetworkBehaviour
         switch(entranceChoice)
         {
             case "HostLan":
-            case "SinglePlayer":
-            default:
                 networkManager.StartHost();
                 break;
             case "LanServer":
                 networkManager.StartServer();
+                //TODO: show number of humans playing etc.
+                //Also hide board
                 break;
             case "JoinLan":
                 //TODO: handle invalid LAN addressese here
                 networkManager.networkAddress = PlayerPrefs.GetString("ipAddress").Trim();
                 networkManager.StartClient();
                 break;
+            case "SinglePlayer":
+            default:
+                networkManager.StartHost();
+                //TODO: prevent others from joining
+                break;
         }
     }
-
-    //TODO: handle when people leave
 }
