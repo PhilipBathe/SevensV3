@@ -11,6 +11,10 @@ public class LoginManager : MonoBehaviour
 
     void Start()
     {
+        //Until we get online working
+        GameObject.Find("JoinOnlineButton").GetComponent<Button>().interactable = false;
+        GameObject.Find("ServerOnlineButton").GetComponent<Button>().interactable = false;
+
         playerNameField.text = PlayerPrefs.GetString("username").Trim();
         ipAddressField.text = PlayerPrefs.GetString("ipAddress").Trim();
     }
