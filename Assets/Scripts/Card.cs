@@ -17,7 +17,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
     {
         if(IsClickable)
         {
-            Debug.Log("Mouse Clicked");
+            //Debug.Log("Mouse Clicked");
             GameObject.Find("LocalNetworkPlayer").GetComponent<NetworkPlayer>().PlayCard(PlayingCard);
         }
     }

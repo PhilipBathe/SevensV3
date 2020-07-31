@@ -41,7 +41,7 @@ public class BoardManager : NetworkBehaviour
     [ClientRpc]
     public void RpcPlayCard(PlayingCard card)
     {
-        Debug.Log($"playing card {card.CardName}");
+        //Debug.Log($"playing card {card.CardName}");
         GameObject suitSlot = suitHolders[card.Suit];
 
         

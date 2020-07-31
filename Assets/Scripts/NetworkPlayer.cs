@@ -69,7 +69,7 @@ public class NetworkPlayer : NetworkBehaviour
         if(isLocalPlayer)
         {        
             var networkManager = GameObject.Find("NetworkManager").GetComponent<SevensNetworkManager>();  
-            Debug.Log($"isClientOnly, {isClientOnly}");
+            //Debug.Log($"isClientOnly, {isClientOnly}");
             if(isClientOnly)
             {
                 Debug.Log("Stop client");
@@ -191,7 +191,7 @@ public class NetworkPlayer : NetworkBehaviour
         {
             foreach(var hand in GameObject.FindGameObjectsWithTag("Hand"))
             {
-                Debug.Log($"hand with name {hand.name}");
+                //Debug.Log($"hand with name {hand.name}");
                 hand.GetComponent<Hand>().SortCards();
             }
         }
