@@ -60,6 +60,28 @@ public class NetworkPlayer : NetworkBehaviour
 
         GameObject.Find("AIManager").GetComponent<AIManager>().NumberChangedEvent.AddListener(CmdChangeNumberOfAIPlayers);
         GameObject.Find("AIManager").GetComponent<AIManager>().WineLevelChangedEvent.AddListener(CmdChangeWineLevel);
+        GameObject.Find("AIManager").GetComponent<AIManager>().LeaveTableEvent.AddListener(leaveTable);
+    }
+
+    [Client]
+    private void leaveTable()
+    {
+        if(isLocalPlayer)
+        {        
+            var networkManager = GameObject.Find("NetworkManager").GetComponent<SevensNetworkManager>();  
+            Debug.Log($"isClientOnly, {isClientOnly}");
+            if(isClientOnly)
+            {
+                Debug.Log("Stop client");
+                networkManager.StopClient();
+            }
+            else
+            {
+                Debug.Log("Stop host");
+                networkManager.StopHost();
+            } 
+            //UnityEngine.SceneManagement.SceneManager.LoadScene("LoginScene");
+        }
     }
 
     [Command]

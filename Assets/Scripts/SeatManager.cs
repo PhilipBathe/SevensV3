@@ -71,32 +71,35 @@ public class SeatManager : NetworkBehaviour
         }
     }
 
-
     public void NetworkPlayerDestroyed(GameObject networkPlayer)
     {
-        //we turn them into AI so any existing game does not end
         int seatNumber = networkPlayer.GetComponent<NetworkPlayer>().SeatNumber;
 
         Debug.Log($"Goodbye Number {seatNumber}");
 
         var leaver = gamePlayers.First(g => g.SeatNumber == seatNumber);
-        
-        leaver.IsAI = true;
-        leaver.WineLevel = AIWineLevel;
-        leaver.EnemyPlayerGO.GetComponent<Enemy>().IsAI = true;
-        leaver.EnemyPlayerGO.GetComponent<Enemy>().PlayerName = $"*{leaver.EnemyPlayerGO.GetComponent<Enemy>().PlayerName}";
-        leaver.NetworkPlayerGO = null;
-
-        networkPlayers.Remove(networkPlayer);
-
-        //Debug.Log($"NumberOfAIPlayers {NumberOfAIPlayers}");
-
-        GameObject.Find("AIManager").GetComponent<AIManager>().NumberOfAIPlayers = ++NumberOfAIPlayers;
 
         if(isGameInProgress == true)
         {
+            //we turn them into AI so any existing game does not end
+            leaver.IsAI = true;
+            leaver.WineLevel = AIWineLevel;
+            leaver.EnemyPlayerGO.GetComponent<Enemy>().IsAI = true;
+            leaver.EnemyPlayerGO.GetComponent<Enemy>().PlayerName = $"*{leaver.EnemyPlayerGO.GetComponent<Enemy>().PlayerName}";
+            leaver.NetworkPlayerGO = null;
+
+            GameObject.Find("AIManager").GetComponent<AIManager>().NumberOfAIPlayers = ++NumberOfAIPlayers;
+
             RoundManager.NetworkPlayerNowAI(seatNumber);
         }
+        else
+        {
+            gamePlayers.Remove(leaver);
+            leaver.EnemyPlayerGO.transform.SetParent(null);
+            Destroy(leaver.EnemyPlayerGO);
+        }
+
+        networkPlayers.Remove(networkPlayer);
     }
 
     private void killAllAIPlayers()
