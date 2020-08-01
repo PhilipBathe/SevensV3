@@ -16,6 +16,7 @@ public class AIManager : NetworkBehaviour
     public UnityEvent<int> NumberChangedEvent = new UnityEvent<int>();
     public UnityEvent<int> WineLevelChangedEvent = new UnityEvent<int>();
     public UnityEvent LeaveTableEvent = new UnityEvent();
+    public UnityEvent ToggleSitOutEvent = new UnityEvent();
 
     public Toggle Wine1Button;
     public Toggle Wine2Button;
@@ -99,5 +100,10 @@ public class AIManager : NetworkBehaviour
     public void LeaveTable()
     {
         LeaveTableEvent.Invoke();
+    }
+
+    public void ToggleSitOut()
+    {
+        ToggleSitOutEvent.Invoke();
     }
 }

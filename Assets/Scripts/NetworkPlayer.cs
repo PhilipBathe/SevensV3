@@ -14,6 +14,9 @@ public class NetworkPlayer : NetworkBehaviour
     [SyncVar]
     public int SeatNumber;
 
+    [SyncVar(hook = nameof(OnStatusTextChanged))]
+    public string StatusText;
+
     public GameObject PlayerPrefab;
 
     public GameObject CardPrefab;
@@ -61,6 +64,30 @@ public class NetworkPlayer : NetworkBehaviour
         GameObject.Find("AIManager").GetComponent<AIManager>().NumberChangedEvent.AddListener(CmdChangeNumberOfAIPlayers);
         GameObject.Find("AIManager").GetComponent<AIManager>().WineLevelChangedEvent.AddListener(CmdChangeWineLevel);
         GameObject.Find("AIManager").GetComponent<AIManager>().LeaveTableEvent.AddListener(leaveTable);
+        GameObject.Find("AIManager").GetComponent<AIManager>().ToggleSitOutEvent.AddListener(toggleSitOut);
+    }
+
+    void OnStatusTextChanged(string oldStatusText, string newStatusText)
+    {
+        if(isLocalPlayer)
+        {
+            playerUI.GetComponentInChildren<CommonPlayerUI>().SetStatusText(newStatusText);
+        }
+    }
+
+    [Client]
+    private void toggleSitOut()
+    {
+        if(isLocalPlayer)
+        {
+            CmdToggleSitOut();
+        }   
+    }
+
+    [Command]
+    private void CmdToggleSitOut()
+    {
+        GameObject.Find("SeatManager").GetComponent<SeatManager>().ToggleSitOut(this.gameObject);
     }
 
     [Client]
@@ -115,8 +142,7 @@ public class NetworkPlayer : NetworkBehaviour
             playerUI = Instantiate(PlayerPrefab, Vector2.zero, Quaternion.identity) as GameObject;
             playerUI.transform.SetParent(canvas.transform, false);
 
-            var commonPlayerUI = playerUI.GetComponent<CommonPlayerUI>();
-            commonPlayerUI.SetStatusText($"Waiting for next game");
+            CmdInitiateStatusText();
 
             newGamePanel = GameObject.Find("NextGame");
             waitingGO = GameObject.Find("WaitingForPlayers");
@@ -124,8 +150,17 @@ public class NetworkPlayer : NetworkBehaviour
         }
     }
 
+    [Command]
+    private void CmdInitiateStatusText()
+    {
+        if(isLocalPlayer)
+        {
+            StatusText = "Waiting for next game";
+        }
+    }
+
     [ClientRpc]
-    public void RpcResetUI()
+    public void RpcResetUI(string status)
     {
         if(isLocalPlayer)
         {
@@ -136,7 +171,10 @@ public class NetworkPlayer : NetworkBehaviour
                 return;
             }
 
-            playerUI.GetComponent<CommonPlayerUI>().ClearAll();
+            playerUI.GetComponent<CommonPlayerUI>().ClearAll(status);
+
+            GameObject knockButton = GameObject.Find("KnockButton");
+            knockButton.GetComponent<Animator>().SetBool("isHidden", true);
 
             clearHand();
         }
@@ -145,12 +183,17 @@ public class NetworkPlayer : NetworkBehaviour
     [Client]
     private void clearHand()
     {
-        // foreach(Transform child in playerUI.GetComponentInChildren<Hand>().transform)
-        // {
-        //     Destroy(child.gameObject);
-        // }
-
-        // playerUI.GetComponentInChildren<Hand>().transform.DetachChildren();
+        if(isLocalPlayer)
+        {
+            foreach(var hand in GameObject.FindGameObjectsWithTag("Hand"))
+            {
+                foreach(Transform child in hand.transform)
+                {
+                    Destroy(child.gameObject);
+                }
+                hand.transform.DetachChildren();
+            }
+        }
     }
 
     [ClientRpc]

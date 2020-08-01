@@ -50,7 +50,7 @@ public class RoundManager : NetworkBehaviour
     {
         foreach(var player in players)
         {
-            player.Reset();
+            player.Reset(string.Empty);
         }
     }
 
@@ -176,11 +176,47 @@ public class RoundManager : NetworkBehaviour
 
     public void NetworkPlayerNowAI(int seatNumber)
     {
-        var lostPlayer = players.First(p => p.SeatNumber == seatNumber);
-        lostPlayer.IsAI = true;
-        lostPlayer.NetworkPlayerGO = null;   
-        
-        if(players[currentPlayerIndex].SeatNumber == seatNumber)
+        var lostPlayer = players.FirstOrDefault(p => p.SeatNumber == seatNumber);
+        if(lostPlayer != null)
+        {
+            lostPlayer.IsAI = true;
+            lostPlayer.NetworkPlayerGO = null;   
+            
+            if(players[currentPlayerIndex].SeatNumber == seatNumber)
+            {
+                players[currentPlayerIndex].SetAsCurrentPlayer();
+            }
+        }
+    }
+
+    public void NetworkPlayerToggleSittingOut(int seatNumber, bool isSittingOut, out bool isPlayerInCurrentGame)
+    {
+        isPlayerInCurrentGame = false;
+        var player = players.FirstOrDefault(p => p.SeatNumber == seatNumber);
+        if(player != null)
+        {
+            player.IsSittingOut = isSittingOut; 
+
+            player.ClearUI();
+
+            StartCoroutine(rebuildUICoroutine(player));
+            isPlayerInCurrentGame = true;
+        }
+    }
+
+    private IEnumerator rebuildUICoroutine(GamePlayer player)
+    {
+        yield return new WaitForSeconds(1);
+        if(player.IsSittingOut == false)
+        {
+            player.ShowCardsInUI();
+        }
+        else
+        {
+            player.SetMidGameSittingOutStatus();
+        }
+
+        if(players[currentPlayerIndex]== player)
         {
             players[currentPlayerIndex].SetAsCurrentPlayer();
         }

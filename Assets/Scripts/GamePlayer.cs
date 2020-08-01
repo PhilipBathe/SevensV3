@@ -14,18 +14,27 @@ public class GamePlayer : ICloneable
     public int SeatNumber;
     public bool IsAI;
     public int WineLevel;
+    public bool IsSittingOut;
 
     public GameObject EnemyPlayerGO;
     public GameObject NetworkPlayerGO;
 
     public List<PlayingCard> Cards = new List<PlayingCard>();
 
-    public void Reset()
+    public void Reset(string status)
     {
-        this.EnemyPlayerGO.GetComponent<Enemy>().Reset();
+        this.EnemyPlayerGO.GetComponent<Enemy>().Reset(status);
         if(IsAI == false)
         {
-            this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcResetUI();
+            this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcResetUI(status);
+        }
+    }
+
+    public void ClearUI()
+    {
+        if(IsAI == false)
+        {
+            this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcResetUI(string.Empty);
         }
     }
 
@@ -58,14 +67,20 @@ public class GamePlayer : ICloneable
 
         List<PlayingCard> playableCards = getPlayableCards();
 
-        if(IsAI == false)
+        if(IsAI == false && IsSittingOut == false)
         {
             this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcTakeTurn(playableCards.ToArray());
+            return;
         }
-        else
+
+        var wineLevel = WineLevel;
+
+        if(IsSittingOut)
         {
-            this.EnemyPlayerGO.GetComponent<AIPlayer>().MakeChoice(playableCards, Cards, WineLevel);
+            wineLevel = 1; //always be smart for humans!
         }
+
+        this.EnemyPlayerGO.GetComponent<AIPlayer>().MakeChoice(playableCards, Cards, wineLevel);
     }
 
     private List<PlayingCard> getPlayableCards()
@@ -112,7 +127,7 @@ public class GamePlayer : ICloneable
     public void SetFinalPosition(int position)
     {
         this.EnemyPlayerGO.GetComponent<Enemy>().Placed = position;
-        if(IsAI == false)
+        if(IsAI == false && IsSittingOut == false)
         {
             this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcSetPlaced(position);
         }
@@ -124,5 +139,28 @@ public class GamePlayer : ICloneable
         {
             this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcSortEnemies();
         }
+    }
+
+    public void ToggleBetweenGameSittingOutStatus()
+    {
+        this.EnemyPlayerGO.GetComponent<Enemy>().IsSittingOut = IsSittingOut;
+
+        if(IsSittingOut == true)
+        { 
+            this.EnemyPlayerGO.GetComponent<Enemy>().StatusText = "Sitting Out";
+            this.NetworkPlayerGO.GetComponent<NetworkPlayer>().StatusText = "Sitting Out";
+        }
+        else
+        {
+            this.EnemyPlayerGO.GetComponent<Enemy>().StatusText = "Waiting for next game";
+            this.NetworkPlayerGO.GetComponent<NetworkPlayer>().StatusText = "Waiting for next game";
+        }
+    }
+
+    public void SetMidGameSittingOutStatus()
+    {
+        this.EnemyPlayerGO.GetComponent<Enemy>().IsSittingOut = IsSittingOut;
+        //enemy still needs to show cards as we are AI (ish)
+        this.NetworkPlayerGO.GetComponent<NetworkPlayer>().StatusText = "Sitting Out";
     }
 }

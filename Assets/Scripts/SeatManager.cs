@@ -44,8 +44,6 @@ public class SeatManager : NetworkBehaviour
         gamePlayers.Add(gamePlayer);
 
         startNewGame();
-
-        //TODO: deal with people leaving the table affecting seatnumber (and remove them from enemies panel)
     }
 
     public void ChangeNumberOfAIPlayers(int numberOfPlayers)
@@ -63,7 +61,6 @@ public class SeatManager : NetworkBehaviour
 
     public void ChangeWineLevel(int wineLevel)
     {
-        //Debug.Log($"ChangeWineLevel {wineLevel}");
         AIWineLevel = wineLevel;
         foreach(var player in gamePlayers)
         {
@@ -82,10 +79,11 @@ public class SeatManager : NetworkBehaviour
         if(isGameInProgress == true)
         {
             //we turn them into AI so any existing game does not end
+            leaver.IsSittingOut = false;
             leaver.IsAI = true;
             leaver.WineLevel = AIWineLevel;
             leaver.EnemyPlayerGO.GetComponent<Enemy>().IsAI = true;
-            leaver.EnemyPlayerGO.GetComponent<Enemy>().PlayerName = $"*{leaver.EnemyPlayerGO.GetComponent<Enemy>().PlayerName}";
+            //leaver.EnemyPlayerGO.GetComponent<Enemy>().PlayerName = $"*{leaver.EnemyPlayerGO.GetComponent<Enemy>().PlayerName}";
             leaver.NetworkPlayerGO = null;
 
             GameObject.Find("AIManager").GetComponent<AIManager>().NumberOfAIPlayers = ++NumberOfAIPlayers;
@@ -100,6 +98,32 @@ public class SeatManager : NetworkBehaviour
         }
 
         networkPlayers.Remove(networkPlayer);
+    }
+
+    public void ToggleSitOut(GameObject networkPlayer)
+    {
+        int seatNumber = networkPlayer.GetComponent<NetworkPlayer>().SeatNumber;
+
+        Debug.Log($"Number {seatNumber} is toggling sit out");
+
+        var player = gamePlayers.First(g => g.SeatNumber == seatNumber);
+        player.IsSittingOut = !player.IsSittingOut;
+
+        bool isPlayerInCurrentGame = false;
+
+        if(isGameInProgress == true)
+        {
+            RoundManager.NetworkPlayerToggleSittingOut(seatNumber, player.IsSittingOut, out isPlayerInCurrentGame);
+            if(isPlayerInCurrentGame == false)
+            {
+                player.ToggleBetweenGameSittingOutStatus();
+            }
+        }
+        else
+        {
+            player.ToggleBetweenGameSittingOutStatus();
+            startNewGame();
+        }
     }
 
     private void killAllAIPlayers()
@@ -124,7 +148,6 @@ public class SeatManager : NetworkBehaviour
 
     private void createNewAIPlayers()
     {
-        //Debug.Log($"createNewAIPlayers {NumberOfAIPlayers}");
         for(int i = 0; i < NumberOfAIPlayers; i++)
         {
             addAIPlayer();
@@ -182,7 +205,16 @@ public class SeatManager : NetworkBehaviour
 
         isGameInProgress = true;
         hideNextGamePanel();
-        RoundManager.StartNewGame(gamePlayers);
+        setSitOutStatuses();
+        RoundManager.StartNewGame(gamePlayers.Where(p => p.IsSittingOut == false).ToList());  
+    }
+
+    private void setSitOutStatuses()
+    {
+        foreach(var player in gamePlayers.Where(p => p.IsSittingOut == true))
+        {
+            player.Reset("Sitting Out");
+        }
     }
 
     private void showWaitingForPlayers()
@@ -218,7 +250,7 @@ public class SeatManager : NetworkBehaviour
 
     private bool isLegalToPlay()
     {
-        return gamePlayers.Count >= MinPlayers;
+        return gamePlayers.Count(p => p.IsSittingOut == false) >= MinPlayers;
     }
 
     private void spawnNewEnemyGameObject(GamePlayer gamePlayer)

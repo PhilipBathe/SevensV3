@@ -41,8 +41,35 @@ public class Enemy : NetworkBehaviour
 
     public GameObject Hand;
 
+    [SyncVar(hook = nameof(OnIsAIChanged))]
     public bool IsAI;
 
+    [SyncVar(hook = nameof(OnIsSittingOutChanged))]
+    public bool IsSittingOut;
+
+    void OnIsSittingOutChanged(bool oldIsSittingOut, bool newIsSittingOut)
+    {
+        if(newIsSittingOut == true)
+        {
+            gameObject.GetComponent<CommonPlayerUI>().ShowIsSittingOut();
+        }
+        else
+        {
+            gameObject.GetComponent<CommonPlayerUI>().ClearPlayerType();
+        }
+    }
+
+    void OnIsAIChanged(bool oldIsAI, bool newIsAI)
+    {
+        if(newIsAI == true)
+        {
+            gameObject.GetComponent<CommonPlayerUI>().ShowIsAI();
+        }
+        else
+        {
+            gameObject.GetComponent<CommonPlayerUI>().ClearPlayerType();
+        }
+    }
 
     void OnStatusTextChanged(string oldStatusText, string newStatusText)
     {
@@ -150,19 +177,20 @@ public class Enemy : NetworkBehaviour
     }
 
     [Server]
-    public void Reset() {
+    public void Reset(string status) 
+    {
         CardCount = 0;
         Placed = 0;
         IsDealer = false;
         IsThinking = false;
-        StatusText = string.Empty;
-        RpcResetUI();
+        RpcClearLastGo();
+        StatusText = status;
     }
 
     [ClientRpc]
-    private void RpcResetUI()
+    private void RpcClearLastGo()
     {
-        gameObject.GetComponent<CommonPlayerUI>().ClearAll();
+        gameObject.GetComponent<CommonPlayerUI>().ClearLastGo();
     }
 
     void OnCardCountChanged(int oldCardCount, int newCardCount)
