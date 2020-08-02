@@ -13,7 +13,11 @@ public class AIManager : NetworkBehaviour
     [SyncVar(hook = nameof(OnWineLevelChanged))]
     public int WineLevel = 1;
 
-    public UnityEvent<int> NumberChangedEvent = new UnityEvent<int>();
+    [SyncVar(hook = nameof(OnNumberOfCardPacksChanged))]
+    public int NumberOfCardPacks = 1;
+
+    public UnityEvent<int> AINumberChangedEvent = new UnityEvent<int>();
+    public UnityEvent<int> CardPackNumberChangedEvent = new UnityEvent<int>();
     public UnityEvent<int> WineLevelChangedEvent = new UnityEvent<int>();
     public UnityEvent LeaveTableEvent = new UnityEvent();
     public UnityEvent ToggleSitOutEvent = new UnityEvent();
@@ -36,7 +40,14 @@ public class AIManager : NetworkBehaviour
     {
         int newNumber = (int)numberOfPlayers;
 
-        NumberChangedEvent.Invoke(newNumber);
+        AINumberChangedEvent.Invoke(newNumber);
+    }
+
+    public void SetNumberOfCardPacks(float numberOfPacks)
+    {
+        int newNumber = (int)numberOfPacks;
+
+        CardPackNumberChangedEvent.Invoke(newNumber);
     }
 
     [Client]
@@ -46,6 +57,16 @@ public class AIManager : NetworkBehaviour
         if(aiNumberSlider.value != newNumber)
         {
             aiNumberSlider.value = newNumber;
+        }
+    }
+
+    [Client]
+    private void OnNumberOfCardPacksChanged(int oldNumber, int newNumber)
+    {
+        var cardPackNumberSlider = GameObject.Find("PackNumberSlider").GetComponent<UnityEngine.UI.Slider>();
+        if(cardPackNumberSlider.value != newNumber)
+        {
+            cardPackNumberSlider.value = newNumber;
         }
     }
 

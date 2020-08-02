@@ -12,6 +12,7 @@ public class SeatManager : NetworkBehaviour
 
     public int MinPlayers = 3;
     public int NumberOfAIPlayers = 0;
+    public int NumberOfCardPacks = 1;
     public int AIWineLevel = 1;
     public int CountdownSeconds = 10;
 
@@ -50,14 +51,21 @@ public class SeatManager : NetworkBehaviour
 
     public void ChangeNumberOfAIPlayers(int numberOfPlayers)
     {
-        int newNumber = numberOfPlayers;
-
-        if(NumberOfAIPlayers != newNumber)
+        if(NumberOfAIPlayers != numberOfPlayers)
         {
-            NumberOfAIPlayers = newNumber;
+            NumberOfAIPlayers = numberOfPlayers;
             killAllAIPlayers();
             createNewAIPlayers();
             startNewGame();
+        }
+    }
+
+    public void ChangeNumberOfCardPacks(int numberOfPacks)
+    {
+        Debug.Log("changing number of packs");
+        if(NumberOfCardPacks != numberOfPacks)
+        {
+            NumberOfCardPacks = numberOfPacks;
         }
     }
 
@@ -81,6 +89,7 @@ public class SeatManager : NetworkBehaviour
         if(isGameInProgress == true)
         {
             //we turn them into AI so any existing game does not end
+            leaver.IsTableHost = false;
             leaver.IsSittingOut = false;
             leaver.IsAI = true;
             leaver.WineLevel = AIWineLevel;
@@ -226,7 +235,8 @@ public class SeatManager : NetworkBehaviour
         isGameInProgress = true;
         hideNextGamePanel();
         setSitOutStatuses();
-        RoundManager.StartNewGame(gamePlayers.Where(p => p.IsSittingOut == false).ToList());  
+        //Debug.Log($"new game: {NumberOfCardPacks}");
+        RoundManager.StartNewGame(gamePlayers.Where(p => p.IsSittingOut == false).ToList(), NumberOfCardPacks);  
     }
 
     private void setSitOutStatuses()

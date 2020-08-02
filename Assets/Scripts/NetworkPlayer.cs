@@ -64,7 +64,8 @@ public class NetworkPlayer : NetworkBehaviour
         CmdSetPlayerName(name);
         setupUI();
 
-        GameObject.Find("AIManager").GetComponent<AIManager>().NumberChangedEvent.AddListener(CmdChangeNumberOfAIPlayers);
+        GameObject.Find("AIManager").GetComponent<AIManager>().AINumberChangedEvent.AddListener(CmdChangeNumberOfAIPlayers);
+        GameObject.Find("AIManager").GetComponent<AIManager>().CardPackNumberChangedEvent.AddListener(CmdChangeCardPackNumber);
         GameObject.Find("AIManager").GetComponent<AIManager>().WineLevelChangedEvent.AddListener(CmdChangeWineLevel);
         GameObject.Find("AIManager").GetComponent<AIManager>().LeaveTableEvent.AddListener(leaveTable);
         GameObject.Find("AIManager").GetComponent<AIManager>().ToggleSitOutEvent.AddListener(toggleSitOut);
@@ -74,7 +75,7 @@ public class NetworkPlayer : NetworkBehaviour
     {
         if(isLocalPlayer)
         {
-            GameObject.Find("AIPanel").GetComponent<Image>().rectTransform.localPosition = new Vector2(0, 0);
+            GameObject.Find("HostOptionsPanel").GetComponent<Image>().rectTransform.localPosition = new Vector2(0, 0);
         }
     }
 
@@ -126,6 +127,13 @@ public class NetworkPlayer : NetworkBehaviour
     {
         GameObject.Find("SeatManager").GetComponent<SeatManager>().ChangeNumberOfAIPlayers(number);
         GameObject.Find("AIManager").GetComponent<AIManager>().NumberOfAIPlayers = number;
+    }
+
+    [Command]
+    private void CmdChangeCardPackNumber(int number)
+    {
+        GameObject.Find("SeatManager").GetComponent<SeatManager>().ChangeNumberOfCardPacks(number);
+        GameObject.Find("AIManager").GetComponent<AIManager>().NumberOfCardPacks = number;
     }
 
     [Command]
@@ -348,7 +356,8 @@ public class NetworkPlayer : NetworkBehaviour
             //Debug.Log($"card found {child.GetComponent<Card>().PlayingCard.CardName}");
             foreach(Transform grandChild in child)
             {
-                if (grandChild.GetComponent<Card>().Number == card.Number && grandChild.GetComponent<Card>().Suit == card.Suit)
+                if (grandChild.GetComponent<Card>().SortOrder == card.SortOrder 
+                    && buggersToKill.Any(b => b.GetComponent<Card>().SortOrder == card.SortOrder) == false)
                 {
                     buggersToKill.Add(grandChild.gameObject);
                 }

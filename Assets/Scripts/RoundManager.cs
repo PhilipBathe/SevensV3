@@ -19,26 +19,42 @@ public class RoundManager : NetworkBehaviour
 
     private int dealerIndex = -1;
 
+    private int numberOfCardPacks = 1;
+
+    private List<PlayingCard> singlePack;
     private List<PlayingCard> cards;
     private List<PlayingCard> playedCards = new List<PlayingCard>();
     private List<int> finishedPlayers = new List<int>();
 
     void Start() {
-        cards = Pack.GetCards(); 
+        singlePack = Pack.GetCards(); 
     }
 
-    public void StartNewGame(List<GamePlayer> gamePlayers)
+    public void StartNewGame(List<GamePlayer> gamePlayers, int numberOfPacks)
     {
         players = gamePlayers.Clone();
+        numberOfCardPacks = numberOfPacks;
+        loadCards();
         playedCards = new List<PlayingCard>();
         finishedPlayers = new List<int>();
         StartCoroutine(NewGameCoroutine());
     }
 
+    private void loadCards()
+    {
+        //Debug.Log(numberOfPacks);
+        cards = new List<PlayingCard>();
+        for(int i = 0; i < numberOfCardPacks; i++)
+        {
+            //Debug.Log("Adding a pack");
+            cards.AddRange(singlePack);
+        }
+    }
+
     IEnumerator NewGameCoroutine()
     {
         resetPlayers();
-        clearBoard();
+        prepareBoard();
         yield return new WaitForSeconds(1);
         changeDealer();
         deal();
@@ -54,9 +70,9 @@ public class RoundManager : NetworkBehaviour
         }
     }
 
-    private void clearBoard()
+    private void prepareBoard()
     {
-        GameObject.Find("Board").GetComponent<BoardManager>().RpcClearBoard();
+        GameObject.Find("Board").GetComponent<BoardManager>().RpcPrepareBoard(numberOfCardPacks);
     }
 
     private void changeDealer()
@@ -224,20 +240,20 @@ public class RoundManager : NetworkBehaviour
 
     public bool IsCardPlayable(PlayingCard card)
     {
-         if(card.Number == 7)
+        if(card.Number == 7)
         {
             return true;
         }
 
-        foreach(var playedCard in playedCards.Where(c => c.Suit == card.Suit))
+        int numberOfSameCardsPlayed = playedCards.Count(c => c.Suit == card.Suit && c.Number == card.Number);
+        int numberOfParentsPlayed = playedCards.Count(c => c.Suit == card.Suit && c.Number == card.Number + 1);
+
+        if(card.Number > 7)
         {
-            if(Math.Abs(playedCard.Number - card.Number) == 1)
-            {
-                return true;
-            }
+            numberOfParentsPlayed = playedCards.Count(c => c.Suit == card.Suit && c.Number == card.Number - 1);
         }
 
-        return false;
+        return numberOfParentsPlayed > numberOfSameCardsPlayed;
     }
 
 }
