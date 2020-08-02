@@ -170,4 +170,14 @@ public class GamePlayer : ICloneable
         this.EnemyPlayerGO.GetComponent<Enemy>().IsTableHost = true;
         this.NetworkPlayerGO.GetComponent<NetworkPlayer>().IsTableHost = true;
     }
+
+    public void ScrunchCardHolders(int numberOfPlayers, int numberOfCardPacks)
+    {
+        //TODO: enemies
+        if(IsAI == false)
+        {
+            this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcScrunchCardHolders(numberOfPlayers, numberOfCardPacks);
+        }
+        
+    }
 }

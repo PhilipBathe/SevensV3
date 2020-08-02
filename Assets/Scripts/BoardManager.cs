@@ -64,7 +64,8 @@ public class BoardManager : NetworkBehaviour
 
         GameObject playerCard = Instantiate(CardPrefab, Vector2.zero, Quaternion.identity, cardHolderTransform);
         playerCard.GetComponentInChildren<Image>().sprite = Resources.Load<Sprite>($"Sprites/{card.CardName}");
-        playerCard.GetComponentInChildren<Image>().rectTransform.sizeDelta = new Vector2(getCardSize(), getCardSize());
+        playerCard.GetComponent<RectTransform>().sizeDelta = new Vector2(getCardSize(), getCardSize());
+        playerCard.GetComponent<RectMask2D>().padding = Vector2.zero;
 
         float y = calculateY(card);
         
@@ -102,22 +103,4 @@ public class BoardManager : NetworkBehaviour
                 return 80;
         }
     }
-
-    // [Client]
-    // private float calculateX(PlayingCard card)
-    // {
-    //     if(numberOfCardPacks == 1)
-    //     {
-    //         return 0f;
-    //     }
-
-    //     float x = 0f;
-
-    //     int cardSize = getCardSize();
-
-
-
-
-    //     return x;
-    // }
 }

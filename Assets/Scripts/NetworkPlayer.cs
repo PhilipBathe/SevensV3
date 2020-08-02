@@ -31,6 +31,8 @@ public class NetworkPlayer : NetworkBehaviour
     private GameObject waitingGO;
 
     private GameObject countdownGO;
+    private int cardSize;
+    private int cardPadding;
 
 
 
@@ -267,6 +269,8 @@ public class NetworkPlayer : NetworkBehaviour
             GameObject newCard = Instantiate(CardPrefab, this.transform.position, this.transform.rotation);
             newCard.name = card.CardName;
             newCard.GetComponentInChildren<Image>().sprite = Resources.Load<Sprite>($"Sprites/{card.CardName}");
+            newCard.GetComponent<RectTransform>().sizeDelta = new Vector2(cardSize, cardSize);
+            newCard.GetComponent<RectMask2D>().padding = new Vector4(cardPadding, 0, cardPadding, 0);
             newCard.GetComponent<Card>().PlayingCard = card;
 
             //TODO: get rid of these other properties now we are attaching the PlayingCard
@@ -312,20 +316,17 @@ public class NetworkPlayer : NetworkBehaviour
             foreach(Transform child in parentTransform)
             {
                 if (child.tag == "Card" 
-                    && child.GetComponent<Card>().Number == card.Number
-                    && child.GetComponent<Card>().Suit == card.Suit)
+                    && child.GetComponent<Card>().SortOrder == card.SortOrder)
                 {
                     var newParentTransform = GameObject.Find($"{card.Suit}Playable").transform;
                     child.transform.SetParent(newParentTransform, false);
                     child.GetComponent<Card>().IsClickable = true;
-                    continue; //to prevent duplicates being moved with multipacks
+                    continue;
                 }
             }  
         }
 
         sortCards();
-
-        //TODO: if no unplayable cards left disable panel so we can click the whole card
     }
 
     [Client]
@@ -470,6 +471,70 @@ public class NetworkPlayer : NetworkBehaviour
             waitingGO.SetActive(isWaitingForPlayers);
             countdownGO.SetActive(!isWaitingForPlayers);
         }
+    }
+
+    [ClientRpc]
+    public void RpcScrunchCardHolders(int numberOfPlayers, int numberOfCardPacks)
+    {
+        if(isLocalPlayer)
+        {
+            int handSpacing = 0;
+            int optionSpacing = 0;
+
+            switch(numberOfCardPacks)
+            {
+                case 1:
+                    setNormalSizes(out handSpacing, out optionSpacing);
+                    break;
+                case 2:
+                    setCrampedSizes(out handSpacing, out optionSpacing);
+                    break;
+                default:
+                    setSillySizes(out handSpacing, out optionSpacing);
+                    break;
+            }
+
+            GameObject playerHandPanel = GameObject.Find("PlayerHand");
+
+            foreach(Transform child in playerHandPanel.transform)
+            {
+                child.GetComponent<HorizontalLayoutGroup>().spacing = handSpacing;
+            }
+
+            GameObject optionsPanel = GameObject.Find("OptionsPanel");
+
+            foreach(Transform child in optionsPanel.transform)
+            {
+                child.GetComponent<HorizontalLayoutGroup>().spacing = optionSpacing;
+            }
+        }
+    }
+
+    [Client]
+    private void setSillySizes(out int handSpacing, out int optionSpacing)
+    {
+        handSpacing = -68;
+        cardSize = 80;
+        cardPadding = 15;
+        optionSpacing = -50;
+    }
+
+    [Client]
+    private void setCrampedSizes(out int handSpacing, out int optionSpacing)
+    {
+        handSpacing = -102;
+        cardSize = 120;
+        cardPadding = 22;
+        optionSpacing = -75;
+    }
+
+    [Client]
+    private void setNormalSizes(out int handSpacing, out int optionSpacing)
+    {
+        handSpacing = -135;
+        cardSize = 160;
+        cardPadding = 30;
+        optionSpacing = -100;
     }
 
     [ClientRpc]

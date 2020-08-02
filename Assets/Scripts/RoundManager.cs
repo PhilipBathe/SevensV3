@@ -67,6 +67,7 @@ public class RoundManager : NetworkBehaviour
         foreach(var player in players)
         {
             player.Reset(string.Empty);
+            player.ScrunchCardHolders(players.Count, numberOfCardPacks);
         }
     }
 
