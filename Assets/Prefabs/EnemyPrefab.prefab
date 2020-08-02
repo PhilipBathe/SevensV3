@@ -806,6 +806,7 @@ MonoBehaviour:
   IsDealer: 0
   Placed: 0
   StatusText: 
+  IsTableHost: 0
   EnemyCardPrefab: {fileID: 3242007404850113729, guid: 6498c25146e59304baced467cc8db256,
     type: 3}
   Hand: {fileID: 8781862539491087243}

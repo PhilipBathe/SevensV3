@@ -88,6 +88,11 @@ public class CommonPlayerUI : NetworkBehaviour
         PlayerTypeTransform.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/transparent"); 
     }
 
+    public void ShowIsTableHost()
+    {
+        PlayerTypeTransform.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/pirate-captain"); 
+    }
+
     public void ClearAll(string statusText)
     {
         hasPlaced = false;

@@ -17,6 +17,9 @@ public class NetworkPlayer : NetworkBehaviour
     [SyncVar(hook = nameof(OnStatusTextChanged))]
     public string StatusText;
 
+    [SyncVar(hook = nameof(OnIsTableHostChanged))]
+    public bool IsTableHost;
+
     public GameObject PlayerPrefab;
 
     public GameObject CardPrefab;
@@ -65,6 +68,14 @@ public class NetworkPlayer : NetworkBehaviour
         GameObject.Find("AIManager").GetComponent<AIManager>().WineLevelChangedEvent.AddListener(CmdChangeWineLevel);
         GameObject.Find("AIManager").GetComponent<AIManager>().LeaveTableEvent.AddListener(leaveTable);
         GameObject.Find("AIManager").GetComponent<AIManager>().ToggleSitOutEvent.AddListener(toggleSitOut);
+    }
+
+    void OnIsTableHostChanged(bool oldIsTableHost, bool newIsTableHost )
+    {
+        if(isLocalPlayer)
+        {
+            GameObject.Find("AIPanel").GetComponent<Image>().rectTransform.localPosition = new Vector2(0, 0);
+        }
     }
 
     void OnStatusTextChanged(string oldStatusText, string newStatusText)

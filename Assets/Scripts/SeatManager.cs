@@ -39,9 +39,11 @@ public class SeatManager : NetworkBehaviour
             NetworkPlayerGO = networkPlayer
         };
 
+        gamePlayers.Add(gamePlayer);
+
         spawnNewEnemyGameObject(gamePlayer);
 
-        gamePlayers.Add(gamePlayer);
+        nominateNewTableHost();
 
         startNewGame();
     }
@@ -98,6 +100,24 @@ public class SeatManager : NetworkBehaviour
         }
 
         networkPlayers.Remove(networkPlayer);
+
+        nominateNewTableHost();
+    }
+
+    private void nominateNewTableHost()
+    {
+        Debug.Log("nominateNewTableHost");
+        if(gamePlayers.Count(p => p.IsTableHost == true) == 0)
+        {
+            Debug.Log("need a new host");
+            var firstHuman = gamePlayers.OrderBy(p => p.IsSittingOut).ThenBy(p => p.SeatNumber).FirstOrDefault(p => p.IsAI == false);
+            if(firstHuman != null)
+            {
+                Debug.Log("found a new host");
+                firstHuman.IsTableHost = true;
+                firstHuman.ShowIsTableHost();
+            }
+        }
     }
 
     public void ToggleSitOut(GameObject networkPlayer)

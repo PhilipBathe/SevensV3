@@ -15,6 +15,7 @@ public class GamePlayer : ICloneable
     public bool IsAI;
     public int WineLevel;
     public bool IsSittingOut;
+    public bool IsTableHost;
 
     public GameObject EnemyPlayerGO;
     public GameObject NetworkPlayerGO;
@@ -162,5 +163,11 @@ public class GamePlayer : ICloneable
         this.EnemyPlayerGO.GetComponent<Enemy>().IsSittingOut = IsSittingOut;
         //enemy still needs to show cards as we are AI (ish)
         this.NetworkPlayerGO.GetComponent<NetworkPlayer>().StatusText = "Sitting Out";
+    }
+
+    public void ShowIsTableHost()
+    {
+        this.EnemyPlayerGO.GetComponent<Enemy>().IsTableHost = true;
+        this.NetworkPlayerGO.GetComponent<NetworkPlayer>().IsTableHost = true;
     }
 }

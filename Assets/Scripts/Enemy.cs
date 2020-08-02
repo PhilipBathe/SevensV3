@@ -35,6 +35,9 @@ public class Enemy : NetworkBehaviour
     [SyncVar(hook = nameof(OnStatusTextChanged))]
     public string StatusText;
 
+    [SyncVar(hook = nameof(OnIsTableHostChanged))]
+    public bool IsTableHost;
+
 
 
     public GameObject EnemyCardPrefab;
@@ -47,28 +50,46 @@ public class Enemy : NetworkBehaviour
     [SyncVar(hook = nameof(OnIsSittingOutChanged))]
     public bool IsSittingOut;
 
+    void OnIsTableHostChanged(bool oldIsTableHost, bool newIsTableHost)
+    {
+        setPlayerType();
+    }
+
     void OnIsSittingOutChanged(bool oldIsSittingOut, bool newIsSittingOut)
     {
-        if(newIsSittingOut == true)
-        {
-            gameObject.GetComponent<CommonPlayerUI>().ShowIsSittingOut();
-        }
-        else
-        {
-            gameObject.GetComponent<CommonPlayerUI>().ClearPlayerType();
-        }
+        setPlayerType();
     }
 
     void OnIsAIChanged(bool oldIsAI, bool newIsAI)
     {
-        if(newIsAI == true)
+        setPlayerType();
+    }
+
+    private void setPlayerType()
+    {
+        var commonPlayerUI = gameObject.GetComponent<CommonPlayerUI>();
+
+        //TODO: add special graphic for host sitting out???
+
+        if(IsSittingOut == true)
         {
-            gameObject.GetComponent<CommonPlayerUI>().ShowIsAI();
+            commonPlayerUI.ShowIsSittingOut();
+            return;
         }
-        else
+
+        if(IsTableHost == true)
         {
-            gameObject.GetComponent<CommonPlayerUI>().ClearPlayerType();
+            commonPlayerUI.ShowIsTableHost();
+            return;
         }
+
+        if(IsAI == true)
+        {
+            commonPlayerUI.ShowIsAI();
+            return;
+        }
+
+        commonPlayerUI.ClearPlayerType();
     }
 
     void OnStatusTextChanged(string oldStatusText, string newStatusText)
