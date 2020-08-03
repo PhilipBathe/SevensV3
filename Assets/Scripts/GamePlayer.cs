@@ -22,6 +22,8 @@ public class GamePlayer : ICloneable
 
     public List<PlayingCard> Cards = new List<PlayingCard>();
 
+    public bool IsAIMakingChoice;
+
     public void Reset(string status)
     {
         this.EnemyPlayerGO.GetComponent<Enemy>().Reset(status);
@@ -62,13 +64,23 @@ public class GamePlayer : ICloneable
         return Cards.Any(c => c.Suit == "Diamond" && c.Number == 7);
     }
 
-    public void SetAsCurrentPlayer()
+    public void SetAsCurrentPlayer(bool isFirstCardOfGame)
     {
+        if(IsAIMakingChoice == true)
+        {
+            // Debug.Log($"PlayerName {PlayerName} isAIMakingChoice == true");
+            // Debug.Log($"IsAI {IsAI}");
+            // Debug.Log($"IsSittingOut {IsSittingOut}");
+            return;
+        }
+
+        IsAIMakingChoice = IsAI || IsSittingOut;
+
         this.EnemyPlayerGO.GetComponent<Enemy>().IsThinking = true;
 
-        List<PlayingCard> playableCards = getPlayableCards();
+        List<PlayingCard> playableCards = getPlayableCards(isFirstCardOfGame);
 
-        if(IsAI == false && IsSittingOut == false)
+        if(IsAIMakingChoice == false)
         {
             this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcTakeTurn(playableCards.ToArray());
             return;
@@ -82,13 +94,14 @@ public class GamePlayer : ICloneable
         }
 
         this.EnemyPlayerGO.GetComponent<AIPlayer>().MakeChoice(playableCards, Cards, wineLevel);
+        
     }
 
-    private List<PlayingCard> getPlayableCards()
+    private List<PlayingCard> getPlayableCards(bool isFirstCardOfGame)
     {
         List<PlayingCard> playableCards = new List<PlayingCard>();
 
-        if(HasSevenOfDiamonds())
+        if(isFirstCardOfGame == true && HasSevenOfDiamonds())
         {
             playableCards.Add(Cards.First(c => c.Suit == "Diamond" && c.Number == 7));
             return playableCards;
@@ -162,7 +175,7 @@ public class GamePlayer : ICloneable
     {
         this.EnemyPlayerGO.GetComponent<Enemy>().IsSittingOut = IsSittingOut;
         //enemy still needs to show cards as we are AI (ish)
-        this.NetworkPlayerGO.GetComponent<NetworkPlayer>().StatusText = "Sitting Out";
+        this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcResetUI("Sitting Out");
     }
 
     public void ShowIsTableHost()

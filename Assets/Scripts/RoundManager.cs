@@ -25,6 +25,7 @@ public class RoundManager : NetworkBehaviour
     private List<PlayingCard> cards;
     private List<PlayingCard> playedCards = new List<PlayingCard>();
     private List<int> finishedPlayers = new List<int>();
+    private bool isFirstCardOfGame;
 
     void Start() {
         singlePack = Pack.GetCards(); 
@@ -32,6 +33,7 @@ public class RoundManager : NetworkBehaviour
 
     public void StartNewGame(List<GamePlayer> gamePlayers, int numberOfPacks)
     {
+        isFirstCardOfGame = true;
         players = gamePlayers.Clone();
         numberOfCardPacks = numberOfPacks;
         loadCards();
@@ -124,7 +126,7 @@ public class RoundManager : NetworkBehaviour
              if(players[playerIndex].HasSevenOfDiamonds())
              {
                  currentPlayerIndex = playerIndex;
-                 players[playerIndex].SetAsCurrentPlayer();
+                 players[playerIndex].SetAsCurrentPlayer(isFirstCardOfGame);
                  break;
              }
         }
@@ -166,12 +168,17 @@ public class RoundManager : NetworkBehaviour
 
     private void nextPlayer()
     {
+        isFirstCardOfGame = false;
+
         if(players.Count <= finishedPlayers.Count)  
         {
             //Debug.Log("All done!");
             GameObject.Find("SeatManager").GetComponent<SeatManager>().GameFinished();
             return;
         }
+
+        //could wait for AI to finish here (using a callback in doAiThinkingCoroutine) - just forcing it for now instead
+        players[currentPlayerIndex].IsAIMakingChoice = false;
 
         currentPlayerIndex++;
         if(currentPlayerIndex >= players.Count)
@@ -188,7 +195,7 @@ public class RoundManager : NetworkBehaviour
             }
         }
 
-        players[currentPlayerIndex].SetAsCurrentPlayer();
+        players[currentPlayerIndex].SetAsCurrentPlayer(isFirstCardOfGame);
     }
 
     public void NetworkPlayerNowAI(int seatNumber)
@@ -201,41 +208,48 @@ public class RoundManager : NetworkBehaviour
             
             if(players[currentPlayerIndex].SeatNumber == seatNumber)
             {
-                players[currentPlayerIndex].SetAsCurrentPlayer();
+                players[currentPlayerIndex].SetAsCurrentPlayer(isFirstCardOfGame);
             }
         }
     }
 
     public void NetworkPlayerToggleSittingOut(int seatNumber, bool isSittingOut, out bool isPlayerInCurrentGame)
     {
-        isPlayerInCurrentGame = false;
         var player = players.FirstOrDefault(p => p.SeatNumber == seatNumber);
         if(player != null)
         {
             player.IsSittingOut = isSittingOut; 
 
-            player.ClearUI();
-
-            StartCoroutine(rebuildUICoroutine(player));
             isPlayerInCurrentGame = true;
+
+            StartCoroutine(rebuildUICoroutine(player));     
+        }
+        else
+        {
+            isPlayerInCurrentGame = false;
         }
     }
 
     private IEnumerator rebuildUICoroutine(GamePlayer player)
     {
-        yield return new WaitForSeconds(1);
         if(player.IsSittingOut == false)
         {
-            player.ShowCardsInUI();
+            player.ClearUI();
+            yield return new WaitForSeconds(1);
+            if(player.Cards.Any())
+            {
+                player.ShowCardsInUI();
+            }
+            //TODO: show where placed instead?
         }
         else
         {
             player.SetMidGameSittingOutStatus();
         }
 
-        if(players[currentPlayerIndex]== player)
+        if(player.IsAI == false && players[currentPlayerIndex].SeatNumber == player.SeatNumber && player.Cards.Any())
         {
-            players[currentPlayerIndex].SetAsCurrentPlayer();
+            players[currentPlayerIndex].SetAsCurrentPlayer(isFirstCardOfGame);
         }
     }
 
@@ -247,11 +261,15 @@ public class RoundManager : NetworkBehaviour
         }
 
         int numberOfSameCardsPlayed = playedCards.Count(c => c.Suit == card.Suit && c.Number == card.Number);
-        int numberOfParentsPlayed = playedCards.Count(c => c.Suit == card.Suit && c.Number == card.Number + 1);
+        int numberOfParentsPlayed = 0;
 
         if(card.Number > 7)
         {
             numberOfParentsPlayed = playedCards.Count(c => c.Suit == card.Suit && c.Number == card.Number - 1);
+        }
+        else
+        {
+            numberOfParentsPlayed = playedCards.Count(c => c.Suit == card.Suit && c.Number == card.Number + 1);
         }
 
         return numberOfParentsPlayed > numberOfSameCardsPlayed;

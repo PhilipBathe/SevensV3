@@ -47,7 +47,7 @@ public class AIPlayer : NetworkBehaviour
                 }
             }
 
-            GameObject.Find("SeatManager").GetComponent<RoundManager>().PlayCard(cardToPlay);
+            GameObject.Find("SeatManager").GetComponent<RoundManager>().PlayCard(cardToPlay);    
         }
     }
     
