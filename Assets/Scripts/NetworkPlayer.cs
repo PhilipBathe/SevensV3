@@ -310,11 +310,13 @@ public class NetworkPlayer : NetworkBehaviour
             return;
         }
 
-        foreach(var card in playableCards)
+        foreach(var card in playableCards.GroupBy(p => p.SortOrder).Select(g => g.First()))
         {
+            //Debug.Log(card.SortOrder);
             var parentTransform = GameObject.Find($"{card.Suit}Cards").transform;
             foreach(Transform child in parentTransform)
             {
+                
                 if (child.tag == "Card" 
                     && child.GetComponent<Card>().SortOrder == card.SortOrder)
                 {
@@ -487,6 +489,7 @@ public class NetworkPlayer : NetworkBehaviour
                     setNormalSizes(out handSpacing, out optionSpacing);
                     break;
                 case 2:
+                case 3:
                     setCrampedSizes(out handSpacing, out optionSpacing);
                     break;
                 default:
@@ -495,6 +498,7 @@ public class NetworkPlayer : NetworkBehaviour
             }
 
             GameObject playerHandPanel = GameObject.Find("PlayerHand");
+            //Debug.Log($"playerHand width {playerHandPanel.GetComponent<RectTransform>().sizeDelta.x}");
 
             foreach(Transform child in playerHandPanel.transform)
             {
@@ -502,6 +506,7 @@ public class NetworkPlayer : NetworkBehaviour
             }
 
             GameObject optionsPanel = GameObject.Find("OptionsPanel");
+            //Debug.Log($"optionsPanel width {optionsPanel.GetComponent<RectTransform>().sizeDelta.x}");
 
             foreach(Transform child in optionsPanel.transform)
             {
@@ -522,7 +527,7 @@ public class NetworkPlayer : NetworkBehaviour
     [Client]
     private void setCrampedSizes(out int handSpacing, out int optionSpacing)
     {
-        handSpacing = -102;
+        handSpacing = -107;
         cardSize = 120;
         cardPadding = 22;
         optionSpacing = -75;

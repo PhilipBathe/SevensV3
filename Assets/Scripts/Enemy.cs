@@ -222,6 +222,8 @@ public class Enemy : NetworkBehaviour
             return;
         }
 
+        setSpacing(newCardCount);
+
         if(newCardCount == oldCardCount-1)
         {
             removeOneCard();
@@ -236,6 +238,17 @@ public class Enemy : NetworkBehaviour
         {
             GameObject playerCard = Instantiate(EnemyCardPrefab, Vector2.zero, Quaternion.identity, Hand.transform);
         }
+    }
+
+    private void setSpacing(float cardCount)
+    {
+        float newSpacing = -33f;
+        if(cardCount > 21f) //let hands shrink after we are down to 21 or less
+        {
+            newSpacing = (180 - (cardCount * 40)) / (cardCount - 1);
+        }
+
+        Hand.GetComponent<HorizontalLayoutGroup>().spacing = newSpacing;
     }
 
     private void clearHand()

@@ -80,12 +80,12 @@ public class BoardManager : NetworkBehaviour
 
         if(card.Number < 7)
         {
-            y = (card.Number - 7) * 6f - 44f;
+            y = (card.Number - 7) * 15f - 44f;
         }
 
         if(card.Number > 7)
         {
-            y = (card.Number - 7) * 6f + 44f;
+            y = (card.Number - 7) * 15f + 44f;
         }
 
         return y;
