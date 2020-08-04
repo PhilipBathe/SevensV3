@@ -9,6 +9,11 @@ public class SceneLoader : NetworkBehaviour
     {
         var networkManager = this.GetComponent<SevensNetworkManager>();
 
+        #if UNITY_SERVER
+            networkManager.StartServer();
+            return;
+        #endif
+
         var entranceChoice = PlayerPrefs.GetString("entranceChoice").Trim();
 
         switch(entranceChoice)
