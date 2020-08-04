@@ -7,17 +7,53 @@ using UnityEngine.UI;
 public class LoginManager : MonoBehaviour
 {
    public InputField playerNameField;
+   public InputField ipAddressField;
 
     void Start()
     {
+        //Until we get online working
+        GameObject.Find("JoinOnlineButton").GetComponent<Button>().interactable = false;
+        GameObject.Find("ServerOnlineButton").GetComponent<Button>().interactable = false;
+
         playerNameField.text = PlayerPrefs.GetString("username").Trim();
+        ipAddressField.text = PlayerPrefs.GetString("ipAddress").Trim();
     }
 
-    public void JoinTable() 
+    public void HostLan()
     {
-        PlayerPrefs.SetString("username", playerNameField.text);
+        PlayerPrefs.SetString("username", playerNameField.text.Trim());
+        joinTable("HostLan");
+    }
+
+    public void JoinOnline()
+    {
+        PlayerPrefs.SetString("username", playerNameField.text.Trim());
+        joinTable("JoinOnline");
+    }
+
+    public void SinglePlayer()
+    {
+        joinTable("SinglePlayer");
+    }
+
+    public void LanServer()
+    {
+        joinTable("LanServer");
+    }
+
+    public void JoinLan()
+    {
+        PlayerPrefs.SetString("username", playerNameField.text.Trim());
+        PlayerPrefs.SetString("ipAddress", ipAddressField.text.Trim());
+        joinTable("JoinLan");
+    }
+
+    private void joinTable(string entranceChoice)
+    {
+        //TODO: use something other than magic strings here!
+        PlayerPrefs.SetString("entranceChoice", entranceChoice);
+
         PlayerPrefs.Save();
-        //Debug.Log(name.text);
 
         SceneManager.LoadScene("TableScene");
     }

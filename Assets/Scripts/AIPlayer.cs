@@ -8,16 +8,16 @@ using Mirror;
 public class AIPlayer : NetworkBehaviour
 {
     public float WaitTimeForAI = 0.5f;
-    public float AIWineLevel = 0f;
+
 
     [Server]
-    public void MakeChoice(List<PlayingCard> playableCards, List<PlayingCard> allCards)
+    public void MakeChoice(List<PlayingCard> playableCards, List<PlayingCard> allCards, int wineLevel)
     {
-        StartCoroutine(doAiThinkingCoroutine(playableCards, allCards));
+        StartCoroutine(doAiThinkingCoroutine(playableCards, allCards, wineLevel));
     }
 
     [Server]
-    IEnumerator doAiThinkingCoroutine(List<PlayingCard> playableCards, List<PlayingCard> allCards)
+    IEnumerator doAiThinkingCoroutine(List<PlayingCard> playableCards, List<PlayingCard> allCards, int wineLevel)
     {
         //Thinking time!
         yield return new WaitForSeconds(WaitTimeForAI);
@@ -29,22 +29,48 @@ public class AIPlayer : NetworkBehaviour
         else
         {
             var cardToPlay = playableCards.First();
-            if(playableCards.Count > 1)
+
+            if(wineLevel == 3) //one bottle of wine so just pick a card at random
             {
-                cardToPlay = chooseCard(playableCards, allCards);      
+                var randomIndex = UnityEngine.Random.Range(0, playableCards.Count);
+                cardToPlay = playableCards[randomIndex];
+            }
+            if(wineLevel == 5) //drunk owl so nearest number to 7
+            {
+                cardToPlay = chooseCardNearestToSeven(playableCards);
+            }
+            else
+            {
+                if(playableCards.Count > 1)
+                {
+                    cardToPlay = chooseCard(playableCards, allCards, wineLevel);      
+                }
             }
 
-            GameObject.Find("SeatManager").GetComponent<RoundManager>().PlayCard(cardToPlay);
+            GameObject.Find("SeatManager").GetComponent<RoundManager>().PlayCard(cardToPlay);    
         }
     }
-
-     [Server]
-    private PlayingCard chooseCard(List<PlayingCard> playableCards, List<PlayingCard> allCards)
+    
+    [Server]
+    private PlayingCard chooseCardNearestToSeven(List<PlayingCard> playableCards)
     {
-        //Debug.Log("Choice to make");
+        return playableCards.OrderBy(p => Math.Abs(7 - p.Number)).ThenBy(a => Guid.NewGuid()).First();
+    }
+
+    [Server]
+    private PlayingCard chooseCard(List<PlayingCard> playableCards, List<PlayingCard> allCards, int wineLevel)
+    {
+        //Debug.Log($"Choice to make with wineLevel {wineLevel}");
+
+        float randomness = 0.09f;
+        if(wineLevel == 2) //two glasses of wine so try to make a good decision but with a wider randomness range
+        {
+            randomness = 10f;
+        }
 
         var cardToPlay = playableCards.First();
         float bestCardWorth = -100f;
+        float worstCardWorth = 100f;
 
         foreach(var playableCard in playableCards)
         {
@@ -91,14 +117,27 @@ public class AIPlayer : NetworkBehaviour
             //Debug.Log($"Card {playableCardGO.name} had worth of {currentWorth}");
 
             //if still a tie then don't always pick the first suit ("add some flavour")
-            currentWorth += UnityEngine.Random.Range(0.01f, AIWineLevel + 0.09f);
+            currentWorth += UnityEngine.Random.Range(0.01f, randomness);
 
             //Debug.Log($"Card {playableCardGO.name} gets wine worth of {currentWorth}");
 
-            if(currentWorth > bestCardWorth)
+            //one glass or two glasses of wine so still trying to win
+            if(wineLevel < 4 && currentWorth > bestCardWorth)
             {
                 bestCardWorth = currentWorth;
                 cardToPlay = playableCard;
+            }
+
+            // Debug.Log($"card {playableCard.CardName}");
+            // Debug.Log($"currentWorth {currentWorth}");
+            // Debug.Log($"worstCardWorth {worstCardWorth}");
+
+            //two bottles of wine - so blotto we are trying to lose
+            if(wineLevel >= 4 && currentWorth < worstCardWorth)
+            {
+                worstCardWorth = currentWorth;
+                cardToPlay = playableCard;
+                //Debug.Log($"worst card {playableCard.CardName}");
             }
         }
 

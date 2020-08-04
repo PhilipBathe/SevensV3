@@ -32,13 +32,72 @@ public class Enemy : NetworkBehaviour
     [SyncVar(hook = nameof(OnPlacedChanged))]
     public int Placed;
 
+    [SyncVar(hook = nameof(OnStatusTextChanged))]
+    public string StatusText;
+
+    [SyncVar(hook = nameof(OnIsTableHostChanged))]
+    public bool IsTableHost;
+
 
 
     public GameObject EnemyCardPrefab;
 
     public GameObject Hand;
 
+    [SyncVar(hook = nameof(OnIsAIChanged))]
     public bool IsAI;
+
+    [SyncVar(hook = nameof(OnIsSittingOutChanged))]
+    public bool IsSittingOut;
+
+    void OnIsTableHostChanged(bool oldIsTableHost, bool newIsTableHost)
+    {
+        setPlayerType();
+    }
+
+    void OnIsSittingOutChanged(bool oldIsSittingOut, bool newIsSittingOut)
+    {
+        setPlayerType();
+    }
+
+    void OnIsAIChanged(bool oldIsAI, bool newIsAI)
+    {
+        setPlayerType();
+    }
+
+    private void setPlayerType()
+    {
+        var commonPlayerUI = gameObject.GetComponent<CommonPlayerUI>();
+
+        //TODO: add special graphic for host sitting out???
+
+        if(IsAI == true)
+        {
+            commonPlayerUI.ShowIsAI();
+            return;
+        }
+
+        if(IsSittingOut == true)
+        {
+            commonPlayerUI.ShowIsSittingOut();
+            return;
+        }
+
+        if(IsTableHost == true)
+        {
+            commonPlayerUI.ShowIsTableHost();
+            return;
+        }
+
+        
+
+        commonPlayerUI.ClearPlayerType();
+    }
+
+    void OnStatusTextChanged(string oldStatusText, string newStatusText)
+    {
+        gameObject.GetComponent<CommonPlayerUI>().SetStatusText(newStatusText);
+    }
 
     void OnPlacedChanged(int oldPlaced, int newPlaced)
     {
@@ -136,26 +195,25 @@ public class Enemy : NetworkBehaviour
 
     void OnParentChanged(GameObject oldParent, GameObject newParent)
     {
-        //TODO: hide ourselves?
         this.transform.SetParent(newParent.transform, false);
+        this.transform.localScale = new Vector2(1, 1);
     }
 
     [Server]
-    public void Reset() {
+    public void Reset(string status) 
+    {
         CardCount = 0;
         Placed = 0;
         IsDealer = false;
         IsThinking = false;
-        RpcResetUI();
-
-        //TODO: reset other bits
+        RpcClearLastGo();
+        StatusText = status;
     }
 
     [ClientRpc]
-    private void RpcResetUI()
+    private void RpcClearLastGo()
     {
-        var commonPlayerUI = gameObject.GetComponent<CommonPlayerUI>();
-        commonPlayerUI.ClearAll();
+        gameObject.GetComponent<CommonPlayerUI>().ClearLastGo();
     }
 
     void OnCardCountChanged(int oldCardCount, int newCardCount)
@@ -165,6 +223,8 @@ public class Enemy : NetworkBehaviour
             clearHand();
             return;
         }
+
+        setSpacing(newCardCount);
 
         if(newCardCount == oldCardCount-1)
         {
@@ -180,6 +240,17 @@ public class Enemy : NetworkBehaviour
         {
             GameObject playerCard = Instantiate(EnemyCardPrefab, Vector2.zero, Quaternion.identity, Hand.transform);
         }
+    }
+
+    private void setSpacing(float cardCount)
+    {
+        float newSpacing = -33f;
+        if(cardCount > 21f) //let hands shrink after we are down to 21 or less
+        {
+            newSpacing = (180 - (cardCount * 40)) / (cardCount - 1);
+        }
+
+        Hand.GetComponent<HorizontalLayoutGroup>().spacing = newSpacing;
     }
 
     private void clearHand()
@@ -199,6 +270,13 @@ public class Enemy : NetworkBehaviour
             Destroy(child.gameObject);
             break;
         }
+    }
+
+    [ClientRpc]
+    public void RpcDie()
+    {
+        this.transform.SetParent(null);
+        Destroy(gameObject);
     }
 
 }

@@ -5,32 +5,58 @@ using Mirror;
 using System.Linq;
 using System;
 
+public static class Extensions
+{
+    public static List<T> Clone<T>(this List<T> listToClone) where T: ICloneable
+    {
+        return listToClone.Select(item => (T)item.Clone()).ToList();
+    }
+}
+
 public class RoundManager : NetworkBehaviour
 {
     private List<GamePlayer> players;
 
     private int dealerIndex = -1;
 
+    private int numberOfCardPacks = 1;
+
+    private List<PlayingCard> singlePack;
     private List<PlayingCard> cards;
     private List<PlayingCard> playedCards = new List<PlayingCard>();
     private List<int> finishedPlayers = new List<int>();
+    private bool isFirstCardOfGame;
 
     void Start() {
-        cards = Pack.GetCards(); 
+        singlePack = Pack.GetCards(); 
     }
 
-    public void StartNewGame(List<GamePlayer> gamePlayers)
+    public void StartNewGame(List<GamePlayer> gamePlayers, int numberOfPacks)
     {
-        players = gamePlayers;
+        isFirstCardOfGame = true;
+        players = gamePlayers.Clone();
+        numberOfCardPacks = numberOfPacks;
+        loadCards();
         playedCards = new List<PlayingCard>();
         finishedPlayers = new List<int>();
         StartCoroutine(NewGameCoroutine());
     }
 
+    private void loadCards()
+    {
+        //Debug.Log(numberOfPacks);
+        cards = new List<PlayingCard>();
+        for(int i = 0; i < numberOfCardPacks; i++)
+        {
+            //Debug.Log("Adding a pack");
+            cards.AddRange(singlePack);
+        }
+    }
+
     IEnumerator NewGameCoroutine()
     {
         resetPlayers();
-        clearBoard();
+        prepareBoard();
         yield return new WaitForSeconds(1);
         changeDealer();
         deal();
@@ -42,13 +68,14 @@ public class RoundManager : NetworkBehaviour
     {
         foreach(var player in players)
         {
-            player.Reset();
+            player.Reset(string.Empty);
+            player.ScrunchCardHolders(players.Count, numberOfCardPacks);
         }
     }
 
-    private void clearBoard()
+    private void prepareBoard()
     {
-        GameObject.Find("Board").GetComponent<BoardManager>().RpcClearBoard();
+        GameObject.Find("Board").GetComponent<BoardManager>().RpcPrepareBoard(numberOfCardPacks);
     }
 
     private void changeDealer()
@@ -65,8 +92,8 @@ public class RoundManager : NetworkBehaviour
 
     private void deal()
     {
-        Debug.Log("deal");
-        Debug.Log(cards.Count);
+        //Debug.Log("deal");
+        //Debug.Log(cards.Count);
         List<PlayingCard> shuffledCards = cards.OrderBy(a => Guid.NewGuid()).ToList();
 
         for(var i = 0; i < shuffledCards.Count; i++)
@@ -99,7 +126,7 @@ public class RoundManager : NetworkBehaviour
              if(players[playerIndex].HasSevenOfDiamonds())
              {
                  currentPlayerIndex = playerIndex;
-                 players[playerIndex].SetAsCurrentPlayer();
+                 players[playerIndex].SetAsCurrentPlayer(isFirstCardOfGame);
                  break;
              }
         }
@@ -141,12 +168,17 @@ public class RoundManager : NetworkBehaviour
 
     private void nextPlayer()
     {
+        isFirstCardOfGame = false;
+
         if(players.Count <= finishedPlayers.Count)  
         {
-            Debug.Log("All done!");
+            //Debug.Log("All done!");
             GameObject.Find("SeatManager").GetComponent<SeatManager>().GameFinished();
             return;
         }
+
+        //could wait for AI to finish here (using a callback in doAiThinkingCoroutine) - just forcing it for now instead
+        players[currentPlayerIndex].IsAIMakingChoice = false;
 
         currentPlayerIndex++;
         if(currentPlayerIndex >= players.Count)
@@ -163,25 +195,82 @@ public class RoundManager : NetworkBehaviour
             }
         }
 
-        players[currentPlayerIndex].SetAsCurrentPlayer();
+        players[currentPlayerIndex].SetAsCurrentPlayer(isFirstCardOfGame);
+    }
+
+    public void NetworkPlayerNowAI(int seatNumber)
+    {
+        var lostPlayer = players.FirstOrDefault(p => p.SeatNumber == seatNumber);
+        if(lostPlayer != null)
+        {
+            lostPlayer.IsAI = true;
+            lostPlayer.NetworkPlayerGO = null;   
+            
+            if(players[currentPlayerIndex].SeatNumber == seatNumber)
+            {
+                players[currentPlayerIndex].SetAsCurrentPlayer(isFirstCardOfGame);
+            }
+        }
+    }
+
+    public void NetworkPlayerToggleSittingOut(int seatNumber, bool isSittingOut, out bool isPlayerInCurrentGame)
+    {
+        var player = players.FirstOrDefault(p => p.SeatNumber == seatNumber);
+        if(player != null)
+        {
+            player.IsSittingOut = isSittingOut; 
+
+            isPlayerInCurrentGame = true;
+
+            StartCoroutine(rebuildUICoroutine(player));     
+        }
+        else
+        {
+            isPlayerInCurrentGame = false;
+        }
+    }
+
+    private IEnumerator rebuildUICoroutine(GamePlayer player)
+    {
+        player.ToggleMidGameSittingOutStatus();
+
+        if(player.IsSittingOut == false)
+        {
+            player.ClearUI();
+            yield return new WaitForSeconds(1);
+            if(player.Cards.Any())
+            {
+                player.ShowCardsInUI();
+            }
+            //TODO: show where placed instead?
+        }
+
+        if(player.IsAI == false && players[currentPlayerIndex].SeatNumber == player.SeatNumber && player.Cards.Any())
+        {
+            players[currentPlayerIndex].SetAsCurrentPlayer(isFirstCardOfGame);
+        }
     }
 
     public bool IsCardPlayable(PlayingCard card)
     {
-         if(card.Number == 7)
+        if(card.Number == 7)
         {
             return true;
         }
 
-        foreach(var playedCard in playedCards.Where(c => c.Suit == card.Suit))
+        int numberOfSameCardsPlayed = playedCards.Count(c => c.Suit == card.Suit && c.Number == card.Number);
+        int numberOfParentsPlayed = 0;
+
+        if(card.Number > 7)
         {
-            if(Math.Abs(playedCard.Number - card.Number) == 1)
-            {
-                return true;
-            }
+            numberOfParentsPlayed = playedCards.Count(c => c.Suit == card.Suit && c.Number == card.Number - 1);
+        }
+        else
+        {
+            numberOfParentsPlayed = playedCards.Count(c => c.Suit == card.Suit && c.Number == card.Number + 1);
         }
 
-        return false;
+        return numberOfParentsPlayed > numberOfSameCardsPlayed;
     }
 
 }
