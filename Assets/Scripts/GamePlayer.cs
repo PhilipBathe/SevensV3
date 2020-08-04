@@ -171,11 +171,14 @@ public class GamePlayer : ICloneable
         }
     }
 
-    public void SetMidGameSittingOutStatus()
+    public void ToggleMidGameSittingOutStatus()
     {
         this.EnemyPlayerGO.GetComponent<Enemy>().IsSittingOut = IsSittingOut;
-        //enemy still needs to show cards as we are AI (ish)
-        this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcResetUI("Sitting Out");
+
+        if(IsSittingOut == true)
+        {
+            this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcResetUI("Sitting Out");
+        }
     }
 
     public void ShowIsTableHost()
@@ -191,6 +194,13 @@ public class GamePlayer : ICloneable
         {
             this.NetworkPlayerGO.GetComponent<NetworkPlayer>().RpcScrunchCardHolders(numberOfPlayers, numberOfCardPacks);
         }
-        
     }
+
+    public void ShowPlayerType()
+    {
+        this.EnemyPlayerGO.GetComponent<Enemy>().IsTableHost = IsTableHost;
+        this.EnemyPlayerGO.GetComponent<Enemy>().IsSittingOut = IsSittingOut;
+        this.EnemyPlayerGO.GetComponent<Enemy>().IsAI = IsAI;
+    }
+
 }

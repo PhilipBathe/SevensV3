@@ -71,6 +71,12 @@ public class Enemy : NetworkBehaviour
 
         //TODO: add special graphic for host sitting out???
 
+        if(IsAI == true)
+        {
+            commonPlayerUI.ShowIsAI();
+            return;
+        }
+
         if(IsSittingOut == true)
         {
             commonPlayerUI.ShowIsSittingOut();
@@ -83,11 +89,7 @@ public class Enemy : NetworkBehaviour
             return;
         }
 
-        if(IsAI == true)
-        {
-            commonPlayerUI.ShowIsAI();
-            return;
-        }
+        
 
         commonPlayerUI.ClearPlayerType();
     }

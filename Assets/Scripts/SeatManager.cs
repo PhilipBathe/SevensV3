@@ -96,6 +96,7 @@ public class SeatManager : NetworkBehaviour
             leaver.EnemyPlayerGO.GetComponent<Enemy>().IsAI = true;
             //leaver.EnemyPlayerGO.GetComponent<Enemy>().PlayerName = $"*{leaver.EnemyPlayerGO.GetComponent<Enemy>().PlayerName}";
             leaver.NetworkPlayerGO = null;
+            leaver.ShowPlayerType();
 
             GameObject.Find("AIManager").GetComponent<AIManager>().NumberOfAIPlayers = ++NumberOfAIPlayers;
 

@@ -77,7 +77,12 @@ public class NetworkPlayer : NetworkBehaviour
     {
         if(isLocalPlayer)
         {
+            //newIsTableHost can only ever be true at the moment (if false it means they have left the table)
             GameObject.Find("HostOptionsPanel").GetComponent<Image>().rectTransform.localPosition = new Vector2(0, 0);
+            if(playerUI != null)
+            {
+                playerUI.GetComponentInChildren<CommonPlayerUI>().ShowIsTableHost();
+            }
         }
     }
 
@@ -163,7 +168,7 @@ public class NetworkPlayer : NetworkBehaviour
             playerUI = Instantiate(PlayerPrefab, Vector2.zero, Quaternion.identity) as GameObject;
             playerUI.transform.SetParent(canvas.transform, false);
 
-            CmdInitiateStatusText();
+            CmdInitiateStatusTextAndHost();
 
             newGamePanel = GameObject.Find("NextGame");
             waitingGO = GameObject.Find("WaitingForPlayers");
@@ -172,11 +177,15 @@ public class NetworkPlayer : NetworkBehaviour
     }
 
     [Command]
-    private void CmdInitiateStatusText()
+    private void CmdInitiateStatusTextAndHost()
     {
         if(isLocalPlayer)
         {
             StatusText = "Waiting for next game";
+            if(IsTableHost == true)
+            {
+                playerUI.GetComponentInChildren<CommonPlayerUI>().ShowIsTableHost();
+            }
         }
     }
 

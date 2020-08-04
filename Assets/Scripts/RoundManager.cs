@@ -232,6 +232,8 @@ public class RoundManager : NetworkBehaviour
 
     private IEnumerator rebuildUICoroutine(GamePlayer player)
     {
+        player.ToggleMidGameSittingOutStatus();
+
         if(player.IsSittingOut == false)
         {
             player.ClearUI();
@@ -241,10 +243,6 @@ public class RoundManager : NetworkBehaviour
                 player.ShowCardsInUI();
             }
             //TODO: show where placed instead?
-        }
-        else
-        {
-            player.SetMidGameSittingOutStatus();
         }
 
         if(player.IsAI == false && players[currentPlayerIndex].SeatNumber == player.SeatNumber && player.Cards.Any())
