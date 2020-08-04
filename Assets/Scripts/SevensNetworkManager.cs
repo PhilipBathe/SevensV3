@@ -30,6 +30,12 @@ public class SevensNetworkManager : NetworkManager
         base.OnServerDisconnect(conn);
     }
 
+    public override void OnStartServer()
+    {
+        //GameserverSDK.Start();
+        base.OnStartServer();
+    }
+
     //TODO: handle when a LAN host stops
     // OnStopHost
     // OnStopServer (also when a LAN server only stops)

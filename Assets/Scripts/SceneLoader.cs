@@ -10,7 +10,8 @@ public class SceneLoader : NetworkBehaviour
         var networkManager = this.GetComponent<SevensNetworkManager>();
 
         #if UNITY_SERVER
-            networkManager.StartServer();
+            //mirror server does this automagically if running as a headless server mode thingie
+            //networkManager.StartServer();
             return;
         #endif
 
