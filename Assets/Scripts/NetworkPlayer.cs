@@ -323,7 +323,7 @@ public class NetworkPlayer : NetworkBehaviour
                     var newParentTransform = GameObject.Find($"{card.Suit}Playable").transform;
                     child.transform.SetParent(newParentTransform, false);
                     child.GetComponent<Card>().IsClickable = true;
-                    continue;
+                    break;
                 }
             }  
         }
