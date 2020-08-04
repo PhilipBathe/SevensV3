@@ -132,6 +132,7 @@ public class SeatManager : NetworkBehaviour
 
     public void ToggleSitOut(GameObject networkPlayer)
     {
+        bool wasAlreadyLegalToPlay = isLegalToPlay();
         int seatNumber = networkPlayer.GetComponent<NetworkPlayer>().SeatNumber;
 
         Debug.Log($"Number {seatNumber} is toggling sit out");
@@ -152,7 +153,10 @@ public class SeatManager : NetworkBehaviour
         else
         {
             player.ToggleBetweenGameSittingOutStatus();
-            startNewGame();
+            if(wasAlreadyLegalToPlay == false && isLegalToPlay() == true)
+            {
+                startNewGame();
+            }
         }
     }
 
