@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using System.Linq;
+using System;
 
 public class SevensNetworkManager : NetworkManager
 {
@@ -32,12 +33,15 @@ public class SevensNetworkManager : NetworkManager
 
     public override void OnStartServer()
     {
-        //GameserverSDK.Start();
+        #if UNITY_SERVER
+			clearOfflineScene();
+        #endif
+
         base.OnStartServer();
     }
 
-    //TODO: handle when a LAN host stops
-    // OnStopHost
-    // OnStopServer (also when a LAN server only stops)
-    // OnStopClient
+    private void clearOfflineScene()
+    {
+        this.offlineScene = string.Empty;
+    }
 }
