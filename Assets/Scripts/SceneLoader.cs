@@ -76,15 +76,61 @@ public class SceneLoader : NetworkBehaviour
     private void OnPlayFabLoginSuccess(LoginResult response)
 	{
 		Debug.Log(response.ToString());
-		if (configuration.ipAddress == "")
-		{   //We need to grab an IP and Port from a server based on the buildId. Copy this and add it to your Configuration.
-			RequestMultiplayerServer(); 
+
+		getExistingServerDetails();
+
+		// if (configuration.ipAddress == "")
+		// {   //We need to grab an IP and Port from a server based on the buildId. Copy this and add it to your Configuration.
+		// 	RequestMultiplayerServer(); 
+		// }
+		// else
+		// {
+		// 	ConnectRemoteClient();
+		// }
+	}
+
+	private void getExistingServerDetails()
+	{
+		GetMultiplayerServerDetailsRequest request = new GetMultiplayerServerDetailsRequest();
+		request.BuildId = configuration.buildId;
+		PlayFabMultiplayerAPI.GetMultiplayerServerDetails(request, OnRequestServerDetails, OnRequestServerDetailsError);
+	}
+
+	private void OnRequestServerDetails(GetMultiplayerServerDetailsResponse response)
+	{
+		Debug.Log("OnRequestServerDetails");
+
+		if(response != null)
+		{
+			Debug.Log($"response.IPV4Address {response.IPV4Address}");
+			configuration.ipAddress = response.IPV4Address;
+			configuration.port = (ushort)response.Ports[0].Num;
+			ConnectRemoteClient();
 		}
 		else
 		{
-			ConnectRemoteClient();
+			RequestMultiplayerServer(); 
 		}
 	}
+
+	private void OnRequestServerDetailsError(PlayFabError error)
+	{
+		Debug.Log($"OnRequestServerDetailsError");
+		Debug.Log(error.ErrorMessage);
+
+		if(error.ErrorDetails != null)
+		{
+			foreach(var errDic in error.ErrorDetails)
+			{
+				Debug.Log($"key --- {errDic.Key}");
+				foreach(var val in errDic.Value)
+				{
+					Debug.Log(val);
+				}
+			}
+		}
+	}
+
 
     private void RequestMultiplayerServer()
 	{
@@ -92,7 +138,7 @@ public class SceneLoader : NetworkBehaviour
 		Debug.Log($"configuration.ipAddress {configuration.ipAddress}");
 		RequestMultiplayerServerRequest requestData = new RequestMultiplayerServerRequest();
 		requestData.BuildId = configuration.buildId;
-		requestData.SessionId = System.Guid.NewGuid().ToString();
+		requestData.SessionId = "5c48a303-e25b-4afc-8c8e-d5c1d459c850"; //System.Guid.NewGuid().ToString();
 		requestData.PreferredRegions = new List<string>() { "WestUs" };
 		PlayFabMultiplayerAPI.RequestMultiplayerServer(requestData, OnRequestMultiplayerServer, OnRequestMultiplayerServerError);
 	}
