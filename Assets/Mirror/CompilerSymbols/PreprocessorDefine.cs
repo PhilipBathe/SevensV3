@@ -38,7 +38,7 @@ namespace Mirror
             string newDefines = string.Join(";", defines);
             if (newDefines != currentDefines)
             {
-                PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, newDefines);
+                //PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, newDefines);
             }
         }
     }

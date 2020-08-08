@@ -111,6 +111,12 @@ public class SeatManager : NetworkBehaviour
 
         networkPlayers.Remove(networkPlayer);
 
+        //TODO: some sort of delay and then check again to allow users to reconnect?
+        if(networkPlayers.Any() == false)
+        {
+            Application.Quit();
+        }
+
         nominateNewTableHost();
     }
 

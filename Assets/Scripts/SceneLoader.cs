@@ -33,6 +33,7 @@ public class SceneLoader : NetworkBehaviour
                 networkManager.StartClient();
                 break;
             case "JoinOnline":
+				//this.GetComponent<PlayFabClient>().HardCodedJoin();
                 this.GetComponent<PlayFabClient>().JoinOnline();
                 break;
             case "SinglePlayer":
@@ -41,5 +42,5 @@ public class SceneLoader : NetworkBehaviour
                 //TODO: prevent others from joining
                 break;
         }
-    }  
+    } 
 }

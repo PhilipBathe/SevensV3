@@ -57,13 +57,12 @@ public class PlayFabClient : NetworkBehaviour
 
     private void onPlayFabLoginSuccess(LoginResult response)
 	{
-		Debug.Log(response.ToString());
+		//Debug.Log(response.ToString());
 
         PlayFab.ClientModels.EntityKey clientEntityKey = response.EntityToken.Entity;
 
         //TODO: show waiting for players in UI
 
-        //join matchmaking queue or get back fill thingie?
         CreateMatchmakingTicketRequest request = new CreateMatchmakingTicketRequest();
         request.QueueName = "FamilyGame";
         request.GiveUpAfterSeconds = 60; //TODO: probably need to increase this knowing my family!
@@ -84,96 +83,176 @@ public class PlayFabClient : NetworkBehaviour
     private void onMatchmakingTicketCreateSuccess(CreateMatchmakingTicketResult result)
     {
         Debug.Log("onMatchmakingTicketCreateSuccess called");
+
+        GetMatchmakingTicketRequest request = new GetMatchmakingTicketRequest{
+            TicketId = result.TicketId,
+            QueueName = "FamilyGame",
+            EscapeObject = false
+        };
+
+        //poll GetMatchmakingTicket to get match id
+        ticketPoller = StartCoroutine(checkForMatchId(request));
     }
 
+    Coroutine ticketPoller;
 
-	private void OnRequestServerDetails(GetMultiplayerServerDetailsResponse response)
+    private IEnumerator checkForMatchId(GetMatchmakingTicketRequest request)
+    {
+        while (true)
+        {
+            Debug.Log("polling");
+            //can poll up to 10 times a minute
+            yield return new WaitForSeconds(10);
+            PlayFabMultiplayerAPI.GetMatchmakingTicket(request, onGetMatchmakingTicketSuccess, onGetMatchmakingTicketError);
+        }
+    }
+
+    private void onGetMatchmakingTicketError(PlayFabError response)
+    {
+        //TODO: show the problem in UI
+		Debug.Log(response.ToString());
+    }
+
+    private void onGetMatchmakingTicketSuccess(GetMatchmakingTicketResult result)
+    {
+        Debug.Log("onGetMatchmakingTicketSuccess");
+
+        Debug.Log($"result.MatchId: {result.MatchId}");
+
+        if(string.IsNullOrEmpty(result.MatchId) == false)
+        {
+            Debug.Log("onGetMatchmakingTicketSuccess - has match ID");
+            StopCoroutine(ticketPoller);
+
+            //use GetMatch to get IP and port
+            GetMatchRequest request = new GetMatchRequest {
+                EscapeObject = false,
+                QueueName = "FamilyGame",
+                ReturnMemberAttributes = false,
+                MatchId = result.MatchId
+            };
+            PlayFabMultiplayerAPI.GetMatch(request, onGetMatchSuccess, onGetMatchError);
+        }
+    }
+
+    private void onGetMatchError(PlayFabError response)
+    {
+        //TODO: show the problem in UI
+		Debug.Log(response.ToString());
+    }
+
+    private void onGetMatchSuccess(GetMatchResult result)
+    {
+        Debug.Log("onGetMatchSuccess");
+        Debug.Log($"result.ServerDetails.IPV4Address, {result.ServerDetails.IPV4Address}");
+        Debug.Log($"result.ServerDetails.Ports[0].Num, {result.ServerDetails.Ports[0].Num}");
+
+        configuration.ipAddress = result.ServerDetails.IPV4Address;
+		configuration.port = (ushort)result.ServerDetails.Ports[0].Num;
+        StartCoroutine(ConnectRemoteClient());
+    }
+
+	private IEnumerator ConnectRemoteClient()
 	{
-		Debug.Log("OnRequestServerDetails");
-
-		if(response != null)
-		{
-			Debug.Log($"response.IPV4Address {response.IPV4Address}");
-			configuration.ipAddress = response.IPV4Address;
-			configuration.port = (ushort)response.Ports[0].Num;
-			ConnectRemoteClient();
-		}
-		else
-		{
-			RequestMultiplayerServer(); 
-		}
-	}
-
-	private void OnRequestServerDetailsError(PlayFabError error)
-	{
-		Debug.Log($"OnRequestServerDetailsError");
-		Debug.Log(error.ErrorMessage);
-
-		if(error.ErrorDetails != null)
-		{
-			foreach(var errDic in error.ErrorDetails)
-			{
-				Debug.Log($"key --- {errDic.Key}");
-				foreach(var val in errDic.Value)
-				{
-					Debug.Log(val);
-				}
-			}
-		}
-	}
-
-
-    private void RequestMultiplayerServer()
-	{
-		Debug.Log("[ClientStartUp].RequestMultiplayerServer");
-		Debug.Log($"configuration.ipAddress {configuration.ipAddress}");
-		RequestMultiplayerServerRequest requestData = new RequestMultiplayerServerRequest();
-		requestData.BuildId = configuration.buildId;
-		requestData.SessionId = "5c48a303-e25b-4afc-8c8e-d5c1d459c850"; //System.Guid.NewGuid().ToString();
-		requestData.PreferredRegions = new List<string>() { "WestUs" };
-		PlayFabMultiplayerAPI.RequestMultiplayerServer(requestData, OnRequestMultiplayerServer, OnRequestMultiplayerServerError);
-	}
-
-	private void OnRequestMultiplayerServer(RequestMultiplayerServerResponse response)
-	{
-		Debug.Log($"OnRequestMultiplayerServer {response}");
-		ConnectRemoteClient(response);
-	}
-
-	private void ConnectRemoteClient(RequestMultiplayerServerResponse response = null)
-	{
-		if(response == null) 
-		{
-			networkManager.networkAddress = configuration.ipAddress;
-			telepathyTransport.port = configuration.port;
-			//apathyTransport.port = configuration.port;
-		}
-		else
-		{
-			Debug.Log("**** ADD THIS TO YOUR CONFIGURATION **** -- IP: " + response.IPV4Address + " Port: " + (ushort)response.Ports[0].Num);
-			networkManager.networkAddress = response.IPV4Address;
-			telepathyTransport.port = (ushort)response.Ports[0].Num;
-			//apathyTransport.port = (ushort)response.Ports[0].Num;
-		}
+        //let server get ready - or can we check some other way?
+        yield return new WaitForSeconds(10);
+        networkManager.networkAddress = configuration.ipAddress;
+        telepathyTransport.port = configuration.port;
+        //apathyTransport.port = configuration.port;
 
 		networkManager.StartClient();
 	}
 
-	private void OnRequestMultiplayerServerError(PlayFabError error)
-	{
-		Debug.Log($"OnRequestMultiplayerServerError");
-		Debug.Log(error.ErrorMessage);
 
-		if(error.ErrorDetails != null)
-		{
-			foreach(var errDic in error.ErrorDetails)
-			{
-				Debug.Log($"key --- {errDic.Key}");
-				foreach(var val in errDic.Value)
-				{
-					Debug.Log(val);
-				}
-			}
-		}
-	}
+    public void HardCodedJoin()
+    {
+        networkManager = this.GetComponent<SevensNetworkManager>();
+        telepathyTransport = this.GetComponent<TelepathyTransport>();
+        
+        networkManager.networkAddress = "52.224.151.249";
+        telepathyTransport.port = 30001;
+        //apathyTransport.port = configuration.port;
+
+		networkManager.StartClient();
+    }
+
+
+
+
+
+
+
+
+	// private void OnRequestServerDetails(GetMultiplayerServerDetailsResponse response)
+	// {
+	// 	Debug.Log("OnRequestServerDetails");
+
+	// 	if(response != null)
+	// 	{
+	// 		Debug.Log($"response.IPV4Address {response.IPV4Address}");
+	// 		configuration.ipAddress = response.IPV4Address;
+	// 		configuration.port = (ushort)response.Ports[0].Num;
+	// 		ConnectRemoteClient();
+	// 	}
+	// 	else
+	// 	{
+	// 		RequestMultiplayerServer(); 
+	// 	}
+	// }
+
+	// private void OnRequestServerDetailsError(PlayFabError error)
+	// {
+	// 	Debug.Log($"OnRequestServerDetailsError");
+	// 	Debug.Log(error.ErrorMessage);
+
+	// 	if(error.ErrorDetails != null)
+	// 	{
+	// 		foreach(var errDic in error.ErrorDetails)
+	// 		{
+	// 			Debug.Log($"key --- {errDic.Key}");
+	// 			foreach(var val in errDic.Value)
+	// 			{
+	// 				Debug.Log(val);
+	// 			}
+	// 		}
+	// 	}
+	// }
+
+
+    // private void RequestMultiplayerServer()
+	// {
+	// 	Debug.Log("[ClientStartUp].RequestMultiplayerServer");
+	// 	Debug.Log($"configuration.ipAddress {configuration.ipAddress}");
+	// 	RequestMultiplayerServerRequest requestData = new RequestMultiplayerServerRequest();
+	// 	requestData.BuildId = configuration.buildId;
+	// 	requestData.SessionId = "5c48a303-e25b-4afc-8c8e-d5c1d459c850"; //System.Guid.NewGuid().ToString();
+	// 	requestData.PreferredRegions = new List<string>() { "WestUs" };
+	// 	PlayFabMultiplayerAPI.RequestMultiplayerServer(requestData, OnRequestMultiplayerServer, OnRequestMultiplayerServerError);
+	// }
+
+	// private void OnRequestMultiplayerServer(RequestMultiplayerServerResponse response)
+	// {
+	// 	Debug.Log($"OnRequestMultiplayerServer {response}");
+	// 	ConnectRemoteClient(response);
+	// }
+
+
+
+	// private void OnRequestMultiplayerServerError(PlayFabError error)
+	// {
+	// 	Debug.Log($"OnRequestMultiplayerServerError");
+	// 	Debug.Log(error.ErrorMessage);
+
+	// 	if(error.ErrorDetails != null)
+	// 	{
+	// 		foreach(var errDic in error.ErrorDetails)
+	// 		{
+	// 			Debug.Log($"key --- {errDic.Key}");
+	// 			foreach(var val in errDic.Value)
+	// 			{
+	// 				Debug.Log(val);
+	// 			}
+	// 		}
+	// 	}
+	// }
 }
