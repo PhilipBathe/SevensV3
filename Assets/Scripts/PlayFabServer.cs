@@ -2,45 +2,27 @@
 using UnityEngine;
 using PlayFab;
 using System;
-using System.Collections.Generic;
-using PlayFab.MultiplayerAgent.Model;
-using Mirror;
-
 
 public class PlayFabServer : MonoBehaviour
 {
-    //public Configuration configuration;
-
-	//private List<ConnectedPlayer> _connectedPlayers;
-
-	//public NetworkManager networkManager;
+	private PlayFabMessageRelay playFabMessageRelay;
 
     void Start()
     {
         #if UNITY_SERVER
-			Debug.Log("We are UNITY_SERVER");
+			Debug.Log("We are running as UNITY_SERVER");
             StartRemoteServer();
         #endif
     }
 
     private void StartRemoteServer()
 	{
-		Debug.Log("[ServerStartUp].StartRemoteServer");
-
-
-
-
-
-		//_connectedPlayers = new List<ConnectedPlayer>();
 		PlayFabMultiplayerAgentAPI.Start();
-		//PlayFabMultiplayerAgentAPI.IsDebugging = configuration.playFabDebugging;
-		// PlayFabMultiplayerAgentAPI.OnMaintenanceCallback += OnMaintenance;
-		// PlayFabMultiplayerAgentAPI.OnShutDownCallback += OnShutdown;
-		//PlayFabMultiplayerAgentAPI.OnServerActiveCallback += OnServerActive;
-		// PlayFabMultiplayerAgentAPI.OnAgentErrorCallback += OnAgentError;
-
-		// UNetServer.OnPlayerAdded.AddListener(OnPlayerAdded);
-		// UNetServer.OnPlayerRemoved.AddListener(OnPlayerRemoved);
+		PlayFabMultiplayerAgentAPI.IsDebugging = false;
+		PlayFabMultiplayerAgentAPI.OnMaintenanceCallback += OnMaintenance;
+		PlayFabMultiplayerAgentAPI.OnShutDownCallback += OnShutdown;
+		//PlayFabMultiplayerAgentAPI.OnServerActiveCallback += OnServerActive; //TODO: use this to start polling for backfill?
+		PlayFabMultiplayerAgentAPI.OnAgentErrorCallback += OnAgentError;
 
 		StartCoroutine(ReadyForPlayers());
 		//StartCoroutine(ShutdownServerInXTime());
@@ -49,80 +31,46 @@ public class PlayFabServer : MonoBehaviour
 	// IEnumerator ShutdownServerInXTime()
 	// {
 	// 	yield return new WaitForSeconds(300f);
-	// 	StartShutdownProcess();
+	// 	OnShutdown();
 	// }
 
 	IEnumerator ReadyForPlayers()
 	{
 		yield return new WaitForSeconds(.5f);
 		PlayFabMultiplayerAgentAPI.ReadyForPlayers();
+		
 	}
 
-	// private void OnServerActive()
-	// {
-	// 	UNetServer.StartServer();
-	// 	Debug.Log("Server Started From Agent Activation");
-	// }
+	private void getRelay()
+	{
+		if(playFabMessageRelay == null)
+		{
+			playFabMessageRelay = GameObject.Find("PlayFabMessageRelay").GetComponent<PlayFabMessageRelay>();
+		}
+	}
 
-	// private void OnPlayerRemoved(string playfabId)
-	// {
-	// 	ConnectedPlayer player = _connectedPlayers.Find(x => x.PlayerId.Equals(playfabId, StringComparison.OrdinalIgnoreCase));
-	// 	_connectedPlayers.Remove(player);
-	// 	PlayFabMultiplayerAgentAPI.UpdateConnectedPlayers(_connectedPlayers);
-	// 	CheckPlayerCountToShutdown();
-	// }
+	private void OnAgentError(string error)
+	{
+		getRelay();
+		playFabMessageRelay.RpcSendClientMessage(error);
+	}
 
-	// private void CheckPlayerCountToShutdown()
-	// {
-	// 	if (_connectedPlayers.Count <= 0)
-	// 	{
-	// 		StartShutdownProcess();
-	// 	}
-	// }
+	private void OnShutdown()
+	{
+		getRelay();
+		playFabMessageRelay.RpcSendClientMessage("The server is shutting down - sorry!");
+		StartCoroutine(ShutdownServer());
+	}
 
-	// private void OnPlayerAdded(string playfabId)
-	// {
-	// 	_connectedPlayers.Add(new ConnectedPlayer(playfabId));
-	// 	PlayFabMultiplayerAgentAPI.UpdateConnectedPlayers(_connectedPlayers);
-	// }
+	IEnumerator ShutdownServer()
+	{
+		yield return new WaitForSeconds(5f);
+		Application.Quit();
+	}
 
-	// private void OnAgentError(string error)
-	// {
-	// 	Debug.Log(error);
-	// }
-
-	// private void OnShutdown()
-	// {
-	// 	StartShutdownProcess();
-	// }
-
-	// private void StartShutdownProcess()
-	// {
-	// 	Debug.Log("Server is shutting down");
-	// 	foreach (var conn in UNetServer.Connections)
-	// 	{
-	// 		conn.Connection.Send(CustomGameServerMessageTypes.ShutdownMessage, new ShutdownMessage());
-	// 	}
-	// 	StartCoroutine(ShutdownServer());
-	// }
-
-	// IEnumerator ShutdownServer()
-	// {
-	// 	yield return new WaitForSeconds(5f);
-	// 	Application.Quit();
-	// }
-
-	// private void OnMaintenance(DateTime? NextScheduledMaintenanceUtc)
-	// {
-	// 	Debug.LogFormat("Maintenance scheduled for: {0}", NextScheduledMaintenanceUtc.Value.ToLongDateString());
-	// 	foreach (var conn in UNetServer.Connections)
-	// 	{
-	// 		conn.Connection.Send(CustomGameServerMessageTypes.ShutdownMessage, new MaintenanceMessage()
-	// 		{
-	// 			ScheduledMaintenanceUTC = (DateTime)NextScheduledMaintenanceUtc
-	// 		});
-	// 	}
-	// }
-
-
+	private void OnMaintenance(DateTime? NextScheduledMaintenanceUtc)
+	{
+		getRelay();
+		playFabMessageRelay.RpcSendClientMessage($"Maintenance scheduled for: {NextScheduledMaintenanceUtc.Value.ToLongDateString()}");
+	}
 }

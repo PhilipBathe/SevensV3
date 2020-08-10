@@ -5,6 +5,7 @@ using Mirror;
 using System.Linq;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class NetworkPlayer : NetworkBehaviour
 {
@@ -125,7 +126,8 @@ public class NetworkPlayer : NetworkBehaviour
             {
                 Debug.Log("Stop host");
                 networkManager.StopHost();
-            } 
+            }
+            SceneManager.LoadScene("LoginScene");
         }
     }
 
