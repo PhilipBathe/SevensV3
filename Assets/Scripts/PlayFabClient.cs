@@ -13,12 +13,15 @@ public class PlayFabClient : NetworkBehaviour
     private SevensNetworkManager networkManager;
     private TelepathyTransport telepathyTransport;
 
+    private MessageManager messageManager;
+
 
     void Start()
     {
         networkManager = this.GetComponent<SevensNetworkManager>();
         telepathyTransport = this.GetComponent<TelepathyTransport>();
         configuration = this.GetComponent<Configuration>();
+        messageManager = GameObject.Find("MessageManager").GetComponent<MessageManager>();
     }
 
     public void JoinOnline()
@@ -51,8 +54,7 @@ public class PlayFabClient : NetworkBehaviour
 
     private void onLoginError(PlayFabError response)
 	{
-        //TODO: show the problem in UI
-		Debug.Log(response.ToString());
+        handleError(response);
 	}
 
     private void onPlayFabLoginSuccess(LoginResult response)
@@ -61,7 +63,7 @@ public class PlayFabClient : NetworkBehaviour
 
         PlayFab.ClientModels.EntityKey clientEntityKey = response.EntityToken.Entity;
 
-        //TODO: show waiting for players in UI
+        messageManager.ShowNewMessage("Who is up for sevens?");
 
         CreateMatchmakingTicketRequest request = new CreateMatchmakingTicketRequest();
         request.QueueName = "FamilyGame";
@@ -76,8 +78,7 @@ public class PlayFabClient : NetworkBehaviour
 
     private void onMatchmakingTicketCreateError(PlayFabError response)
     {
-        //TODO: show the problem in UI
-		Debug.Log(response.ToString());
+        handleError(response);
     }
 
     private void onMatchmakingTicketCreateSuccess(CreateMatchmakingTicketResult result)
@@ -104,13 +105,13 @@ public class PlayFabClient : NetworkBehaviour
             //can poll up to 10 times a minute
             yield return new WaitForSeconds(10);
             PlayFabMultiplayerAPI.GetMatchmakingTicket(request, onGetMatchmakingTicketSuccess, onGetMatchmakingTicketError);
+            messageManager.AddMessage("Anyone want to play?");
         }
     }
 
     private void onGetMatchmakingTicketError(PlayFabError response)
     {
-        //TODO: show the problem in UI
-		Debug.Log(response.ToString());
+        handleError(response);
     }
 
     private void onGetMatchmakingTicketSuccess(GetMatchmakingTicketResult result)
@@ -121,6 +122,7 @@ public class PlayFabClient : NetworkBehaviour
 
         if(string.IsNullOrEmpty(result.MatchId) == false)
         {
+            messageManager.AddMessage("Yay! I'll wipe the table - you get the cards");
             Debug.Log("onGetMatchmakingTicketSuccess - has match ID");
             StopCoroutine(ticketPoller);
 
@@ -137,8 +139,7 @@ public class PlayFabClient : NetworkBehaviour
 
     private void onGetMatchError(PlayFabError response)
     {
-        //TODO: show the problem in UI
-		Debug.Log(response.ToString());
+        handleError(response);
     }
 
     private void onGetMatchSuccess(GetMatchResult result)
@@ -155,104 +156,36 @@ public class PlayFabClient : NetworkBehaviour
 	private IEnumerator ConnectRemoteClient()
 	{
         //let server get ready - or can we check some other way?
+        messageManager.AddMessage("Actually, I just need the loo, back in a sec");
         yield return new WaitForSeconds(10);
         networkManager.networkAddress = configuration.ipAddress;
         telepathyTransport.port = configuration.port;
-        //apathyTransport.port = configuration.port;
 
+        messageManager.HideMessagePanel();
 		networkManager.StartClient();
 	}
 
-
-    public void HardCodedJoin()
+    private void handleError(PlayFabError error)
     {
-        networkManager = this.GetComponent<SevensNetworkManager>();
-        telepathyTransport = this.GetComponent<TelepathyTransport>();
-        
-        networkManager.networkAddress = "52.224.151.249";
-        telepathyTransport.port = 30001;
-        //apathyTransport.port = configuration.port;
+        //TODO: actually handle this!
 
-		networkManager.StartClient();
+        Debug.Log(error.ErrorMessage);
+
+        messageManager.AddMessage("Doh! Something has gone wrong :-(");
+        messageManager.AddMessage("Can someone tell Philip please?  Meanwhile - maybe just try closing the app down completely and then starting again.");
+
+        messageManager.AddMessage(error.ErrorMessage);
+
+		if(error.ErrorDetails != null)
+		{
+			foreach(var errDic in error.ErrorDetails)
+			{
+				messageManager.AddMessage($"key --- {errDic.Key}");
+				foreach(var val in errDic.Value)
+				{
+					messageManager.AddMessage(val);
+				}
+			}
+		}
     }
-
-
-
-
-
-
-
-
-	// private void OnRequestServerDetails(GetMultiplayerServerDetailsResponse response)
-	// {
-	// 	Debug.Log("OnRequestServerDetails");
-
-	// 	if(response != null)
-	// 	{
-	// 		Debug.Log($"response.IPV4Address {response.IPV4Address}");
-	// 		configuration.ipAddress = response.IPV4Address;
-	// 		configuration.port = (ushort)response.Ports[0].Num;
-	// 		ConnectRemoteClient();
-	// 	}
-	// 	else
-	// 	{
-	// 		RequestMultiplayerServer(); 
-	// 	}
-	// }
-
-	// private void OnRequestServerDetailsError(PlayFabError error)
-	// {
-	// 	Debug.Log($"OnRequestServerDetailsError");
-	// 	Debug.Log(error.ErrorMessage);
-
-	// 	if(error.ErrorDetails != null)
-	// 	{
-	// 		foreach(var errDic in error.ErrorDetails)
-	// 		{
-	// 			Debug.Log($"key --- {errDic.Key}");
-	// 			foreach(var val in errDic.Value)
-	// 			{
-	// 				Debug.Log(val);
-	// 			}
-	// 		}
-	// 	}
-	// }
-
-
-    // private void RequestMultiplayerServer()
-	// {
-	// 	Debug.Log("[ClientStartUp].RequestMultiplayerServer");
-	// 	Debug.Log($"configuration.ipAddress {configuration.ipAddress}");
-	// 	RequestMultiplayerServerRequest requestData = new RequestMultiplayerServerRequest();
-	// 	requestData.BuildId = configuration.buildId;
-	// 	requestData.SessionId = "5c48a303-e25b-4afc-8c8e-d5c1d459c850"; //System.Guid.NewGuid().ToString();
-	// 	requestData.PreferredRegions = new List<string>() { "WestUs" };
-	// 	PlayFabMultiplayerAPI.RequestMultiplayerServer(requestData, OnRequestMultiplayerServer, OnRequestMultiplayerServerError);
-	// }
-
-	// private void OnRequestMultiplayerServer(RequestMultiplayerServerResponse response)
-	// {
-	// 	Debug.Log($"OnRequestMultiplayerServer {response}");
-	// 	ConnectRemoteClient(response);
-	// }
-
-
-
-	// private void OnRequestMultiplayerServerError(PlayFabError error)
-	// {
-	// 	Debug.Log($"OnRequestMultiplayerServerError");
-	// 	Debug.Log(error.ErrorMessage);
-
-	// 	if(error.ErrorDetails != null)
-	// 	{
-	// 		foreach(var errDic in error.ErrorDetails)
-	// 		{
-	// 			Debug.Log($"key --- {errDic.Key}");
-	// 			foreach(var val in errDic.Value)
-	// 			{
-	// 				Debug.Log(val);
-	// 			}
-	// 		}
-	// 	}
-	// }
 }
