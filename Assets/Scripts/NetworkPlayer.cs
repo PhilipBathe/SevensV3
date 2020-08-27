@@ -64,7 +64,10 @@ public class NetworkPlayer : NetworkBehaviour
             name = name.Substring(0, 15);
         }
 
-        CmdSetPlayerName(name);
+        string matchResultJson = GameObject.Find("NetworkManager").GetComponent<PlayFabClient>().GetMatchResultJson();
+        CmdSetRecentPlayerDetails(matchResultJson);
+
+        CmdSetPlayerNameAndRequestSeat(name);
         setupUI();
 
         GameObject.Find("AIManager").GetComponent<AIManager>().AINumberChangedEvent.AddListener(CmdChangeNumberOfAIPlayers);
@@ -74,7 +77,13 @@ public class NetworkPlayer : NetworkBehaviour
         GameObject.Find("AIManager").GetComponent<AIManager>().ToggleSitOutEvent.AddListener(toggleSitOut);
     }
 
-    void OnIsTableHostChanged(bool oldIsTableHost, bool newIsTableHost )
+    [Command]
+    private void CmdSetRecentPlayerDetails(string matchResultJson)
+    {
+        GameObject.Find("SeatManager").GetComponent<PlayFabBackfiller>().SetRecentPlayerDetails(matchResultJson);
+    }
+
+    void OnIsTableHostChanged(bool oldIsTableHost, bool newIsTableHost)
     {
         if(isLocalPlayer)
         {
@@ -153,7 +162,7 @@ public class NetworkPlayer : NetworkBehaviour
     }
 
     [Command]
-    void CmdSetPlayerName(string name)
+    void CmdSetPlayerNameAndRequestSeat(string name)
     {
         //Debug.Log($"CmdSetPlayerName {name}");
         PlayerName = name;

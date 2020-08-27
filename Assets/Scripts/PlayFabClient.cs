@@ -130,7 +130,7 @@ public class PlayFabClient : NetworkBehaviour
             GetMatchRequest request = new GetMatchRequest {
                 EscapeObject = false,
                 QueueName = "FamilyGame",
-                ReturnMemberAttributes = false,
+                ReturnMemberAttributes = true,
                 MatchId = result.MatchId
             };
             PlayFabMultiplayerAPI.GetMatch(request, onGetMatchSuccess, onGetMatchError);
@@ -144,16 +144,26 @@ public class PlayFabClient : NetworkBehaviour
 
     private void onGetMatchSuccess(GetMatchResult result)
     {
+        getMatchResult = result;
+
         Debug.Log("onGetMatchSuccess");
         Debug.Log($"result.ServerDetails.IPV4Address, {result.ServerDetails.IPV4Address}");
         Debug.Log($"result.ServerDetails.Ports[0].Num, {result.ServerDetails.Ports[0].Num}");
 
         configuration.ipAddress = result.ServerDetails.IPV4Address;
 		configuration.port = (ushort)result.ServerDetails.Ports[0].Num;
-        StartCoroutine(ConnectRemoteClient());
+        StartCoroutine(ConnectRemoteClient(result));
     }
 
-	private IEnumerator ConnectRemoteClient()
+    private GetMatchResult getMatchResult;
+
+    public string GetMatchResultJson()
+    {
+        Debug.Log(JsonUtility.ToJson(getMatchResult));
+        return JsonUtility.ToJson(getMatchResult);
+    }
+
+	private IEnumerator ConnectRemoteClient(GetMatchResult result)
 	{
         //let server get ready - or can we check some other way?
         messageManager.AddMessage("Actually, I just need the loo, back in a sec");
@@ -163,7 +173,10 @@ public class PlayFabClient : NetworkBehaviour
 
         messageManager.HideMessagePanel();
 		networkManager.StartClient();
+        //TODO: register ourselves somewhere so we can backfill!
 	}
+
+
 
     private void handleError(PlayFabError error)
     {

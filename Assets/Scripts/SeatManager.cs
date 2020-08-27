@@ -45,7 +45,7 @@ public class SeatManager : NetworkBehaviour
         spawnNewEnemyGameObject(gamePlayer);
 
         nominateNewTableHost();
-
+        
         startNewGame();
     }
 
